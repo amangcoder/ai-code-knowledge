@@ -1,0 +1,26 @@
+{
+  "name": "ai-code-knowledge",
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ts-morph": "^23.0.0",
+    "chokidar": "^3.6.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "@types/node": "^22.0.0",
+    "vitest": "^2.0.0"
+  },
+  "scripts": {
+    "build-knowledge": "tsx scripts/build-knowledge.ts",
+    "build-knowledge:incremental": "tsx scripts/build-knowledge.ts --incremental",
+    "watch": "tsx scripts/watch.ts",
+    "build-mcp": "tsc --project tsconfig.mcp.json",
+    "start-mcp": "node mcp-server/dist/mcp-server/server.js",
+    "test": "vitest run",
+    "install-hooks": "sh scripts/install-hooks.sh"
+  }
+}
