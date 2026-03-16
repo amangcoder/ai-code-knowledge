@@ -1,0 +1,259 @@
+{
+  "components": [
+    {
+      "name": "KnowledgePipeline",
+      "responsibility": "Orchestrates the full 4-phase build: symbol extraction, dependency graph, LLM summaries, and index generation. Supports --incremental flag to skip files whose SHA-256 hash is unchanged. Writes all four artifacts atomically. Status: COMPLETE (scripts/build-knowledge.ts).",
+      "interfaces": [
+        "main(): Promise<void>",
+        "CLI: tsx scripts/build-knowledge.ts [--root <path>] [--incremental]",
+        "parseArgs(): { projectRoot: string; incremental: boolean }"
+      ],
+      "dependencies": [
+        "SymbolExtractor",
+        "CallGraphBuilder",
+        "DependencyGraphBuilder",
+        "SummaryGenerator",
+        "IndexBuilder",
+        "AtomicWriter"
+      ]
+    },
+    {
+      "name": "SymbolExtractor",
+      "responsibility": "Uses ts-morph to walk each SourceFile AST and extract exported and internal functions, classes, interfaces, type aliases, and class methods. Captures name, qualifiedName, file, line, signature, type, module, and isExported. Status: COMPLETE (scripts/lib/symbol-extractor.ts).",
+      "interfaces": [
+        "extractSymbols(sourceFile: SourceFile, projectRoot: string): SymbolEntry[]"
+      ],
+      "dependencies": ["ts-morph"]
+    },
+    {
+      "name": "CallGraphBuilder",
+      "responsibility": "Traverses all CallExpression nodes across the full ts-morph Project to build a calls[] array per symbol, then inverts the graph to populate calledBy[] for efficient reverse lookup. Handles unresolvable calls with logged warnings. Status: COMPLETE (scripts/lib/call-graph.ts).",
+      "interfaces": [
+        "buildCallGraph(project: Project, symbols: SymbolEntry[]): SymbolEntry[]",
+        "invertCallGraph(symbols: SymbolEntry[]): SymbolEntry[]"
+      ],
+      "dependencies": ["ts-morph", "SymbolExtractor"]
+    },
+    {
+      "name": "DependencyGraphBuilder",
+      "responsibility": "Parses static and dynamic import() calls per source file, resolves paths to absolute, groups files by parent directory into named modules, and detects import cycles via BFS with max depth 10. Produces DependencyGraph with nodes, edges, cycles, and fileDeps. Status: COMPLETE (scripts/lib/dependency-extractor.ts, dependency-graph.ts).",
+      "interfaces": [
+        "extractFileDeps(sourceFile: SourceFile): ImportInfo[]",
+        "buildDependencyGraph(fileDeps: Record<string, ImportInfo[]>, projectRoot: string): DependencyGraph"
+      ],
+      "dependencies": ["ts-morph", "ModuleGrouper"]
+    },
+    {
+      "name": "SummaryGenerator",
+      "responsibility": "Generates FileSummary objects via pluggable summarizer backends (static, ollama, anthropic). Uses SHA-256 content hashing to skip unchanged files. Persists through summaries/cache.json. Status: COMPLETE (scripts/lib/summary-cache.ts, summarizer-factory.ts, summarizers/).",
+      "interfaces": [
+        "getOrGenerateSummary(relPath: string, content: string, symbols: SymbolEntry[], summarizer: Summarizer, cache: SummaryCache): Promise<FileSummary>",
+        "SummaryCache.load(): Record<string, FileSummary>",
+        "SummaryCache.set(key: string, value: FileSummary): void",
+        "createSummarizer(mode?: SummarizerMode): Summarizer"
+      ],
+      "dependencies": ["AtomicWriter"]
+    },
+    {
+      "name": "IndexBuilder",
+      "responsibility": "Reads all three artifact files (symbols.json, dependencies.json, summaries/cache.json) and produces a KnowledgeIndex with: fileCount (unique files in symbols), lastBuilt (ISO timestamp), hasSymbols, hasDependencies, modules list, and summaries list. Status: COMPLETE (scripts/lib/index-builder.ts).",
+      "interfaces": [
+        "buildIndex(knowledgeRoot: string): Promise<KnowledgeIndex>",
+        "writeIndex(knowledgeRoot: string, index: KnowledgeIndex): Promise<void>"
+      ],
+      "dependencies": ["AtomicWriter"]
+    },
+    {
+      "name": "AtomicWriter",
+      "responsibility": "Prevents partial reads during writes by writing to a UUID-suffixed .tmp file then atomically renaming to target. Creates parent directories as needed. Cleans up .tmp on failure. Status: COMPLETE (scripts/lib/atomic-writer.ts).",
+      "interfaces": [
+        "atomicWrite(filePath: string, data: string): Promise<void>"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "IncrementalUpdater",
+      "responsibility": "Re-processes a single changed file: strips old symbol entries, creates a minimal ts-morph Project (skipFileDependencyResolution: true) for the changed file only, re-extracts symbols, rebuilds local call graph, updates summary cache, writes both artifacts atomically. For deleted files, removes all entries and cleans stale calledBy/calls cross-references. Status: COMPLETE (scripts/lib/incremental-updater.ts).",
+      "interfaces": [
+        "handleFileChange(filePath: string, knowledgeRoot: string, projectRoot: string): Promise<void>",
+        "handleFileDeletion(filePath: string, knowledgeRoot: string): Promise<void>"
+      ],
+      "dependencies": [
+        "SymbolExtractor",
+        "CallGraphBuilder",
+        "SummaryGenerator",
+        "AtomicWriter"
+      ]
+    },
+    {
+      "name": "FileWatcher",
+      "responsibility": "Watches src/**/*.{ts,tsx,js,py,go,rs} for add/change/unlink events using chokidar with ignoreInitial:true and awaitWriteFinish stabilization. Collects events into a pending map and flushes after 500ms debounce. Handles SIGINT/SIGTERM for graceful shutdown. Status: COMPLETE (scripts/watch.ts).",
+      "interfaces": [
+        "CLI: tsx scripts/watch.ts [--root <path>]"
+      ],
+      "dependencies": ["IncrementalUpdater", "chokidar"]
+    },
+    {
+      "name": "MCPServer",
+      "responsibility": "Main MCP protocol entry point using @modelcontextprotocol/sdk with StdioServerTransport. Registers all 6 tools with Zod-validated input schemas. Routes incoming tools/call requests to the correct handler. All logging goes to stderr only (stdout is exclusively the MCP protocol wire). Compiled to CommonJS via tsconfig.mcp.json. Status: NOT YET IMPLEMENTED — mcp-server/server.ts must be created.",
+      "interfaces": [
+        "CLI: node mcp-server/dist/server.js",
+        "CLI (dev): npx tsx mcp-server/server.ts",
+        "MCP tools/list: returns 6 registered tools",
+        "MCP tools/call: routes to per-tool handler"
+      ],
+      "dependencies": [
+        "@modelcontextprotocol/sdk",
+        "FindSymbolTool",
+        "FindCallersTool",
+        "GetDependenciesTool",
+        "GetFileSummaryTool",
+        "SearchArchitectureTool",
+        "HealthCheckTool"
+      ]
+    },
+    {
+      "name": "FindSymbolTool",
+      "responsibility": "MCP tool handler: case-insensitive substring search on symbols.json, optional type filter, returns up to 20 results sorted by name length ascending. Returns helpful error when symbols.json is missing. Status: COMPLETE (mcp-server/tools/find-symbol.ts).",
+      "interfaces": [
+        "handler(args: { name: string; type?: string }, knowledgeRoot: string): Promise<CallToolResult>"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "FindCallersTool",
+      "responsibility": "MCP tool handler: BFS traversal of the inverted calledBy index starting from the requested symbol, collecting callers up to maxDepth levels. Tracks visited nodes to prevent infinite loops on circular graphs. Returns file/line info per caller with depth-based indentation. Status: COMPLETE (mcp-server/tools/find-callers.ts).",
+      "interfaces": [
+        "handler(args: { symbol: string; maxDepth?: number }, knowledgeRoot: string): CallToolResult"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "GetDependenciesTool",
+      "responsibility": "MCP tool handler: BFS traversal of the module dependency graph returning direct and transitive dependencies. Lists available modules when the requested module is not found. Status: COMPLETE WITH BUG — mcp-server/tools/get-dependencies.ts line 144 uses result.dependency which does not exist on DependencyResult; should be result.to.",
+      "interfaces": [
+        "handler(args: { module: string; depth?: number }, knowledgeRoot: string): CallToolResult"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "GetFileSummaryTool",
+      "responsibility": "MCP tool handler: reads FileSummary from summaries/cache.json with path normalization (strip ./ or /, add .ts if no extension). Supports exact and partial suffix matching. Lists first 10 available summaries on miss. Status: COMPLETE (mcp-server/tools/get-file-summary.ts).",
+      "interfaces": [
+        "handler(args: { file: string }, knowledgeRoot: string): CallToolResult"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "SearchArchitectureTool",
+      "responsibility": "MCP tool handler: case-insensitive line search over architecture.md, returns matching lines with ±3 lines of context prefixed with [architecture.md:LINE]. Merges overlapping context windows. Returns 'No results' on miss. Status: COMPLETE (mcp-server/tools/search-architecture.ts).",
+      "interfaces": [
+        "handler(args: { query: string }, knowledgeRoot: string): Promise<CallToolResult>"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "HealthCheckTool",
+      "responsibility": "MCP tool handler: reads index.json and returns a formatted status string with lastBuilt, fileCount, hasSymbols, hasDependencies, and the full module list. Returns build instruction when index.json does not exist. Status: COMPLETE (mcp-server/tools/health-check.ts).",
+      "interfaces": [
+        "handler(args: Record<string, unknown>, knowledgeRoot: string): Promise<CallToolResult>"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "ClaudeConfig",
+      "responsibility": "JSON configuration files that register the MCP server with Claude Code. Production config (.claude/mcp_servers.json) points to compiled node mcp-server/dist/server.js with KNOWLEDGE_ROOT env var. Dev config (.claude/mcp_servers.dev.json) uses npx tsx mcp-server/server.ts for fast iteration. Status: NOT YET IMPLEMENTED.",
+      "interfaces": [
+        ".claude/mcp_servers.json",
+        ".claude/mcp_servers.dev.json"
+      ],
+      "dependencies": ["MCPServer"]
+    }
+  ],
+  "data_flow": "Source TypeScript files on disk are loaded into a ts-morph Project (respecting tsconfig.json). KnowledgePipeline runs in sequence: (1) SymbolExtractor walks each SourceFile AST emitting SymbolEntry[] with empty calls/calledBy; (2) CallGraphBuilder traverses all CallExpression nodes across the whole Project to populate calls[], then invertCallGraph builds the calledBy[] reverse index — final SymbolEntry[] is atomically written to .knowledge/symbols.json; (3) DependencyGraphBuilder reads import statements for every source file, resolves to absolute paths, groups by module directory, runs cycle-detection BFS (max depth 10), atomically writes .knowledge/dependencies.json; (4) SummaryGenerator hashes each file content with SHA-256, calls the configured summarizer backend only for changed files, atomically writes .knowledge/summaries/cache.json; (5) IndexBuilder reads all three artifacts to compute KnowledgeIndex metadata and atomically writes .knowledge/index.json. All four writes go through AtomicWriter (UUID-tmp → rename) to prevent partial reads. At runtime Claude Code launches MCPServer as a subprocess via .claude/mcp_servers.json stdio config. Incoming MCP tool calls arrive on stdin; MCPServer deserializes the request, extracts tool name and validated args, and dispatches to the matching handler module. Each handler reads the relevant .knowledge/ JSON file and returns a formatted CallToolResult text string. Responses are serialized to stdout as MCP protocol messages. For live development, FileWatcher monitors source files with chokidar; after a 500ms debounce IncrementalUpdater creates a minimal ts-morph Project for only the changed file, removes stale entries, re-extracts symbols, updates the summary cache, and atomically patches only symbols.json and summaries/cache.json — the MCP server continues serving consistent data throughout.",
+  "tech_decisions": [
+    {
+      "decision": "Use @modelcontextprotocol/sdk with StdioServerTransport for the MCP server",
+      "rationale": "StdioServerTransport is required for Claude Code MCP integration. The SDK provides type-safe tool registration, Zod schema validation, and protocol serialization without a custom JSON-RPC implementation. Stdio transport requires no port allocation and keeps the server stateless.",
+      "alternatives_considered": [
+        "HTTP/SSE transport (requires port management, not supported by Claude Code mcp_servers.json)",
+        "Custom stdio JSON-RPC implementation (error-prone, not type-safe)"
+      ]
+    },
+    {
+      "decision": "Use ts-morph for TypeScript AST parsing instead of the raw TypeScript compiler API",
+      "rationale": "ts-morph wraps the TypeScript compiler API with an ergonomic, object-oriented interface that handles tsconfig.json resolution, source file collection, and symbol resolution automatically. This reduces boilerplate and decreases the risk of subtle compiler API misuse.",
+      "alternatives_considered": [
+        "TypeScript compiler API directly (verbose, lower-level, error-prone)",
+        "babel/parser (no TypeScript type information, can not resolve symbols across files)",
+        "tree-sitter (no semantic analysis, purely syntactic)"
+      ]
+    },
+    {
+      "decision": "Compile MCP server to CommonJS via a separate tsconfig.mcp.json while scripts use ESM",
+      "rationale": "The main codebase uses ESM (type:module in package.json) for modern Node.js module resolution. The MCP server binary needs to run as a standalone Node.js process and CommonJS provides broader compatibility and simpler distribution. A separate tsconfig targeting only mcp-server/ with module:CommonJS and outDir:mcp-server/dist isolates the two compilation targets.",
+      "alternatives_considered": [
+        "ESM output with dynamic import() shims (complex interop with CJS dependencies)",
+        "Single tsconfig with conditional module output (not supported by tsc)"
+      ]
+    },
+    {
+      "decision": "Write all knowledge artifacts atomically (write to UUID.tmp then fs.rename)",
+      "rationale": "The MCP server reads .knowledge/ artifacts at query time while the build pipeline may be overwriting them. An atomic rename ensures the server always reads a complete, consistent file and never a zero-byte or partially-written artifact — critical in watch mode where rebuilds occur at any time.",
+      "alternatives_considered": [
+        "File locking via lockfiles (complex, not cross-platform)",
+        "In-memory artifact serving with a shared state layer (requires process coupling)",
+        "SQLite database (heavy dependency, overkill for read-heavy rarely-written artifacts)"
+      ]
+    },
+    {
+      "decision": "Use SHA-256 content hashing for summary cache invalidation",
+      "rationale": "Hashing file content guarantees summaries are regenerated only when source actually changes, not when timestamps are updated by tools or git operations. SHA-256 provides strong collision resistance with negligible overhead at typical TypeScript file sizes.",
+      "alternatives_considered": [
+        "File modification timestamps / mtime (unreliable across git checkouts and CI)",
+        "File size comparison (insufficient — same-size edits are invisible)",
+        "MD5 hashing (faster but theoretically collision-prone)"
+      ]
+    },
+    {
+      "decision": "Use chokidar for cross-platform file watching with 500ms debounce",
+      "rationale": "chokidar provides consistent, reliable file watching on macOS (FSEvents), Linux (inotify), and Windows (ReadDirectoryChangesW). The 500ms debounce prevents rapid-fire incremental rebuilds when editors perform multi-step saves or when git applies a batch of file changes.",
+      "alternatives_considered": [
+        "Node.js native fs.watch (inconsistent behavior across platforms, misses rename events on Linux)",
+        "Polling with setInterval (high CPU cost, misses sub-interval changes)",
+        "watchman (requires separate installation)"
+      ]
+    },
+    {
+      "decision": "Minimal ts-morph Project in IncrementalUpdater with skipFileDependencyResolution: true",
+      "rationale": "For single-file incremental updates, loading a full ts-morph Project with all dependencies takes 2-5 seconds on large repos — violating the under-1s requirement. By loading only the changed file with dependency resolution skipped, the incremental path completes well within the time budget.",
+      "alternatives_considered": [
+        "Reuse the full project (too slow on large repos)",
+        "Parse-only mode without AST type resolution (loses call graph accuracy)"
+      ]
+    },
+    {
+      "decision": "Use Vitest for testing with fixture-based integration tests",
+      "rationale": "Vitest is already a devDependency, provides fast TypeScript-native test execution in ESM mode, and supports async beforeAll hooks needed to run build-knowledge before tool tests. The fixture project (test/fixtures/sample-project/) enables deterministic end-to-end validation without depending on the main codebase.",
+      "alternatives_considered": [
+        "Jest with ts-jest (slower, requires ESM interop configuration)",
+        "Node.js built-in test runner (fewer features, less ecosystem)"
+      ]
+    }
+  ],
+  "constraints": [
+    "All TypeScript code must use strict mode and target ES2022",
+    "MCP server must communicate exclusively via stdio transport; all logs and errors must go to stderr, never stdout",
+    "Knowledge build pipeline must complete in under 10 seconds for 500 files in static summarizer mode",
+    "Incremental single-file update must complete in under 1 second",
+    "File watcher debounce interval must be exactly 500ms",
+    "Cycle detection in the dependency graph must cap BFS traversal at depth 10",
+    "All knowledge artifacts must be written atomically via write-to-tmp then rename",
+    "Summary cache must use SHA-256 content hashing for change detection",
+    "MCP server must compile to CommonJS output in mcp-server/dist/ via tsconfig.mcp.json for production deployment",
+    "No modifications to Phase 1-4 completed library files unless strictly required for integration",
+    "Each individual implementation task should remain at or under 200 lines of new code",
+    "All file paths stored in knowledge artifacts must use forward slashes for cross-platform compatibility",
+    "MCP tool responses must return results within 200ms for typical queries against a 500-file knowledge base"
+  ]
+}

@@ -1,13 +1,21 @@
+/**
+ * AUTO-GENERATED from src/types.ts — do not edit directly.
+ * Run "npm run sync-types" to regenerate.
+ *
+ * Kept separate from src/types.ts because tsconfig.mcp.json uses
+ * rootDir: "mcp-server", which cannot import from src/.
+ */
+
 export interface SymbolEntry {
     name: string;
-    qualifiedName: string;        // "OrderService.createOrder"
-    file: string;                 // absolute path
+    qualifiedName: string;
+    file: string;
     line: number;
     signature: string;
     type: 'function' | 'class' | 'interface' | 'type' | 'method';
-    module: string;               // parent directory name
-    calls: string[];              // qualifiedNames of called symbols
-    calledBy: string[];           // qualifiedNames of callers (inverted index)
+    module: string;
+    calls: string[];
+    calledBy: string[];
     throws: string[];
     isExported: boolean;
 }
@@ -16,7 +24,7 @@ export interface DependencyGraph {
     nodes: string[];
     edges: Array<{ from: string; to: string; type: 'direct' | 'dynamic' }>;
     cycles: string[][];
-    fileDeps: Record<string, string[]>;  // file -> imported file paths
+    fileDeps: Record<string, string[]>;
 }
 
 export interface FileSummary {
@@ -38,12 +46,3 @@ export interface KnowledgeIndex {
     lastBuilt: string;
     fileCount: number;
 }
-
-export interface CallSite {
-    caller: string;
-    file: string;
-    line: number;
-    callChain: string[];
-}
-
-export type SummarizerMode = 'static' | 'ollama' | 'anthropic';

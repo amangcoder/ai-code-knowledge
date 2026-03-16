@@ -1,6 +1,166 @@
 {
-    "nodes": [],
-    "edges": [],
-    "cycles": [],
-    "fileDeps": {}
+  "nodes": [
+    "src",
+    "scripts",
+    "mcp-server",
+    "lib",
+    "tools",
+    "summarizers"
+  ],
+  "edges": [
+    {
+      "from": "scripts",
+      "to": "lib",
+      "type": "direct"
+    },
+    {
+      "from": "scripts",
+      "to": "src",
+      "type": "direct"
+    },
+    {
+      "from": "mcp-server",
+      "to": "tools",
+      "type": "direct"
+    },
+    {
+      "from": "lib",
+      "to": "src",
+      "type": "direct"
+    },
+    {
+      "from": "lib",
+      "to": "summarizers",
+      "type": "direct"
+    },
+    {
+      "from": "tools",
+      "to": "mcp-server",
+      "type": "direct"
+    },
+    {
+      "from": "summarizers",
+      "to": "lib",
+      "type": "direct"
+    },
+    {
+      "from": "summarizers",
+      "to": "src",
+      "type": "direct"
+    }
+  ],
+  "cycles": [
+    [
+      "lib",
+      "summarizers"
+    ],
+    [
+      "mcp-server",
+      "tools"
+    ]
+  ],
+  "fileDeps": {
+    "src/types.ts": [],
+    "scripts/build-dependencies.ts": [
+      "scripts/lib/dependency-extractor.ts",
+      "scripts/lib/dependency-graph.ts"
+    ],
+    "scripts/build-knowledge.ts": [
+      "scripts/lib/symbol-extractor.ts",
+      "scripts/lib/call-graph.ts",
+      "scripts/lib/dependency-extractor.ts",
+      "scripts/lib/dependency-graph.ts",
+      "scripts/lib/summary-cache.ts",
+      "scripts/lib/summarizer-factory.ts",
+      "scripts/lib/atomic-writer.ts",
+      "scripts/lib/index-builder.ts",
+      "src/types.ts"
+    ],
+    "scripts/build-symbols.ts": [
+      "scripts/lib/symbol-extractor.ts",
+      "scripts/lib/call-graph.ts",
+      "src/types.ts"
+    ],
+    "scripts/watch.ts": [
+      "scripts/lib/incremental-updater.ts"
+    ],
+    "mcp-server/server.ts": [
+      "mcp-server/tools/find-symbol.ts",
+      "mcp-server/tools/find-callers.ts",
+      "mcp-server/tools/get-dependencies.ts",
+      "mcp-server/tools/get-file-summary.ts",
+      "mcp-server/tools/search-architecture.ts",
+      "mcp-server/tools/health-check.ts"
+    ],
+    "mcp-server/types.ts": [],
+    "scripts/lib/atomic-writer.ts": [],
+    "scripts/lib/call-graph.ts": [
+      "src/types.ts"
+    ],
+    "scripts/lib/dependency-extractor.ts": [],
+    "scripts/lib/dependency-graph.ts": [
+      "src/types.ts",
+      "scripts/lib/module-grouper.ts",
+      "scripts/lib/dependency-extractor.ts"
+    ],
+    "scripts/lib/incremental-updater.ts": [
+      "src/types.ts",
+      "scripts/lib/atomic-writer.ts",
+      "scripts/lib/symbol-extractor.ts",
+      "scripts/lib/call-graph.ts",
+      "scripts/lib/summarizer-factory.ts"
+    ],
+    "scripts/lib/index-builder.ts": [
+      "src/types.ts",
+      "scripts/lib/atomic-writer.ts"
+    ],
+    "scripts/lib/module-grouper.ts": [],
+    "scripts/lib/summarizer-factory.ts": [
+      "scripts/lib/summarizer.ts",
+      "scripts/lib/summarizers/static-summarizer.ts",
+      "scripts/lib/summarizers/ollama-summarizer.ts",
+      "scripts/lib/summarizers/anthropic-summarizer.ts"
+    ],
+    "scripts/lib/summarizer.ts": [
+      "src/types.ts"
+    ],
+    "scripts/lib/summary-cache.ts": [
+      "src/types.ts",
+      "scripts/lib/summarizer.ts",
+      "scripts/lib/atomic-writer.ts"
+    ],
+    "scripts/lib/symbol-extractor.ts": [
+      "src/types.ts"
+    ],
+    "mcp-server/tools/find-callers.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/find-symbol.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/get-dependencies.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/get-file-summary.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/health-check.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/search-architecture.ts": [],
+    "scripts/lib/summarizers/anthropic-summarizer.ts": [
+      "scripts/lib/summarizer.ts",
+      "src/types.ts",
+      "scripts/lib/summarizers/static-summarizer.ts"
+    ],
+    "scripts/lib/summarizers/ollama-summarizer.ts": [
+      "scripts/lib/summarizer.ts",
+      "src/types.ts",
+      "scripts/lib/summarizers/static-summarizer.ts"
+    ],
+    "scripts/lib/summarizers/static-summarizer.ts": [
+      "scripts/lib/summarizer.ts",
+      "src/types.ts"
+    ]
+  }
 }

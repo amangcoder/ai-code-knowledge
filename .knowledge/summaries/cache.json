@@ -1,0 +1,469 @@
+{
+  "src/types.ts": {
+    "file": "src/types.ts",
+    "purpose": "types module",
+    "exports": [
+      "SymbolEntry",
+      "DependencyGraph",
+      "FileSummary",
+      "KnowledgeIndex",
+      "CallSite",
+      "SummarizerMode"
+    ],
+    "dependencies": [],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.337Z",
+    "contentHash": "33a95e04bcf790dfadf03bd02bdf7e2f39a9deeb7cfd0ae0c4818cea4ff918d3"
+  },
+  "scripts/build-dependencies.ts": {
+    "file": "scripts/build-dependencies.ts",
+    "purpose": "build-dependencies module",
+    "exports": [],
+    "dependencies": [
+      "ts-morph",
+      "./lib/dependency-extractor.js",
+      "./lib/dependency-graph.js",
+      "node:fs",
+      "node:path"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "38d3cdde2112143ef4b4a8aed508b8e61d1bd5113ed41bc5be25471b8b85a216"
+  },
+  "scripts/build-knowledge.ts": {
+    "file": "scripts/build-knowledge.ts",
+    "purpose": "build-knowledge module",
+    "exports": [],
+    "dependencies": [
+      "ts-morph",
+      "./lib/symbol-extractor.js",
+      "./lib/call-graph.js",
+      "./lib/dependency-extractor.js",
+      "./lib/dependency-graph.js",
+      "./lib/summary-cache.js",
+      "./lib/summarizer-factory.js",
+      "./lib/atomic-writer.js",
+      "./lib/index-builder.js",
+      "node:fs",
+      "node:path",
+      "node:crypto",
+      "../src/types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "cdb0d05dcad08bd0cfed123544069cb93394e78e01f3db28580f0de3641e1814"
+  },
+  "scripts/build-symbols.ts": {
+    "file": "scripts/build-symbols.ts",
+    "purpose": "build-symbols module",
+    "exports": [],
+    "dependencies": [
+      "ts-morph",
+      "./lib/symbol-extractor.js",
+      "./lib/call-graph.js",
+      "node:fs",
+      "node:path",
+      "../src/types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "69a46c8e7a230fade1977c0c046e05abe70172c70c0cb7cbd200fe7e503b50fa"
+  },
+  "scripts/watch.ts": {
+    "file": "scripts/watch.ts",
+    "purpose": "watch module",
+    "exports": [],
+    "dependencies": [
+      "chokidar",
+      "node:path",
+      "./lib/incremental-updater.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "b9e24b29eb80b0d03ee137f21161e574837a563b68e92b1750b754327ba3d754"
+  },
+  "mcp-server/server.ts": {
+    "file": "mcp-server/server.ts",
+    "purpose": "server module",
+    "exports": [],
+    "dependencies": [
+      "@modelcontextprotocol/sdk/server/mcp",
+      "@modelcontextprotocol/sdk/server/stdio",
+      "zod",
+      "./tools/find-symbol.js",
+      "./tools/find-callers.js",
+      "./tools/get-dependencies.js",
+      "./tools/get-file-summary.js",
+      "./tools/search-architecture.js",
+      "./tools/health-check.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "3ee4b0ffe96d4a110c1268fc40e4ec30379a48db6b34c8c0ca66c5d5ab3f424b"
+  },
+  "mcp-server/types.ts": {
+    "file": "mcp-server/types.ts",
+    "purpose": "types module",
+    "exports": [
+      "SymbolEntry",
+      "DependencyGraph",
+      "FileSummary",
+      "KnowledgeIndex"
+    ],
+    "dependencies": [],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "edd58d437386a01956b84836ea4d39c9c9353e14e60e43998b0b76759ce7fb5e"
+  },
+  "scripts/lib/atomic-writer.ts": {
+    "file": "scripts/lib/atomic-writer.ts",
+    "purpose": "atomic-writer module",
+    "exports": [
+      "atomicWrite"
+    ],
+    "dependencies": [
+      "node:fs/promises",
+      "node:path",
+      "node:crypto"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "a88940a720de9a27ad2bd20099289c2f69c9b4d88dc286cf8c03582c91287156"
+  },
+  "scripts/lib/call-graph.ts": {
+    "file": "scripts/lib/call-graph.ts",
+    "purpose": "call-graph module",
+    "exports": [
+      "buildCallGraph",
+      "invertCallGraph"
+    ],
+    "dependencies": [
+      "ts-morph",
+      "../../src/types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "f61372ab1f547febe5bf9eaaca0196025aa362027fba5891349d52184c1193c6"
+  },
+  "scripts/lib/dependency-extractor.ts": {
+    "file": "scripts/lib/dependency-extractor.ts",
+    "purpose": "dependency-extractor module",
+    "exports": [
+      "extractFileDeps",
+      "ImportInfo"
+    ],
+    "dependencies": [
+      "ts-morph",
+      "node:path",
+      "node:fs"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "6e144b2fe24ed3c63a9d1c79d8cfbef5632f5f7beb4b54dbec423491098d1c4c"
+  },
+  "scripts/lib/dependency-graph.ts": {
+    "file": "scripts/lib/dependency-graph.ts",
+    "purpose": "dependency-graph module",
+    "exports": [
+      "buildDependencyGraph"
+    ],
+    "dependencies": [
+      "../../src/types.js",
+      "./module-grouper.js",
+      "./dependency-extractor.js",
+      "node:path"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "34cdd4ccea97beec62462f510e8bc0d10656e051bb9fb232732b4b6e0d32d937"
+  },
+  "scripts/lib/incremental-updater.ts": {
+    "file": "scripts/lib/incremental-updater.ts",
+    "purpose": "incremental-updater module",
+    "exports": [
+      "handleFileChange",
+      "handleFileDeletion"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "node:crypto",
+      "ts-morph",
+      "../../src/types.js",
+      "./atomic-writer.js",
+      "./symbol-extractor.js",
+      "./call-graph.js",
+      "./summarizer-factory.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "8b6490c3a6b5cd5be100e02a8e411377c0149c0c490378872d2464e6c6de7aec"
+  },
+  "scripts/lib/index-builder.ts": {
+    "file": "scripts/lib/index-builder.ts",
+    "purpose": "index-builder module",
+    "exports": [
+      "buildIndex",
+      "writeIndex"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "../../src/types.js",
+      "./atomic-writer.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "b5f1091009f24ca8093cf63e6e8bf4e8ed4864be09b1a307a2fd1b4c73b8cc04"
+  },
+  "scripts/lib/module-grouper.ts": {
+    "file": "scripts/lib/module-grouper.ts",
+    "purpose": "module-grouper module",
+    "exports": [
+      "groupFilesByModule"
+    ],
+    "dependencies": [
+      "node:path"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "5f406d72b615c92f6189473982e8b19d0ce0eaf3fc752d8c7cd5b84a8fe4336f"
+  },
+  "scripts/lib/summarizer-factory.ts": {
+    "file": "scripts/lib/summarizer-factory.ts",
+    "purpose": "summarizer-factory module",
+    "exports": [
+      "createSummarizer"
+    ],
+    "dependencies": [
+      "./summarizer.js",
+      "./summarizers/static-summarizer.js",
+      "./summarizers/ollama-summarizer.js",
+      "./summarizers/anthropic-summarizer.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "c5d29ed34df51c0ecf350fba71577b9513167d317d7479bc53afa58dc5cce28d"
+  },
+  "scripts/lib/summarizer.ts": {
+    "file": "scripts/lib/summarizer.ts",
+    "purpose": "summarizer module",
+    "exports": [
+      "buildPrompt",
+      "parseResponse",
+      "Summarizer"
+    ],
+    "dependencies": [
+      "../../src/types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "b54de94616018eee6c4c1bca2ab72954d2bfb890035c19d720e8fa291d74bc98"
+  },
+  "scripts/lib/summary-cache.ts": {
+    "file": "scripts/lib/summary-cache.ts",
+    "purpose": "summary-cache module",
+    "exports": [
+      "getOrGenerateSummary",
+      "SummaryCache"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "node:crypto",
+      "../../src/types.js",
+      "./summarizer.js",
+      "./atomic-writer.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "e1af8d628ae2667d3bf23fa74607279ce3f0d31fbb91b9c2673b314af2e737f6"
+  },
+  "scripts/lib/symbol-extractor.ts": {
+    "file": "scripts/lib/symbol-extractor.ts",
+    "purpose": "symbol-extractor module",
+    "exports": [
+      "extractSymbols"
+    ],
+    "dependencies": [
+      "ts-morph",
+      "../../src/types.js",
+      "path"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "b99aad00f6f45dba097015dc96194d67312a22f5db43b7e0f7e0c3dd0136b18d"
+  },
+  "mcp-server/tools/find-callers.ts": {
+    "file": "mcp-server/tools/find-callers.ts",
+    "purpose": "find-callers module",
+    "exports": [
+      "handler",
+      "FindCallersArgs",
+      "CallToolResult"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "../types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "af98e731d0a6345fb4ad7eff979cf1c2a731bef7be689dd7c6f817b00858c19f"
+  },
+  "mcp-server/tools/find-symbol.ts": {
+    "file": "mcp-server/tools/find-symbol.ts",
+    "purpose": "find-symbol module",
+    "exports": [
+      "handler",
+      "FindSymbolArgs",
+      "CallToolResult"
+    ],
+    "dependencies": [
+      "node:fs/promises",
+      "node:path",
+      "../types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "eeb251fafb6c564f73ed8c8ad5cbe3ac7420a0fe1f1cb7f0cef379be7f087980"
+  },
+  "mcp-server/tools/get-dependencies.ts": {
+    "file": "mcp-server/tools/get-dependencies.ts",
+    "purpose": "get-dependencies module",
+    "exports": [
+      "handler",
+      "GetDependenciesArgs",
+      "CallToolResult"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "../types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "c486ed20cc3ff4c8592c31f90097cd480ac207eeed030164f098c2b4fa621d5f"
+  },
+  "mcp-server/tools/get-file-summary.ts": {
+    "file": "mcp-server/tools/get-file-summary.ts",
+    "purpose": "get-file-summary module",
+    "exports": [
+      "handler"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "../types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "5a37dfe28b5506919f58916d5ccd9fa756122dbeb78da6619b31095a1f473607"
+  },
+  "mcp-server/tools/health-check.ts": {
+    "file": "mcp-server/tools/health-check.ts",
+    "purpose": "health-check module",
+    "exports": [
+      "handler",
+      "CallToolResult"
+    ],
+    "dependencies": [
+      "node:fs/promises",
+      "node:path",
+      "../types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "1db0ffe04f6979bc75e1b10643b82870f86b4ae3d7ffa5c21f2b2b1e69329a17"
+  },
+  "mcp-server/tools/search-architecture.ts": {
+    "file": "mcp-server/tools/search-architecture.ts",
+    "purpose": "search-architecture module",
+    "exports": [
+      "handler",
+      "SearchArchitectureArgs",
+      "CallToolResult"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "fa40594cad92693976afd2503dfbd39f5c3492c8349c1239f1a36e2d544c9b94"
+  },
+  "scripts/lib/summarizers/anthropic-summarizer.ts": {
+    "file": "scripts/lib/summarizers/anthropic-summarizer.ts",
+    "purpose": "anthropic-summarizer module",
+    "exports": [
+      "AnthropicSummarizer"
+    ],
+    "dependencies": [
+      "../summarizer.js",
+      "../../../src/types.js",
+      "./static-summarizer.js",
+      "@anthropic-ai/sdk"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "dbd263642ab3b77a021aee80eb22959f6da1d949a8bb5795b7d83b2423d5a3af"
+  },
+  "scripts/lib/summarizers/ollama-summarizer.ts": {
+    "file": "scripts/lib/summarizers/ollama-summarizer.ts",
+    "purpose": "ollama-summarizer module",
+    "exports": [
+      "OllamaSummarizer"
+    ],
+    "dependencies": [
+      "../summarizer.js",
+      "../../../src/types.js",
+      "./static-summarizer.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "a06a4d94e433e6601ab57e038697a0b74e00336a24f4be8e1c3f74498b210851"
+  },
+  "scripts/lib/summarizers/static-summarizer.ts": {
+    "file": "scripts/lib/summarizers/static-summarizer.ts",
+    "purpose": "static-summarizer module",
+    "exports": [
+      "StaticSummarizer"
+    ],
+    "dependencies": [
+      "../summarizer.js",
+      "../../../src/types.js",
+      "node:path",
+      "node:crypto"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T08:26:19.338Z",
+    "contentHash": "2039699fea57e1d9abfd101b9827f25070ddb7ca0167e4c71969d6c378b95c7d"
+  }
+}

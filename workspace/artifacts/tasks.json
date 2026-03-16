@@ -1,0 +1,127 @@
+{
+  "tasks": [
+    {
+      "task_id": "TASK-001",
+      "title": "Create MCP server entry point",
+      "description": "Create mcp-server/server.ts — the only missing piece in the entire Phase 5-9 implementation. All 6 tool handler modules already exist in mcp-server/tools/. This file must: (1) import McpServer (or Server) and StdioServerTransport from @modelcontextprotocol/sdk; (2) import all 6 handler modules; (3) define Zod input schemas for each tool inline; (4) register all 6 tools via server.setRequestHandler(ListToolsRequestSchema) returning the tools array; (5) route CallToolRequestSchema to the correct handler based on params.name; (6) read KNOWLEDGE_ROOT from process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'; (7) connect StdioServerTransport and call server.connect(); (8) catch and log all errors to stderr only — stdout is reserved exclusively for MCP protocol messages. The file should be under 150 lines.",
+      "assigned_role": "engineer",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Running 'npx tsx mcp-server/server.ts' starts without errors",
+        "MCP tools/list request returns all 6 tools: find_symbol, find_callers, get_dependencies, get_file_summary, search_architecture, health_check",
+        "Each tool has correct input schema (name/type for find_symbol; symbol/maxDepth for find_callers; module/depth for get_dependencies; file for get_file_summary; query for search_architecture; empty for health_check)",
+        "CallToolRequest for find_symbol routes to the find-symbol.ts handler",
+        "CallToolRequest for find_callers routes to the find-callers.ts handler",
+        "CallToolRequest for get_dependencies routes to the get-dependencies.ts handler",
+        "CallToolRequest for get_file_summary routes to the get-file-summary.ts handler",
+        "CallToolRequest for search_architecture routes to the search-architecture.ts handler",
+        "CallToolRequest for health_check routes to the health-check.ts handler",
+        "No output is written to stdout except MCP protocol messages",
+        "All errors and logs go to stderr via process.stderr.write or console.error",
+        "KNOWLEDGE_ROOT is read from the KNOWLEDGE_ROOT environment variable"
+      ],
+      "files_to_modify": [
+        "mcp-server/server.ts"
+      ],
+      "estimated_complexity": "medium"
+    },
+    {
+      "task_id": "TASK-002",
+      "title": "Fix get-dependencies output rendering bug",
+      "description": "Fix a runtime bug in mcp-server/tools/get-dependencies.ts at line 144. The code references 'result.dependency' but the DependencyResult interface (defined in the same file) has no 'dependency' field — it has 'from', 'to', 'type', and 'depth'. The correct field is 'result.to'. The current code produces 'undefined' in the formatted output for every dependency entry, making the tool useless for actual queries. Change line 144 from 'lines.push(`${indent}${result.dependency}${typeLabel}`)' to 'lines.push(`${indent}${result.to}${typeLabel}`)'.",
+      "assigned_role": "engineer",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "The formatted output line at line 144 uses result.to instead of result.dependency",
+        "Running get_dependencies against a built knowledge base returns actual module names (not 'undefined')",
+        "Existing test test/get-dependencies.test.ts continues to pass",
+        "The fix is under 5 lines changed"
+      ],
+      "files_to_modify": [
+        "mcp-server/tools/get-dependencies.ts"
+      ],
+      "estimated_complexity": "low"
+    },
+    {
+      "task_id": "TASK-003",
+      "title": "Update package.json build scripts for MCP compilation",
+      "description": "Two updates needed in package.json: (1) Add a 'prebuild-mcp' script that cleans the mcp-server/dist/ directory before compilation to prevent stale compiled files from persisting: use 'node -e \"import('fs').then(fs => fs.rmSync('mcp-server/dist', {recursive:true,force:true}))\"' or a cross-platform equivalent. (2) Fix the existing 'start-mcp' script — it currently points to 'node mcp-server/server.js' which does not exist; the compiled output goes to 'mcp-server/dist/server.js' per tsconfig.mcp.json's outDir setting. Update 'start-mcp' to 'node mcp-server/dist/server.js'.",
+      "assigned_role": "engineer",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "package.json contains a 'prebuild-mcp' script that deletes mcp-server/dist/ if it exists",
+        "The 'start-mcp' script is updated to 'node mcp-server/dist/server.js'",
+        "Running 'npm run prebuild-mcp' removes mcp-server/dist/ without errors",
+        "Running 'npm run build-mcp' (which triggers prebuild-mcp automatically via npm lifecycle) produces a fresh mcp-server/dist/server.js",
+        "All other scripts in package.json are unchanged"
+      ],
+      "files_to_modify": [
+        "package.json"
+      ],
+      "estimated_complexity": "low"
+    },
+    {
+      "task_id": "TASK-004",
+      "title": "Create .claude MCP server configuration files",
+      "description": "Create two JSON files that register the MCP server with Claude Code. (1) .claude/mcp_servers.json — production config pointing to the compiled binary: set command to 'node', args to ['mcp-server/dist/server.js'], env to {'KNOWLEDGE_ROOT': '.knowledge'}. (2) .claude/mcp_servers.dev.json — development config using tsx for fast iteration without a build step: set command to 'npx', args to ['tsx', 'mcp-server/server.ts'], env to {'KNOWLEDGE_ROOT': '.knowledge'}. Create the .claude/ directory if it does not exist. Both files must be valid JSON following the Claude MCP server configuration schema.",
+      "assigned_role": "engineer",
+      "dependencies": ["TASK-001"],
+      "acceptance_criteria": [
+        ".claude/mcp_servers.json is valid, parseable JSON",
+        ".claude/mcp_servers.dev.json is valid, parseable JSON",
+        "Production config uses command 'node' with args ['mcp-server/dist/server.js']",
+        "Dev config uses command 'npx' with args ['tsx', 'mcp-server/server.ts']",
+        "Both configs include KNOWLEDGE_ROOT env var set to '.knowledge'",
+        "Claude Code can parse both files without errors"
+      ],
+      "files_to_modify": [
+        ".claude/mcp_servers.json",
+        ".claude/mcp_servers.dev.json"
+      ],
+      "estimated_complexity": "low"
+    },
+    {
+      "task_id": "TASK-005",
+      "title": "Create MCP tool integration test suite",
+      "description": "Create test/mcp-tools.test.ts using Vitest. This is the only missing test file — all other test files (symbol-extractor, call-graph, dependency-graph, find-symbol, find-callers, get-dependencies, get-file-summary, search-architecture, health-check, index-builder, perf) already exist. In beforeAll: use execFileSync to run 'tsx scripts/build-knowledge.ts --root test/fixtures/sample-project' and capture the output knowledge root path. Import each tool handler and call it with the generated knowledge root. Test assertions: (1) find_symbol({name:'createOrder'}) returns a result containing 'createOrder' and 'order-service'; (2) find_callers({symbol:'PaymentService.charge'}) returns a result showing createOrder as a caller; (3) get_dependencies({module:'order-service',depth:1}) returns payments and analytics in the result (after TASK-002 fix); (4) get_file_summary({file:'order-service.ts'}) returns a non-error result with the file field set; (5) health_check({}) returns a result containing 'Last Built' and 'File Count'; (6) search_architecture({query:'order'}) — test both the found and not-found code paths. In afterAll, delete the .knowledge directory created inside the fixture directory.",
+      "assigned_role": "engineer",
+      "dependencies": ["TASK-001", "TASK-002"],
+      "acceptance_criteria": [
+        "test/mcp-tools.test.ts exists and uses Vitest describe/it/expect",
+        "beforeAll successfully runs build-knowledge on test/fixtures/sample-project",
+        "find_symbol test passes: createOrder is found with correct file path",
+        "find_callers test passes: charge is identified as called by createOrder",
+        "get_dependencies test passes: order-service dependencies include payment-service and analytics-service modules",
+        "get_file_summary test passes: returns non-error result for order-service.ts",
+        "health_check test passes: returns formatted string with metadata fields",
+        "search_architecture test covers both hit and miss cases",
+        "afterAll cleans up generated .knowledge directory from fixtures",
+        "All tests pass via 'npm test'"
+      ],
+      "files_to_modify": [
+        "test/mcp-tools.test.ts"
+      ],
+      "estimated_complexity": "medium"
+    },
+    {
+      "task_id": "TASK-006",
+      "title": "Validate end-to-end MCP server compilation and startup",
+      "description": "Run 'npm run build-mcp' after TASK-001 and TASK-003 are complete to verify the TypeScript compiler can produce a valid mcp-server/dist/server.js from the new server.ts entry point. If compilation fails, fix any TypeScript errors in mcp-server/server.ts or mcp-server/tools/. Common issues to look for: (a) the @modelcontextprotocol/sdk types may require specific import syntax; (b) tsconfig.mcp.json's include pattern 'mcp-server/**/*' must include server.ts; (c) relative imports inside mcp-server/tools/ must not use .js extensions that break CommonJS resolution. After successful build, verify 'node mcp-server/dist/server.js' starts without throwing on startup.",
+      "assigned_role": "engineer",
+      "dependencies": ["TASK-001", "TASK-003"],
+      "acceptance_criteria": [
+        "'npm run build-mcp' completes without TypeScript compilation errors",
+        "mcp-server/dist/server.js exists after build",
+        "'node mcp-server/dist/server.js' starts without throwing",
+        "Process does not exit immediately (it waits for stdin MCP input)",
+        "No unexpected output on stdout before any MCP request is received",
+        "If compilation errors are found, they are fixed with minimal changes to existing tool files"
+      ],
+      "files_to_modify": [
+        "mcp-server/server.ts",
+        "tsconfig.mcp.json"
+      ],
+      "estimated_complexity": "low"
+    }
+  ]
+}
