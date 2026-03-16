@@ -1,15 +1,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import type { DependencyGraph } from '../types.js';
+import type { DependencyGraph, CallToolResult } from '../types.js';
 
 export interface GetDependenciesArgs {
   module: string;
   depth?: number;
-}
-
-export interface CallToolResult {
-  content: Array<{ type: 'text'; text: string }>;
-  isError?: boolean;
 }
 
 interface DependencyResult {

@@ -5,8 +5,8 @@
  * All errors and logs go to stderr — stdout is reserved for MCP protocol messages.
  */
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 
 import * as findSymbol from './tools/find-symbol.js';
@@ -38,7 +38,7 @@ async function main(): Promise<void> {
                     'Optional symbol type filter (e.g. "function", "class", "interface")'
                 ),
         },
-        async (args) => {
+        async (args: { name: string; type?: string }) => {
             return await findSymbol.handler(args, KNOWLEDGE_ROOT);
         }
     );
@@ -59,7 +59,7 @@ async function main(): Promise<void> {
                 .optional()
                 .describe('Maximum BFS traversal depth (default: 1)'),
         },
-        async (args) => {
+        async (args: { symbol: string; maxDepth?: number }) => {
             return findCallers.handler(args, KNOWLEDGE_ROOT);
         }
     );
@@ -78,7 +78,7 @@ async function main(): Promise<void> {
                 .optional()
                 .describe('BFS traversal depth (default: 1)'),
         },
-        async (args) => {
+        async (args: { module: string; depth?: number }) => {
             return getDependencies.handler(args, KNOWLEDGE_ROOT);
         }
     );
@@ -95,7 +95,7 @@ async function main(): Promise<void> {
                     'Relative file path (e.g. "src/lib/foo.ts" or just "foo.ts")'
                 ),
         },
-        async (args) => {
+        async (args: { file: string }) => {
             return getFileSummary.handler(args, KNOWLEDGE_ROOT);
         }
     );
@@ -110,7 +110,7 @@ async function main(): Promise<void> {
                 .string()
                 .describe('Case-insensitive search query to match against architecture.md'),
         },
-        async (args) => {
+        async (args: { query: string }) => {
             return await searchArchitecture.handler(args, KNOWLEDGE_ROOT);
         }
     );
@@ -121,7 +121,7 @@ async function main(): Promise<void> {
         'Check the status of the knowledge base. ' +
             'Returns lastBuilt timestamp, file count, available modules, and artifact flags.',
         {},
-        async (args) => {
+        async (args: Record<string, never>) => {
             return await healthCheck.handler(args, KNOWLEDGE_ROOT);
         }
     );

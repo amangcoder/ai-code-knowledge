@@ -1,24 +1,19 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import type { KnowledgeIndex, CallToolResult } from '../types.js';
-
 /**
  * Handles the health_check MCP tool call.
  * Reads .knowledge/index.json and returns a formatted status string showing:
  * lastBuilt, fileCount, hasSymbols, hasDependencies, and module list.
  * Returns a build instruction message if index.json is missing.
  */
-export async function handler(
-    _args: Record<string, unknown>,
-    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'
-): Promise<CallToolResult> {
+export async function handler(_args, knowledgeRoot = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge') {
     const indexPath = path.join(knowledgeRoot, 'index.json');
-
-    let index: KnowledgeIndex;
+    let index;
     try {
         const raw = await fs.readFile(indexPath, 'utf8');
-        index = JSON.parse(raw) as KnowledgeIndex;
-    } catch {
+        index = JSON.parse(raw);
+    }
+    catch {
         return {
             content: [
                 {
@@ -36,14 +31,11 @@ export async function handler(
             ],
         };
     }
-
     const hasSymbols = index.hasSymbols ? 'yes' : 'no';
     const hasDependencies = index.hasDependencies ? 'yes' : 'no';
-    const moduleList =
-        index.modules.length > 0
-            ? index.modules.map((m) => `  - ${m}`).join('\n')
-            : '  (none)';
-
+    const moduleList = index.modules.length > 0
+        ? index.modules.map((m) => `  - ${m}`).join('\n')
+        : '  (none)';
     const statusText = [
         '=== Knowledge Base Status ===',
         '',
@@ -55,7 +47,6 @@ export async function handler(
         'Modules:',
         moduleList,
     ].join('\n');
-
     return {
         content: [
             {

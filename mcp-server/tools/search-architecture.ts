@@ -1,15 +1,11 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import type { CallToolResult } from '../types.js';
 
 const CONTEXT_LINES = 3;
 
 export interface SearchArchitectureArgs {
   query: string;
-}
-
-export interface CallToolResult {
-  content: Array<{ type: 'text'; text: string }>;
-  isError?: boolean;
 }
 
 /**
@@ -59,7 +55,10 @@ export async function handler(
         isError: true,
       };
     }
-    throw err;
+    return {
+      content: [{ type: 'text', text: `Error reading architecture.md: ${(err as Error).message}` }],
+      isError: true,
+    };
   }
 
   const lines = content.split('\n');

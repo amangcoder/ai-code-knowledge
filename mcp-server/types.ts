@@ -8,23 +8,24 @@
 
 export interface SymbolEntry {
     name: string;
-    qualifiedName: string;
-    file: string;
+    qualifiedName: string;        // "OrderService.createOrder"
+    file: string;                 // absolute path
     line: number;
     signature: string;
-    type: 'function' | 'class' | 'interface' | 'type' | 'method';
-    module: string;
-    calls: string[];
-    calledBy: string[];
+    type: 'function' | 'class' | 'interface' | 'type' | 'method' | 'module-init' | 'decorator' | 'enum' | 'constructor';
+    module: string;               // parent directory name
+    calls: string[];              // qualifiedNames of called symbols
+    calledBy: string[];           // qualifiedNames of callers (inverted index)
     throws: string[];
     isExported: boolean;
+    language?: 'typescript' | 'javascript' | 'python';
 }
 
 export interface DependencyGraph {
     nodes: string[];
     edges: Array<{ from: string; to: string; type: 'direct' | 'dynamic' }>;
     cycles: string[][];
-    fileDeps: Record<string, string[]>;
+    fileDeps: Record<string, string[]>;  // file -> imported file paths
 }
 
 export interface FileSummary {
@@ -45,4 +46,15 @@ export interface KnowledgeIndex {
     hasDependencies: boolean;
     lastBuilt: string;
     fileCount: number;
+    buildInProgress?: boolean;
+    buildGeneration?: number;
+}
+
+export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';
+
+/** MCP tool handler response format. */
+export interface CallToolResult {
+    [key: string]: unknown;
+    content: Array<{ type: 'text'; text: string }>;
+    isError?: boolean;
 }

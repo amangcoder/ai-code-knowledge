@@ -1,17 +1,16 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import type { FileSummary } from '../types.js';
-
-interface CallToolResult {
-  content: Array<{ type: 'text'; text: string }>;
-  isError?: boolean;
-}
+import type { FileSummary, CallToolResult } from '../types.js';
 
 function normalizePath(filePath: string): string {
-  // Strip leading ./ or /
-  let normalized = filePath.replace(/^\.\//, '').replace(/^\//, '');
-  // Block path traversal attempts
-  if (normalized.includes('..')) {
+  // Normalize and convert to forward slashes
+  let normalized = path.normalize(filePath).split(path.sep).join('/');
+  // Strip leading ./
+  normalized = normalized.replace(/^\.\//, '');
+  // Strip leading slashes
+  normalized = normalized.replace(/^\/+/, '');
+  // Block path traversal — check for '..' as a path component
+  if (normalized.split('/').includes('..')) {
     throw new Error('Path traversal not allowed');
   }
   // Ensure .ts extension if no extension present

@@ -1,15 +1,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import type { SymbolEntry } from '../types.js';
+import type { SymbolEntry, CallToolResult } from '../types.js';
 
 export interface FindCallersArgs {
   symbol: string;
   maxDepth?: number;
-}
-
-export interface CallToolResult {
-  content: Array<{ type: 'text'; text: string }>;
-  isError?: boolean;
 }
 
 interface CallerInfo {
