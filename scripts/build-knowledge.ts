@@ -11,17 +11,38 @@ import type { FileContext } from './lib/adapters/language-adapter.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
-import type { SymbolEntry } from '../src/types.js';
+import type { SymbolEntry, RichnessLevel } from '../src/types.js';
 import type { ModuleConfig } from './lib/module-grouper.js';
 
-function parseArgs(): { projectRoot: string; incremental: boolean } {
+const VALID_RICHNESS: RichnessLevel[] = ['minimal', 'standard', 'rich'];
+
+function parseArgs(): { projectRoot: string; incremental: boolean; richness?: RichnessLevel } {
     const args = process.argv.slice(2);
     const rootIdx = args.indexOf('--root');
     const projectRoot = rootIdx !== -1
         ? path.resolve(args[rootIdx + 1])
         : process.cwd();
     const incremental = args.includes('--incremental');
-    return { projectRoot, incremental };
+
+    // Richness: CLI flag > env var > config.json (resolved later) > default 'minimal'
+    const richnessIdx = args.indexOf('--richness');
+    let richness: RichnessLevel | undefined;
+    if (richnessIdx !== -1 && args[richnessIdx + 1]) {
+        const val = args[richnessIdx + 1] as RichnessLevel;
+        if (VALID_RICHNESS.includes(val)) {
+            richness = val;
+        } else {
+            log(`Warning: invalid --richness "${args[richnessIdx + 1]}", ignoring`);
+        }
+    }
+    if (!richness) {
+        const envVal = process.env.KNOWLEDGE_RICHNESS as RichnessLevel | undefined;
+        if (envVal && VALID_RICHNESS.includes(envVal)) {
+            richness = envVal;
+        }
+    }
+
+    return { projectRoot, incremental, richness };
 }
 
 function log(msg: string): void {
@@ -29,11 +50,9 @@ function log(msg: string): void {
 }
 
 async function main(): Promise<void> {
-    const { projectRoot, incremental } = parseArgs();
+    const { projectRoot, incremental, richness: cliRichness } = parseArgs();
     const knowledgeRoot = path.join(projectRoot, '.knowledge');
     const t0 = Date.now();
-
-    log(`mode=${incremental ? 'incremental' : 'full'} root=${projectRoot}`);
 
     // Mark build as in-progress for crash detection
     const indexPath = path.join(knowledgeRoot, 'index.json');
@@ -58,6 +77,12 @@ async function main(): Promise<void> {
             log(`Warning: failed to parse ${configPath}, using defaults`);
         }
     }
+
+    // ── Resolve richness level: CLI > env > config > default ─────────────────
+    const richness: RichnessLevel = cliRichness
+        ?? moduleConfig?.richness
+        ?? 'minimal';
+    log(`mode=${incremental ? 'incremental' : 'full'} richness=${richness} root=${projectRoot}`);
 
     // ── Set up adapter registry and detect languages ──────────────────────────
     const registry = createDefaultRegistry();
@@ -133,7 +158,7 @@ async function main(): Promise<void> {
     for (const [lang, files] of filesToProcess) {
         const adapter = registry.getByLanguage(lang)!;
         for (const file of files) {
-            allSymbols.push(...adapter.extractSymbols(file));
+            allSymbols.push(...adapter.extractSymbols(file, richness));
         }
     }
 
@@ -159,11 +184,6 @@ async function main(): Promise<void> {
     const finalSymbols = invertCallGraph(symbolsWithCalls);
     log(`Symbols: ${finalSymbols.length} in ${Date.now() - t1}ms`);
 
-    await atomicWrite(
-        path.join(knowledgeRoot, 'symbols.json'),
-        JSON.stringify(finalSymbols, null, 2)
-    );
-
     // ── Phase 2: Dependency graph (always full rebuild) ───────────────────────
     const t2 = Date.now();
     const fileDeps: Record<string, ImportInfo[]> = {};
@@ -183,19 +203,79 @@ async function main(): Promise<void> {
         JSON.stringify(depGraph, null, 2)
     );
 
+    // ── Phase 2.5: Rich-level analysis (complexity + test mapping) ────────────
+    if (richness === 'rich') {
+        const t25 = Date.now();
+
+        // Complexity analysis
+        const { computeFileComplexity } = await import('./lib/complexity.js');
+        const tsAdapterForComplexity = registry.getByLanguage('typescript') as TypeScriptAdapter | undefined;
+        const project = tsAdapterForComplexity?.getProject();
+        if (project) {
+            const allRelFiles = new Set<string>();
+            for (const [, files] of allFileContexts) {
+                for (const f of files) allRelFiles.add(f.relativePath);
+            }
+            // Compute complexity per source file
+            for (const sf of project.getSourceFiles()) {
+                const rel = path.relative(projectRoot, sf.getFilePath());
+                if (!allRelFiles.has(rel)) continue;
+                const fileSymbols = finalSymbols.filter(s => s.file === rel);
+                if (fileSymbols.length > 0) {
+                    computeFileComplexity(sf, fileSymbols);
+                }
+            }
+        }
+
+        // Test mapping
+        const { buildTestMap } = await import('./lib/test-mapper.js');
+        const allFiles: string[] = [];
+        for (const [, files] of allFileContexts) {
+            for (const f of files) allFiles.push(f.relativePath);
+        }
+        const testMap = buildTestMap(allFiles, depGraph.fileDeps);
+
+        // Store test map for Phase 3 to use
+        (depGraph as any)._testMap = testMap;
+
+        log(`Rich analysis (complexity + test mapping) in ${Date.now() - t25}ms`);
+    }
+
+    // ── Write symbols (after Phase 2.5 so complexity data is included) ───────
+    await atomicWrite(
+        path.join(knowledgeRoot, 'symbols.json'),
+        JSON.stringify(finalSymbols, null, 2)
+    );
+
     // ── Phase 3: Summary generation (only changed files) ─────────────────────
     const t3 = Date.now();
-    const summarizer = createSummarizer();
+    const summarizer = createSummarizer(richness);
 
     // For TS/JS files, pass the SourceFile for richer summarization if available
     const tsAdapter = registry.getByLanguage('typescript') as TypeScriptAdapter | undefined;
+
+    // Extract test map if available from rich analysis
+    const testMap = (depGraph as any)._testMap as import('./lib/test-mapper.js').TestMap | undefined;
 
     let summaryCount = 0;
     for (const [, files] of filesToProcess) {
         for (const file of files) {
             const fileSymbols = finalSymbols.filter(s => s.file === file.relativePath);
             const sourceFile = tsAdapter?.getProject()?.getSourceFile(file.filePath);
-            await getOrGenerateSummary(file.relativePath, file.content, fileSymbols, summarizer, summaryCache, sourceFile);
+            const summary = await getOrGenerateSummary(file.relativePath, file.content, fileSymbols, summarizer, summaryCache, sourceFile, richness);
+
+            // Attach rich-level data to summary
+            if (richness === 'rich') {
+                if (testMap?.sourceToTests[file.relativePath]) {
+                    summary.testFiles = testMap.sourceToTests[file.relativePath];
+                }
+                // Aggregate complexity from symbols
+                const complexities = fileSymbols.filter(s => s.complexity != null).map(s => s.complexity!);
+                if (complexities.length > 0) {
+                    summary.complexityScore = complexities.reduce((a, b) => a + b, 0);
+                }
+            }
+
             summaryCount++;
         }
     }
@@ -211,6 +291,7 @@ async function main(): Promise<void> {
     const index = await buildIndex(knowledgeRoot);
     (index as any).buildInProgress = false;
     (index as any).buildGeneration = buildGeneration;
+    (index as any).richness = richness;
     await writeIndex(knowledgeRoot, index);
 
     // Cleanup adapters

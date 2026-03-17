@@ -1,5 +1,5 @@
 import { Summarizer, buildPrompt, parseResponse } from '../summarizer.js';
-import { SymbolEntry, FileSummary } from '../../../src/types.js';
+import { SymbolEntry, FileSummary, RichnessLevel } from '../../../src/types.js';
 import { staticSummarizer } from './static-summarizer.js';
 import { withRetry } from '../retry.js';
 
@@ -20,9 +20,11 @@ export class OllamaSummarizer implements Summarizer {
     async summarizeFile(
         filePath: string,
         content: string,
-        symbols: SymbolEntry[]
+        symbols: SymbolEntry[],
+        _sourceFile?: unknown,
+        richness?: RichnessLevel
     ): Promise<FileSummary> {
-        const prompt = buildPrompt(filePath, content, symbols);
+        const prompt = buildPrompt(filePath, content, symbols, richness);
 
         let timeoutId: NodeJS.Timeout | undefined;
         try {
@@ -58,9 +60,9 @@ export class OllamaSummarizer implements Summarizer {
             const parsed = parseResponse(data.response, filePath);
 
             // Get static fallbacks for missing fields
-            const fallback = await staticSummarizer.summarizeFile(filePath, content, symbols);
+            const fallback = await staticSummarizer.summarizeFile(filePath, content, symbols, undefined, richness);
 
-            return {
+            const summary: FileSummary = {
                 file: filePath,
                 purpose: parsed.purpose ?? fallback.purpose,
                 exports: parsed.exports ?? fallback.exports,
@@ -70,6 +72,19 @@ export class OllamaSummarizer implements Summarizer {
                 contentHash: fallback.contentHash,
                 lastUpdated: fallback.lastUpdated
             };
+
+            // Standard-level fields
+            if (parsed.detailedPurpose) summary.detailedPurpose = parsed.detailedPurpose;
+            else if (fallback.detailedPurpose) summary.detailedPurpose = fallback.detailedPurpose;
+            if (parsed.internalPatterns) summary.internalPatterns = parsed.internalPatterns;
+            else if (fallback.internalPatterns) summary.internalPatterns = fallback.internalPatterns;
+            if (fallback.publicAPI) summary.publicAPI = fallback.publicAPI;
+
+            // Rich-level fields
+            if (parsed.architecturalRole) summary.architecturalRole = parsed.architecturalRole;
+            if (parsed.llmDescription) summary.llmDescription = parsed.llmDescription;
+
+            return summary;
         } catch (error: any) {
             if ((error as any).isHttp) throw error;
             if (error.name === 'AbortError') {

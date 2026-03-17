@@ -1,25 +1,154 @@
 {
   "nodes": [
-    "src",
+    "mcp-server",
     "scripts",
-    "mcp-server"
+    "src",
+    "test"
   ],
   "edges": [
     {
       "from": "scripts",
       "to": "src",
       "type": "direct"
+    },
+    {
+      "from": "test",
+      "to": "scripts",
+      "type": "direct"
+    },
+    {
+      "from": "test",
+      "to": "mcp-server",
+      "type": "direct"
+    },
+    {
+      "from": "test",
+      "to": "src",
+      "type": "direct"
     }
   ],
   "cycles": [],
   "fileDeps": {
-    "src/types.ts": [],
+    "mcp-server/server.ts": [
+      "mcp-server/tools/find-symbol.ts",
+      "mcp-server/tools/find-callers.ts",
+      "mcp-server/tools/get-dependencies.ts",
+      "mcp-server/tools/get-file-summary.ts",
+      "mcp-server/tools/search-architecture.ts",
+      "mcp-server/tools/health-check.ts",
+      "mcp-server/tools/get-project-overview.ts",
+      "mcp-server/tools/get-batch-summaries.ts",
+      "mcp-server/tools/get-module-context.ts",
+      "mcp-server/tools/get-implementation-context.ts",
+      "mcp-server/tools/get-artifact-schema.ts",
+      "mcp-server/tools/get-directory-tree.ts",
+      "mcp-server/tools/get-artifact-store-path.ts",
+      "mcp-server/tools/get-code-patterns.ts",
+      "mcp-server/tools/find-template-file.ts",
+      "mcp-server/tools/get-static-data-schema.ts",
+      "mcp-server/tools/validate-artifact-draft.ts",
+      "mcp-server/tools/get-cumulative-context.ts"
+    ],
+    "mcp-server/tools/find-callers.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/find-symbol.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/find-template-file.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts"
+    ],
+    "mcp-server/tools/get-artifact-schema.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/artifact-schemas.ts"
+    ],
+    "mcp-server/tools/get-artifact-store-path.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/artifact-schemas.ts"
+    ],
+    "mcp-server/tools/get-batch-summaries.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/path-utils.ts"
+    ],
+    "mcp-server/tools/get-code-patterns.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts"
+    ],
+    "mcp-server/tools/get-cumulative-context.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/artifact-schemas.ts",
+      "mcp-server/tools/lib/response-budget.ts"
+    ],
+    "mcp-server/tools/get-dependencies.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/get-directory-tree.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/file-tree.ts",
+      "mcp-server/tools/lib/path-utils.ts"
+    ],
+    "mcp-server/tools/get-file-summary.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/path-utils.ts"
+    ],
+    "mcp-server/tools/get-implementation-context.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/response-budget.ts"
+    ],
+    "mcp-server/tools/get-module-context.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts"
+    ],
+    "mcp-server/tools/get-project-overview.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/file-tree.ts",
+      "mcp-server/tools/lib/tech-stack.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/response-budget.ts"
+    ],
+    "mcp-server/tools/get-static-data-schema.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts"
+    ],
+    "mcp-server/tools/health-check.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/file-tree.ts",
+      "mcp-server/tools/lib/tech-stack.ts",
+      "mcp-server/tools/lib/path-utils.ts"
+    ],
+    "mcp-server/tools/lib/artifact-schemas.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/lib/data-loader.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/lib/file-tree.ts": [],
+    "mcp-server/tools/lib/path-utils.ts": [],
+    "mcp-server/tools/lib/response-budget.ts": [],
+    "mcp-server/tools/lib/tech-stack.ts": [],
+    "mcp-server/tools/search-architecture.ts": [
+      "mcp-server/types.ts"
+    ],
+    "mcp-server/tools/validate-artifact-draft.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/artifact-schemas.ts"
+    ],
+    "mcp-server/types.ts": [],
     "scripts/build-dependencies.ts": [
       "scripts/lib/dependency-extractor.ts",
       "scripts/lib/dependency-graph.ts"
     ],
     "scripts/build-knowledge.ts": [
-      "scripts/lib/symbol-extractor.ts",
       "scripts/lib/call-graph.ts",
       "scripts/lib/dependency-extractor.ts",
       "scripts/lib/dependency-graph.ts",
@@ -27,33 +156,52 @@
       "scripts/lib/summarizer-factory.ts",
       "scripts/lib/atomic-writer.ts",
       "scripts/lib/index-builder.ts",
-      "scripts/lib/language-detection.ts",
-      "scripts/lib/python/python-symbol-extractor.ts",
-      "scripts/lib/python/python-dependency-extractor.ts",
-      "scripts/lib/python/python-call-graph.ts",
+      "scripts/lib/adapters/index.ts",
+      "scripts/lib/file-collector.ts",
+      "scripts/lib/adapters/language-adapter.ts",
       "src/types.ts",
-      "scripts/lib/module-grouper.ts"
+      "scripts/lib/module-grouper.ts",
+      "scripts/lib/complexity.ts",
+      "scripts/lib/test-mapper.ts"
     ],
     "scripts/build-symbols.ts": [
       "scripts/lib/symbol-extractor.ts",
       "scripts/lib/call-graph.ts",
       "src/types.ts"
     ],
-    "scripts/watch.ts": [
-      "scripts/lib/incremental-updater.ts",
-      "scripts/lib/logger.ts"
+    "scripts/lib/adapters/adapter-registry.ts": [
+      "scripts/lib/adapters/language-adapter.ts"
     ],
-    "mcp-server/server.ts": [
-      "mcp-server/tools/find-symbol.ts",
-      "mcp-server/tools/find-callers.ts",
-      "mcp-server/tools/get-dependencies.ts",
-      "mcp-server/tools/get-file-summary.ts",
-      "mcp-server/tools/search-architecture.ts",
-      "mcp-server/tools/health-check.ts"
+    "scripts/lib/adapters/index.ts": [
+      "scripts/lib/adapters/adapter-registry.ts",
+      "scripts/lib/adapters/typescript-adapter.ts",
+      "scripts/lib/adapters/python-adapter.ts",
+      "scripts/lib/adapters/language-adapter.ts"
     ],
-    "mcp-server/types.ts": [],
+    "scripts/lib/adapters/language-adapter.ts": [
+      "src/types.ts",
+      "scripts/lib/dependency-extractor.ts"
+    ],
+    "scripts/lib/adapters/python-adapter.ts": [
+      "scripts/lib/adapters/language-adapter.ts",
+      "src/types.ts",
+      "scripts/lib/dependency-extractor.ts",
+      "scripts/lib/python/python-symbol-extractor.ts",
+      "scripts/lib/python/python-dependency-extractor.ts",
+      "scripts/lib/python/python-call-graph.ts"
+    ],
+    "scripts/lib/adapters/typescript-adapter.ts": [
+      "scripts/lib/adapters/language-adapter.ts",
+      "src/types.ts",
+      "scripts/lib/dependency-extractor.ts",
+      "scripts/lib/symbol-extractor.ts",
+      "scripts/lib/call-graph.ts"
+    ],
     "scripts/lib/atomic-writer.ts": [],
     "scripts/lib/call-graph.ts": [
+      "src/types.ts"
+    ],
+    "scripts/lib/complexity.ts": [
       "src/types.ts"
     ],
     "scripts/lib/dependency-extractor.ts": [],
@@ -62,15 +210,18 @@
       "scripts/lib/module-grouper.ts",
       "scripts/lib/dependency-extractor.ts"
     ],
+    "scripts/lib/file-collector.ts": [
+      "scripts/lib/adapters/adapter-registry.ts",
+      "scripts/lib/adapters/language-adapter.ts"
+    ],
     "scripts/lib/incremental-updater.ts": [
       "src/types.ts",
       "scripts/lib/atomic-writer.ts",
-      "scripts/lib/symbol-extractor.ts",
       "scripts/lib/call-graph.ts",
       "scripts/lib/summarizer-factory.ts",
-      "scripts/lib/language-detection.ts",
-      "scripts/lib/python/python-symbol-extractor.ts",
-      "scripts/lib/python/python-call-graph.ts",
+      "scripts/lib/adapters/index.ts",
+      "scripts/lib/adapters/adapter-registry.ts",
+      "scripts/lib/adapters/language-adapter.ts",
       "scripts/lib/logger.ts",
       "scripts/lib/path-utils.ts"
     ],
@@ -80,45 +231,10 @@
     ],
     "scripts/lib/language-detection.ts": [],
     "scripts/lib/logger.ts": [],
-    "scripts/lib/module-grouper.ts": [],
+    "scripts/lib/module-grouper.ts": [
+      "src/types.ts"
+    ],
     "scripts/lib/path-utils.ts": [],
-    "scripts/lib/retry.ts": [],
-    "scripts/lib/summarizer-factory.ts": [
-      "scripts/lib/summarizer.ts",
-      "scripts/lib/summarizers/static-summarizer.ts",
-      "scripts/lib/summarizers/ollama-summarizer.ts",
-      "scripts/lib/summarizers/anthropic-summarizer.ts",
-      "scripts/lib/summarizers/claude-code-summarizer.ts"
-    ],
-    "scripts/lib/summarizer.ts": [
-      "src/types.ts"
-    ],
-    "scripts/lib/summary-cache.ts": [
-      "src/types.ts",
-      "scripts/lib/summarizer.ts",
-      "scripts/lib/atomic-writer.ts"
-    ],
-    "scripts/lib/symbol-extractor.ts": [
-      "src/types.ts"
-    ],
-    "mcp-server/tools/find-callers.ts": [
-      "mcp-server/types.ts"
-    ],
-    "mcp-server/tools/find-symbol.ts": [
-      "mcp-server/types.ts"
-    ],
-    "mcp-server/tools/get-dependencies.ts": [
-      "mcp-server/types.ts"
-    ],
-    "mcp-server/tools/get-file-summary.ts": [
-      "mcp-server/types.ts"
-    ],
-    "mcp-server/tools/health-check.ts": [
-      "mcp-server/types.ts"
-    ],
-    "mcp-server/tools/search-architecture.ts": [
-      "mcp-server/types.ts"
-    ],
     "scripts/lib/python/python-call-graph.ts": [
       "src/types.ts"
     ],
@@ -126,6 +242,18 @@
       "scripts/lib/dependency-extractor.ts"
     ],
     "scripts/lib/python/python-symbol-extractor.ts": [
+      "src/types.ts"
+    ],
+    "scripts/lib/retry.ts": [],
+    "scripts/lib/summarizer-factory.ts": [
+      "scripts/lib/summarizer.ts",
+      "scripts/lib/summarizers/static-summarizer.ts",
+      "scripts/lib/summarizers/ollama-summarizer.ts",
+      "scripts/lib/summarizers/anthropic-summarizer.ts",
+      "scripts/lib/summarizers/claude-code-summarizer.ts",
+      "src/types.ts"
+    ],
+    "scripts/lib/summarizer.ts": [
       "src/types.ts"
     ],
     "scripts/lib/summarizers/anthropic-summarizer.ts": [
@@ -149,6 +277,131 @@
     "scripts/lib/summarizers/static-summarizer.ts": [
       "scripts/lib/summarizer.ts",
       "src/types.ts"
-    ]
+    ],
+    "scripts/lib/summary-cache.ts": [
+      "src/types.ts",
+      "scripts/lib/summarizer.ts",
+      "scripts/lib/atomic-writer.ts"
+    ],
+    "scripts/lib/symbol-extractor.ts": [
+      "src/types.ts"
+    ],
+    "scripts/lib/test-mapper.ts": [],
+    "scripts/watch.ts": [
+      "scripts/lib/incremental-updater.ts",
+      "scripts/lib/logger.ts",
+      "scripts/lib/adapters/index.ts"
+    ],
+    "src/types.ts": [],
+    "test/dependency-graph.test.ts": [
+      "scripts/lib/dependency-extractor.ts",
+      "scripts/lib/dependency-graph.ts"
+    ],
+    "test/error-conditions.test.ts": [
+      "mcp-server/tools/find-symbol.ts",
+      "mcp-server/tools/find-callers.ts",
+      "mcp-server/tools/get-file-summary.ts",
+      "mcp-server/tools/get-dependencies.ts",
+      "mcp-server/tools/health-check.ts"
+    ],
+    "test/find-callers.test.ts": [
+      "mcp-server/tools/find-callers.ts",
+      "src/types.ts"
+    ],
+    "test/find-symbol.test.ts": [
+      "mcp-server/tools/find-symbol.ts",
+      "src/types.ts"
+    ],
+    "test/fixtures/sample-js-project/analytics-service.jsx": [],
+    "test/fixtures/sample-js-project/order-service.js": [
+      "test/fixtures/sample-js-project/payment-service.js"
+    ],
+    "test/fixtures/sample-js-project/payment-service.js": [],
+    "test/fixtures/sample-project/analytics-service.ts": [],
+    "test/fixtures/sample-project/order-service.ts": [
+      "test/fixtures/sample-project/payment-service.ts",
+      "test/fixtures/sample-project/analytics-service.ts"
+    ],
+    "test/fixtures/sample-project/payment-service.ts": [],
+    "test/get-dependencies.test.ts": [
+      "mcp-server/tools/get-dependencies.ts",
+      "src/types.ts"
+    ],
+    "test/get-file-summary.test.ts": [
+      "mcp-server/tools/get-file-summary.ts",
+      "src/types.ts"
+    ],
+    "test/health-check.test.ts": [
+      "mcp-server/tools/health-check.ts",
+      "src/types.ts"
+    ],
+    "test/incremental-updater.test.ts": [
+      "scripts/lib/incremental-updater.ts",
+      "src/types.ts"
+    ],
+    "test/index-builder.test.ts": [
+      "scripts/lib/index-builder.ts",
+      "src/types.ts"
+    ],
+    "test/js-support.test.ts": [
+      "scripts/lib/symbol-extractor.ts",
+      "scripts/lib/dependency-extractor.ts"
+    ],
+    "test/language-detection.test.ts": [
+      "scripts/lib/language-detection.ts"
+    ],
+    "test/mcp-tools.test.ts": [
+      "mcp-server/tools/find-symbol.ts",
+      "mcp-server/tools/find-callers.ts",
+      "mcp-server/tools/get-dependencies.ts",
+      "mcp-server/tools/get-file-summary.ts",
+      "mcp-server/tools/health-check.ts",
+      "mcp-server/tools/search-architecture.ts"
+    ],
+    "test/module-grouper.test.ts": [
+      "scripts/lib/module-grouper.ts"
+    ],
+    "test/multi-language-build.test.ts": [
+      "scripts/lib/language-detection.ts",
+      "scripts/lib/python/python-symbol-extractor.ts",
+      "scripts/lib/call-graph.ts",
+      "src/types.ts"
+    ],
+    "test/perf.test.ts": [],
+    "test/python-call-graph.test.ts": [
+      "scripts/lib/python/python-call-graph.ts",
+      "src/types.ts"
+    ],
+    "test/python-dependency-extractor.test.ts": [
+      "scripts/lib/python/python-dependency-extractor.ts"
+    ],
+    "test/python-symbol-extractor.test.ts": [
+      "scripts/lib/python/python-symbol-extractor.ts"
+    ],
+    "test/retry.test.ts": [
+      "scripts/lib/retry.ts"
+    ],
+    "test/search-architecture.test.ts": [
+      "mcp-server/tools/search-architecture.ts"
+    ],
+    "test/summarizer-language.test.ts": [
+      "scripts/lib/summarizer.ts",
+      "src/types.ts"
+    ],
+    "test/summarizer-parse.test.ts": [
+      "scripts/lib/summarizer.ts"
+    ],
+    "test/symbol-extractor.test.ts": [
+      "scripts/lib/symbol-extractor.ts",
+      "scripts/lib/call-graph.ts",
+      "src/types.ts"
+    ],
+    "test/fixtures/sample-python-project/__init__.py": [],
+    "test/fixtures/sample-python-project/analytics_service.py": [],
+    "test/fixtures/sample-python-project/order_service.py": [
+      "test/fixtures/sample-python-project/payment_service.py",
+      "test/fixtures/sample-python-project/analytics_service.py"
+    ],
+    "test/fixtures/sample-python-project/payment_service.py": []
   }
 }

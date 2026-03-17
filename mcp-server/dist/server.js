@@ -17,6 +17,14 @@ import * as getProjectOverview from './tools/get-project-overview.js';
 import * as getBatchSummaries from './tools/get-batch-summaries.js';
 import * as getModuleContext from './tools/get-module-context.js';
 import * as getImplementationContext from './tools/get-implementation-context.js';
+import * as getArtifactSchema from './tools/get-artifact-schema.js';
+import * as getDirectoryTree from './tools/get-directory-tree.js';
+import * as getArtifactStorePath from './tools/get-artifact-store-path.js';
+import * as getCodePatterns from './tools/get-code-patterns.js';
+import * as findTemplateFile from './tools/find-template-file.js';
+import * as getStaticDataSchema from './tools/get-static-data-schema.js';
+import * as validateArtifactDraft from './tools/validate-artifact-draft.js';
+import * as getCumulativeContext from './tools/get-cumulative-context.js';
 const KNOWLEDGE_ROOT = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge';
 async function main() {
     const server = new McpServer({
@@ -126,6 +134,78 @@ async function main() {
             .describe('Include tech stack, project type, and file tree (default: false)'),
     }, async (args) => {
         return await healthCheck.handler(args, KNOWLEDGE_ROOT);
+    });
+    // ── Pipeline & workspace tools ───────────────────────────────────────
+    server.tool('get_artifact_schema', 'Returns the expected JSON schema for a pipeline artifact type (prd, architecture, ' +
+        'engineering_plan, tasks, review, etc.). Use before generating artifacts to ensure correct format.', {
+        artifact_type: z
+            .string()
+            .describe('Artifact type name (e.g., "prd", "architecture", "tasks", "review")'),
+    }, async (args) => {
+        return getArtifactSchema.handler(args, KNOWLEDGE_ROOT);
+    });
+    server.tool('get_directory_tree', 'Returns the current file/folder structure as a tree listing. ' +
+        'Use to understand project layout or verify directory structure.', {
+        path: z
+            .string()
+            .optional()
+            .describe('Relative path from project root (default: root)'),
+        depth: z
+            .number()
+            .int()
+            .min(1)
+            .max(5)
+            .optional()
+            .describe('Tree depth (default: 3, max: 5)'),
+    }, async (args) => {
+        return getDirectoryTree.handler(args, KNOWLEDGE_ROOT);
+    });
+    server.tool('get_artifact_store_path', 'Returns the expected filesystem path convention where a pipeline artifact should be written.', {
+        artifact_type: z
+            .string()
+            .describe('Artifact type name'),
+    }, async (args) => {
+        return getArtifactStorePath.handler(args, KNOWLEDGE_ROOT);
+    });
+    server.tool('get_code_patterns', 'Extracts recurring code patterns from the knowledge base: component structure, ' +
+        'CSS conventions, data file formats, routing, testing patterns.', {
+        pattern_type: z
+            .string()
+            .optional()
+            .describe('Pattern category: "component", "css", "data", "routing", "testing" (omit for all)'),
+    }, async (args) => {
+        return getCodePatterns.handler(args, KNOWLEDGE_ROOT);
+    });
+    server.tool('find_template_file', 'Given a description, finds the most similar existing files to use as templates. ' +
+        'Helps ensure consistency with existing code.', {
+        description: z
+            .string()
+            .describe('Description of what you need (e.g., "service detail page", "data file for blog posts")'),
+    }, async (args) => {
+        return findTemplateFile.handler(args, KNOWLEDGE_ROOT);
+    });
+    server.tool('get_static_data_schema', 'Returns the structure of static data files and how content is organized — ' +
+        'keys, exports, relationships between data files.', {}, async () => {
+        return getStaticDataSchema.handler({}, KNOWLEDGE_ROOT);
+    });
+    server.tool('validate_artifact_draft', 'Pre-validates artifact JSON against its expected schema before final submission. ' +
+        'Catches format errors before the pipeline rejects them.', {
+        artifact_type: z
+            .string()
+            .describe('Artifact type to validate against'),
+        json_content: z
+            .string()
+            .describe('JSON string to validate'),
+    }, async (args) => {
+        return validateArtifactDraft.handler(args, KNOWLEDGE_ROOT);
+    });
+    server.tool('get_cumulative_context', 'Returns a digest of all artifact types produced by phases prior to the specified phase, ' +
+        'including their schemas and path conventions.', {
+        phase: z
+            .string()
+            .describe('Pipeline phase name (e.g., "architecture", "engineering_plan")'),
+    }, async (args) => {
+        return getCumulativeContext.handler(args, KNOWLEDGE_ROOT);
     });
     // Connect via stdio transport
     const transport = new StdioServerTransport();

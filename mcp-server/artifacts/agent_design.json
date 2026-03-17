@@ -1,0 +1,987 @@
+{
+  "agent_name": "MCP Knowledge Server Enhancement System",
+  "version": "2.0",
+  "created": "2026-03-17",
+  "autonomy_level": 3,
+  "architecture": "orchestrator",
+  "executive_summary": "A multi-agent system to transform the MCP knowledge server from a shallow index-reader into a rich, authoritative codebase intelligence layer. The core problem: agents fall back to Read/Grep/Glob because MCP tools return truncated summaries (e.g., 'data-loader module'), a 3800-byte response ceiling that loses context mid-symbol, no code snippets, substring-only search, stale tech-stack detection, and caller results without call-site context. Success is measured when agents stop issuing file reads for information the MCP already indexed.",
+
+  "current_state_analysis": {
+    "observed_gaps": [
+      {
+        "gap": "Hollow file summaries",
+        "evidence": "knowledge_context brief shows purpose strings like 'types module', 'data-loader module' — identical to the filename, providing zero value",
+        "root_cause": "LLM summarizer falls back to static heuristic (strip extension, append 'module') when summarization fails or is skipped",
+        "agent_behavior": "Agent ignores summary, issues Read tool call to see actual file content"
+      },
+      {
+        "gap": "3800-byte response ceiling",
+        "evidence": "response-budget.ts MAX_RESPONSE_BYTES=3800; a single file with 10 symbols fills this, truncating remaining symbols and sections",
+        "root_cause": "Conservative budget set for latency reasons, but it destroys context completeness",
+        "agent_behavior": "Agent sees truncated symbol list, does follow-up Read to get the rest"
+      },
+      {
+        "gap": "No code snippets in any tool",
+        "evidence": "All tools return metadata only (name, signature, line number). No tool returns the actual function body or usage examples",
+        "root_cause": "Index stores AST-derived metadata, not source text slices",
+        "agent_behavior": "Agent must Read the file at the reported line to understand what the function actually does"
+      },
+      {
+        "gap": "Tech stack detection failure",
+        "evidence": "get_project_overview returns 'Languages: (unknown)' and 'Project Type: Unknown' for a TypeScript/Node.js project",
+        "root_cause": "tech-stack.ts heuristics don't detect tsconfig.json or .ts extensions correctly when package.json has no 'main' field",
+        "agent_behavior": "Agent cannot trust the overview, resorts to manual package.json inspection"
+      },
+      {
+        "gap": "Substring-only symbol search",
+        "evidence": "find_symbol.ts line 52: nameLower.includes(nameLower) — pure substring, case-insensitive only",
+        "root_cause": "No embedding index, no fuzzy matching, no alias or export-name resolution",
+        "agent_behavior": "Typos or partial names return no results; agent switches to Grep tool"
+      },
+      {
+        "gap": "Caller results lack call-site context",
+        "evidence": "find_callers returns qualifiedName + file + line — no surrounding code, no argument values passed",
+        "root_cause": "Index stores qualified names only, not code slices at call sites",
+        "agent_behavior": "Agent reads caller file at reported line to understand how the symbol is invoked"
+      },
+      {
+        "gap": "No staleness awareness in tool responses",
+        "evidence": "health_check reports lastBuilt timestamp but individual tool responses carry no age metadata",
+        "root_cause": "Tools read index files synchronously without comparing mtime against source files",
+        "agent_behavior": "Agent cannot determine whether find_symbol result reflects latest code; may trust stale data or redundantly verify"
+      },
+      {
+        "gap": "Circular dependency detection but no resolution guidance",
+        "evidence": "knowledge brief notes '1 cycle(s)' but provides no details on which modules or how to reason about it",
+        "root_cause": "DependencyGraph stores cycles array but tools don't surface cycle membership in responses",
+        "agent_behavior": "Agent cannot understand module relationships without reading all import chains"
+      },
+      {
+        "gap": "Missing external dependency inventory",
+        "evidence": "get_project_overview shows no npm packages, versions, or external API surface",
+        "root_cause": "Tech stack detection reads package.json name/main but not dependencies/devDependencies fields",
+        "agent_behavior": "Agent reads package.json directly to understand what libraries are available"
+      },
+      {
+        "gap": "find_symbol results do not include callers/callees inline",
+        "evidence": "Symbol result shows signature, returnType, jsdoc but not calls[] or calledBy[] from SymbolEntry",
+        "root_cause": "find_symbol handler omits calls and calledBy fields from output rendering",
+        "agent_behavior": "Agent calls find_callers as a mandatory second step after every find_symbol"
+      },
+      {
+        "gap": "get_module_context truncates file purposes to 60 chars",
+        "evidence": "get-module-context.ts line 116: purpose.length > 60 ? purpose.slice(0, 57) + '...' : purpose",
+        "root_cause": "Aggressive truncation in combination with already-hollow summaries yields unusable descriptions",
+        "agent_behavior": "Agent calls get_implementation_context for every module file individually"
+      },
+      {
+        "gap": "No semantic search across summaries",
+        "evidence": "search_architecture is line-grep of a single architecture.md file; no vector-based search over all summaries",
+        "root_cause": "No embedding generation step in knowledge build pipeline",
+        "agent_behavior": "Agent falls back to Grep across source files for concept-level queries"
+      }
+    ],
+    "trust_deficit_score": "High — agents cannot rely on MCP tools for 8 of 12 common query patterns",
+    "index_files_present": ["index.json", "symbols.json", "dependencies.json", "summaries/cache.json"],
+    "index_files_missing": ["embeddings.json", "code-snippets.json", "external-deps.json", "query-patterns.log", "quality-metrics.json"]
+  },
+
+  "trust_criteria": {
+    "description": "Observable, measurable signals that indicate agents prefer MCP tools over file reads",
+    "metrics": [
+      {
+        "metric": "MCP tool adoption rate",
+        "target": ">=90% of agent turns that need codebase context use MCP tools as first call",
+        "measurement": "Count MCP tool calls vs Read/Grep/Glob/Bash calls in agent logs per session",
+        "current_estimate": "<40% based on observed fallback behavior"
+      },
+      {
+        "metric": "Follow-up file read elimination",
+        "target": ">=70% reduction in Read tool calls that immediately follow an MCP tool call on the same file",
+        "measurement": "Log sequential tool call pairs; flag MCP→Read on same path as a fallback event",
+        "current_estimate": "~80% of MCP calls are followed by a redundant Read within 2 turns"
+      },
+      {
+        "metric": "Symbol resolution accuracy",
+        "target": ">=95% of find_symbol queries return the correct definition as top result",
+        "measurement": "Ground-truth eval: 200 randomly sampled symbol names → compare top-1 result to AST truth",
+        "current_estimate": "~70% for exact names; ~35% for partial/fuzzy names"
+      },
+      {
+        "metric": "Query response latency",
+        "target": "<500ms p99 for find_symbol, get_file_summary, get_implementation_context",
+        "measurement": "Time each handler invocation; log p50/p95/p99 per tool",
+        "current_estimate": "~50ms (but meaningless at current quality level)"
+      },
+      {
+        "metric": "Context self-sufficiency",
+        "target": ">=90% of agent queries answered without follow-up reads when using MCP tool",
+        "measurement": "Agent eval: ask 50 standard codebase questions; score whether MCP response alone is sufficient",
+        "current_estimate": "~20% — most responses require at least one file read for verification"
+      },
+      {
+        "metric": "Index freshness",
+        "target": "Index reflects file changes within 10 seconds (watcher mode) or reports staleness when older than 5 minutes",
+        "measurement": "Compare max(file mtime) across all source files against index.lastBuilt",
+        "current_estimate": "No staleness reporting; watcher_debounce=5s but no per-tool freshness signal"
+      },
+      {
+        "metric": "Summary quality score",
+        "target": ">=85% of file summaries rated 'useful' by agent (contain specific purpose, not just filename)",
+        "measurement": "Automated scoring: flag summaries matching pattern '^\\w+ module$' as low-quality",
+        "current_estimate": "~60% of summaries appear to be fallback 'X module' placeholders"
+      }
+    ]
+  },
+
+  "agents": [
+    {
+      "name": "IndexOrchestrator",
+      "role": "Central controller for knowledge build and incremental update lifecycle. Coordinates parsing, summarization, call-graph construction, embedding generation, and quality gating. Triggered by file-system watcher events or explicit rebuild requests.",
+      "model": "claude-sonnet-4-20250514",
+      "autonomy_level": 3,
+      "tools": [
+        "read_source_file",
+        "write_index_file",
+        "invoke_file_parser",
+        "invoke_llm_summarizer",
+        "invoke_embedding_generator",
+        "invoke_call_graph_builder",
+        "invoke_quality_validator",
+        "read_index_file",
+        "emit_metrics"
+      ],
+      "access": "read_write",
+      "triggers": [
+        "File watcher detects source file change (debounce 5s)",
+        "Explicit 'npm run build-knowledge' command",
+        "Validator reports staleness exceeding 5 minutes",
+        "health_check called with stale index"
+      ],
+      "outputs": [
+        "index.json (updated)",
+        "symbols.json (updated)",
+        "dependencies.json (updated)",
+        "summaries/cache.json (updated)",
+        "embeddings.json (new)",
+        "code-snippets.json (new)",
+        "external-deps.json (new)",
+        "quality-metrics.json (new)"
+      ],
+      "responsibilities": [
+        "Determine which files changed since last build (mtime comparison)",
+        "Prioritize changed files for immediate re-indexing",
+        "Propagate changes through dependency graph (changed file A → re-index all files importing A)",
+        "Gate index publication behind Validator approval (quality score >= threshold)",
+        "Maintain buildGeneration counter for cache invalidation",
+        "Report build metrics: files parsed, symbols extracted, summaries generated, errors encountered"
+      ]
+    },
+    {
+      "name": "FileParser",
+      "role": "Language-aware AST parser. Extracts symbols, call relationships, imports/exports, type signatures, decorators, and complexity metrics from source files. Runs as a sub-process invoked by IndexOrchestrator per file or batch.",
+      "model": "N/A (deterministic code, not LLM-based)",
+      "autonomy_level": 2,
+      "tools": [
+        "read_source_file",
+        "run_ast_parser",
+        "write_parsed_output"
+      ],
+      "access": "read_only_source",
+      "languages_supported": ["TypeScript", "JavaScript", "Python", "Go", "Rust", "Java", "C#"],
+      "extraction_targets": [
+        "All function/method signatures with full parameter types and return types",
+        "All class definitions with inheritance chains",
+        "All interface/type alias definitions",
+        "All enum definitions",
+        "All decorator usage",
+        "All import statements (static, dynamic, re-exports)",
+        "All export statements (named, default, re-exports)",
+        "All call expressions with argument patterns",
+        "Cyclomatic complexity per function",
+        "JSDoc / docstring extraction per symbol",
+        "Throws/raises declarations",
+        "Async/generator markers",
+        "Line ranges (start line, end line) for all symbols — enabling code snippet extraction"
+      ],
+      "edge_cases": [
+        "Dynamic imports (import()): mark as 'dynamic' in dependency graph",
+        "Reflect-based calls: flag as 'dynamic-dispatch' in call graph",
+        "Template/macro expansion: record pre-expansion symbols",
+        "Barrel exports (index.ts re-exporting): trace through to original definition",
+        "Monorepo packages: treat each package.json scope as a separate module root",
+        "Circular imports: record and surface in index without infinite looping",
+        "Forward declarations (TypeScript declare): mark as 'ambient' type",
+        "Overloaded functions: index all overload signatures, link under same qualifiedName"
+      ],
+      "output_schema": {
+        "file": "string (relative path)",
+        "language": "string",
+        "symbols": "SymbolEntry[] (with startLine, endLine, codeSnippet fields added)",
+        "imports": "ImportRecord[]",
+        "exports": "ExportRecord[]",
+        "complexity": "number",
+        "parseErrors": "ParseError[]"
+      }
+    },
+    {
+      "name": "LLMSummarizer",
+      "role": "Generates rich, context-aware summaries for files, modules, and symbols using an LLM. Replaces the static heuristic fallback ('X module') with substantive descriptions that answer: what this does, why it exists, how it fits the architecture, what callers need to know.",
+      "model": "claude-haiku-4-20250514",
+      "autonomy_level": 3,
+      "tools": [
+        "read_source_file",
+        "read_parsed_output",
+        "read_existing_summary",
+        "write_summary",
+        "read_module_context"
+      ],
+      "access": "read_only_source_and_index",
+      "summarization_levels": {
+        "minimal": "One sentence: what the file does. Generated from imports/exports only, no LLM call.",
+        "standard": "3-5 sentences covering purpose, key exports, notable dependencies, and patterns. LLM call with file content up to 4096 tokens.",
+        "rich": "Full structured summary including: purpose, architectural role, public API description, edge cases handled, performance characteristics, test coverage notes, usage examples from callers. LLM call with file content + caller context."
+      },
+      "quality_gates": [
+        "Summary must not match pattern '^\\w+(-\\w+)* module$' (filename-derived fallback)",
+        "Summary must be >= 50 characters",
+        "Summary must reference at least one exported symbol by name",
+        "Summary must not contain placeholder text like 'TODO' or 'FIXME'",
+        "If summary fails quality gate, retry once with expanded prompt; if still failing, escalate to IndexOrchestrator"
+      ],
+      "prompt_strategy": "Provide: (1) file content truncated to 3000 tokens, (2) list of callers from call graph, (3) list of symbols this file imports, (4) architecture.md context if available. Ask for: structured JSON with purpose, architecturalRole, publicAPI, internalPatterns, usageExamples.",
+      "caching": "Skip summarization if file contentHash unchanged and existing summary passes quality gate",
+      "cost_control": "Max 1000 tokens output per summary; batch up to 5 files per LLM call using structured multi-file prompt"
+    },
+    {
+      "name": "EmbeddingIndexer",
+      "role": "Generates vector embeddings for all file summaries, symbol docstrings, and module descriptions. Enables semantic search across the knowledge base — agents can query by concept rather than exact name.",
+      "model": "text-embedding-3-small (OpenAI) or claude-embedding (when available)",
+      "autonomy_level": 3,
+      "tools": [
+        "read_summary_cache",
+        "call_embedding_api",
+        "write_embeddings_index",
+        "read_embeddings_index"
+      ],
+      "access": "read_summaries_write_embeddings",
+      "embedding_targets": [
+        "File summaries (purpose field)",
+        "Symbol docstrings (jsdoc field)",
+        "Module role descriptions",
+        "Public API descriptions"
+      ],
+      "index_format": {
+        "format": "HNSW flat file index (hnswlib-node or faiss)",
+        "metadata_store": "Parallel JSON file mapping vector ID to {file, symbol, type, text}",
+        "dimensions": 1536,
+        "similarity_metric": "cosine"
+      },
+      "update_strategy": "Incremental: only embed new or changed entries; use contentHash to detect changes",
+      "semantic_search_integration": "find_symbol tool gains optional 'semantic: true' parameter that queries embedding index instead of substring match"
+    },
+    {
+      "name": "CallGraphEnricher",
+      "role": "Enhances the call graph with call-site code snippets, argument patterns, and call frequency. Enables find_callers to return context-rich results that eliminate the need for follow-up file reads.",
+      "model": "N/A (deterministic, from AST data)",
+      "autonomy_level": 3,
+      "tools": [
+        "read_parsed_output",
+        "read_source_file_slice",
+        "write_enriched_call_graph"
+      ],
+      "access": "read_source_write_index",
+      "enrichment_fields": [
+        "callSiteSnippet: 3 lines of source code around the call expression",
+        "argumentPattern: inferred types of arguments passed at this call site",
+        "callFrequency: how many times this symbol is called (total across all callers)",
+        "isTestCaller: boolean — caller is inside a test file",
+        "isInternalCaller: boolean — caller is within the same module",
+        "returnValueUsed: boolean — whether the return value is used at the call site"
+      ],
+      "output": "enriched-call-graph.json: extends dependencies.json with per-call-site metadata"
+    },
+    {
+      "name": "IndexValidator",
+      "role": "Continuously monitors index quality by cross-checking indexed data against source files. Detects staleness, accuracy degradation, missing files, and parse failures. Reports to IndexOrchestrator and exposes quality metrics to health_check tool.",
+      "model": "claude-haiku-4-20250514",
+      "autonomy_level": 3,
+      "tools": [
+        "read_index_files",
+        "read_source_files",
+        "compare_symbol_to_ast",
+        "write_quality_report",
+        "emit_alert"
+      ],
+      "access": "read_only",
+      "validation_checks": [
+        {
+          "check": "Staleness detection",
+          "method": "Compare index.lastBuilt against max(mtime) of all source files",
+          "threshold": "Warn if index > 5 minutes older than newest source file",
+          "action": "Emit staleness warning in tool responses; trigger incremental reindex"
+        },
+        {
+          "check": "Symbol accuracy sampling",
+          "method": "Randomly sample 10% of indexed symbols; re-parse source file and compare signature",
+          "threshold": "Alert if >5% of sampled symbols have mismatched signatures",
+          "action": "Escalate to IndexOrchestrator for full rebuild of affected files"
+        },
+        {
+          "check": "Summary quality audit",
+          "method": "Scan all summaries for quality gate failures (fallback pattern, too short)",
+          "threshold": "Flag if >15% of summaries fail quality gate",
+          "action": "Queue failed summaries for LLMSummarizer retry"
+        },
+        {
+          "check": "Coverage completeness",
+          "method": "Walk source file tree; verify every .ts/.js/.py/etc file has a summary entry",
+          "threshold": "Alert if any source file lacks a summary",
+          "action": "Add missing files to indexing queue"
+        },
+        {
+          "check": "Call graph consistency",
+          "method": "Verify calledBy[A] contains B iff calls[B] contains A (bidirectional invariant)",
+          "threshold": "Alert if any inconsistency found",
+          "action": "Rebuild call graph for affected symbols"
+        },
+        {
+          "check": "Tech stack accuracy",
+          "method": "Compare detected tech stack against package.json, tsconfig.json, *.config.* files",
+          "threshold": "Alert if detected language differs from file extension distribution",
+          "action": "Re-run tech stack detection with expanded heuristics"
+        }
+      ],
+      "reporting": {
+        "quality_metrics_file": ".knowledge/quality-metrics.json",
+        "metrics": [
+          "total_files_indexed",
+          "total_symbols_indexed",
+          "summary_quality_score (0-100)",
+          "stale_file_count",
+          "parse_error_count",
+          "call_graph_consistency_score (0-100)",
+          "last_validation_time",
+          "adoption_rate_last_24h (MCP calls / total codebase queries)"
+        ]
+      }
+    },
+    {
+      "name": "QueryEnricher",
+      "role": "Post-processes raw index results before returning to calling agents. Adds inline code snippets, cross-references, freshness signals, and confidence scores to tool responses. Acts as a middleware layer between the index and the MCP tool output formatters.",
+      "model": "N/A (deterministic enrichment from index data)",
+      "autonomy_level": 3,
+      "tools": [
+        "read_symbol_entry",
+        "read_code_snippet",
+        "read_caller_context",
+        "read_quality_metrics",
+        "read_embeddings",
+        "format_response"
+      ],
+      "access": "read_only",
+      "enrichment_pipeline": [
+        "1. Load raw result from index",
+        "2. Attach code snippet (startLine to endLine + 2 lines of context)",
+        "3. Attach top-3 callers with call-site snippets",
+        "4. Attach top-3 callees with their one-line summaries",
+        "5. Compute and attach freshness signal (seconds since index was built vs file mtime)",
+        "6. Attach related files (imports, importedBy, siblings in same directory)",
+        "7. Attach usage examples from test files if available",
+        "8. Compute confidence score based on index age and validation status",
+        "9. Format response respecting dynamic budget (see response budget redesign)"
+      ]
+    },
+    {
+      "name": "AdoptionAnalyzer",
+      "role": "Observes agent query patterns by parsing run logs. Identifies which queries cause MCP-to-file-read fallbacks, which symbols are most queried but poorly indexed, and which tools are underused. Produces weekly improvement recommendations for the IndexOrchestrator.",
+      "model": "claude-sonnet-4-20250514",
+      "autonomy_level": 2,
+      "tools": [
+        "read_run_logs",
+        "parse_tool_call_sequences",
+        "identify_fallback_patterns",
+        "write_improvement_recommendations",
+        "emit_metrics"
+      ],
+      "access": "read_logs_write_recommendations",
+      "analysis_patterns": [
+        "MCP call immediately followed by Read on same file path = fallback event",
+        "Grep tool used with a pattern matching a known symbol name = failed find_symbol",
+        "Glob tool used for source file discovery = failed get_project_overview",
+        "Sequential find_symbol + find_callers always paired = callers should be inlined",
+        "get_implementation_context + Read same file = response budget too small or missing snippet"
+      ],
+      "output": "workspace/logs/adoption-report-{date}.json with: top-10 fallback triggers, recommended response budget adjustments, missing index fields, symbols needing richer summaries"
+    }
+  ],
+
+  "tools": [
+    {
+      "name": "read_source_file",
+      "description": "Read a source file from the project root for parsing or summarization",
+      "parameters": {"path": "string (relative path)", "startLine": "number (optional)", "endLine": "number (optional)"},
+      "side_effects": "none",
+      "requires_approval": false,
+      "timeout_seconds": 5
+    },
+    {
+      "name": "write_index_file",
+      "description": "Write or update a knowledge index file (symbols.json, dependencies.json, etc.)",
+      "parameters": {"filename": "string", "content": "object"},
+      "side_effects": "write",
+      "requires_approval": false,
+      "timeout_seconds": 10,
+      "blast_radius": "Knowledge base only — no source files modified"
+    },
+    {
+      "name": "run_ast_parser",
+      "description": "Invoke language-specific AST parser (TypeScript compiler API, tree-sitter, etc.) on a source file",
+      "parameters": {"path": "string", "language": "string"},
+      "side_effects": "none",
+      "requires_approval": false,
+      "timeout_seconds": 30,
+      "on_failure": "Return partial parse result with error annotation; do not block indexing of other files"
+    },
+    {
+      "name": "call_embedding_api",
+      "description": "Generate vector embeddings for a list of text chunks",
+      "parameters": {"texts": "string[]", "model": "string"},
+      "side_effects": "external",
+      "requires_approval": false,
+      "timeout_seconds": 30,
+      "cost_per_call": "~$0.0001 per 1K tokens",
+      "on_failure": "Skip embedding generation; log error; semantic search degrades to substring fallback"
+    },
+    {
+      "name": "emit_alert",
+      "description": "Write a quality alert to workspace/logs/alerts.jsonl",
+      "parameters": {"severity": "warn|error", "category": "string", "message": "string", "context": "object"},
+      "side_effects": "write",
+      "requires_approval": false,
+      "timeout_seconds": 2
+    },
+    {
+      "name": "emit_metrics",
+      "description": "Write structured metrics to .knowledge/quality-metrics.json",
+      "parameters": {"metrics": "Record<string, number|string>"},
+      "side_effects": "write",
+      "requires_approval": false,
+      "timeout_seconds": 2
+    },
+    {
+      "name": "read_run_logs",
+      "description": "Read JSONL run logs from workspace/logs/ for adoption analysis",
+      "parameters": {"since": "ISO8601 timestamp (optional)", "run_id": "string (optional)"},
+      "side_effects": "none",
+      "requires_approval": false,
+      "timeout_seconds": 10
+    }
+  ],
+
+  "tool_improvement_specifications": {
+    "get_project_overview": {
+      "current_issues": [
+        "Tech stack returns 'Unknown' for TypeScript projects",
+        "No external dependency inventory (npm packages)",
+        "Entry points computed from calledBy count — misses actual entry points (main, bin, exports fields)",
+        "No architecture summary or module responsibility map"
+      ],
+      "improvements": [
+        "Fix tech stack detection: scan tsconfig.json, *.config.{ts,js,mjs}, file extension distribution across all indexed files",
+        "Add external_dependencies section: parse package.json dependencies + devDependencies, group by category (runtime/dev/peer)",
+        "Add entry_points from package.json main/bin/exports fields + any file named index.ts/main.ts",
+        "Add module_responsibilities: one-line role per module from module-level summary",
+        "Add dependency_graph_summary: list all module→module edges with 'A uses B for X' descriptions",
+        "Add circular_dependencies: explicit list of cycle members",
+        "Add index_freshness: seconds since last build, staleness warning if >300s",
+        "Increase response budget for this tool to 8000 bytes (it's the entry point — must be complete)"
+      ],
+      "target_response_fields": ["project_name", "tech_stack", "external_dependencies", "modules", "module_responsibilities", "entry_points", "file_count", "symbol_count", "dependency_graph_summary", "circular_dependencies", "index_freshness", "file_tree"]
+    },
+    "find_symbol": {
+      "current_issues": [
+        "Substring match only — misses typos, alternate casings, aliased exports",
+        "Returns up to 20 results but doesn't include callers/callees inline",
+        "No semantic search option",
+        "File path shown as absolute, not relative — hard to use in follow-up calls"
+      ],
+      "improvements": [
+        "Add fuzzy matching (Levenshtein distance <= 2) as fallback when substring match returns 0 results",
+        "Add semantic: boolean parameter — when true, query embedding index for conceptually similar symbols",
+        "Inline top-3 callers (name + file + line) in each result without requiring find_callers call",
+        "Inline top-3 callees in each result",
+        "Include code_snippet: 5-line snippet centered on the symbol definition",
+        "Show file as relative path from project root",
+        "Add is_exported, is_deprecated, test_coverage fields",
+        "Add overloads: list all overload signatures for overloaded functions",
+        "Add usage_examples: up to 2 call-site snippets from non-test callers",
+        "Increase result limit to 50 with pagination token for further results"
+      ],
+      "target_response_fields": ["name", "qualified_name", "type", "file", "line", "signature", "return_type", "parameters", "jsdoc", "is_exported", "complexity", "code_snippet", "top_callers", "top_callees", "usage_examples", "overloads", "index_age_seconds"]
+    },
+    "get_module_context": {
+      "current_issues": [
+        "File purpose truncated to 60 characters — combined with hollow summaries yields '...' for most files",
+        "Exported symbols truncated to 20 entries with 80-char signature limit",
+        "No test file inventory",
+        "No external API surface for the module",
+        "No data flow summary"
+      ],
+      "improvements": [
+        "Remove 60-char truncation on file purposes; show full detailedPurpose (up to 200 chars)",
+        "Show all exported symbols without count cap; use pagination if >50",
+        "Add test_files section: list of test files that test this module",
+        "Add external_api section: all exported symbols that are imported by other modules (the public contract)",
+        "Add data_flow: describe how data enters and exits the module",
+        "Add change_impact: which other modules would be affected by changes to this module",
+        "Increase module response budget to 10000 bytes",
+        "Add per-file complexity scores in the files listing"
+      ],
+      "target_response_fields": ["module_name", "file_count", "role_in_architecture", "depends_on", "depended_on_by", "change_impact", "files", "external_api", "internal_patterns", "test_files", "data_flow", "symbol_type_distribution"]
+    },
+    "get_implementation_context": {
+      "current_issues": [
+        "No code snippet — agents must Read the file after every call",
+        "Symbol signatures truncated to 80 chars",
+        "No backward-compatibility notes",
+        "No link to test files that test specific functions in this file",
+        "No usage examples showing how functions in this file are called"
+      ],
+      "improvements": [
+        "Add code_snippet field to each symbol: function body up to 40 lines (truncate with '...' if longer)",
+        "Remove 80-char signature truncation — return full signature",
+        "Add backward_compat_notes: detect if any exported symbols have @deprecated JSDoc tags",
+        "Add per-symbol test_coverage: names of test files and test cases covering each exported function",
+        "Add per-symbol usage_examples: up to 3 real call sites with 3-line snippets",
+        "Add file_code_overview: first 20 lines of the file as a quick orientation snippet",
+        "Increase response budget to 15000 bytes for this tool (it's the pre-edit context call)",
+        "Add related_tests: all test files that import this file"
+      ],
+      "target_response_fields": ["file", "purpose", "architectural_role", "complexity_score", "exports", "dependencies", "file_code_overview", "symbols_with_snippets", "public_api", "related_tests", "usage_examples", "import_export_graph", "patterns", "backward_compat_notes"]
+    },
+    "find_callers": {
+      "current_issues": [
+        "Returns only qualifiedName + file + line — no call-site context",
+        "Cannot distinguish test callers from production callers",
+        "No argument pattern information",
+        "No call frequency (how commonly is this called?)"
+      ],
+      "improvements": [
+        "Add call_site_snippet: 3 lines surrounding the call expression",
+        "Add argument_pattern: inferred argument types at the call site",
+        "Add is_test_caller: boolean flag",
+        "Add is_internal_caller: boolean (same module vs cross-module)",
+        "Add return_value_used: boolean",
+        "Add call_frequency: total call count across all callers at all depths",
+        "Group results by: (1) direct callers, (2) transitive callers at depth 2+",
+        "Add caller_summary: one-line summary of the calling function's purpose"
+      ],
+      "target_response_fields": ["target_symbol", "call_frequency", "direct_callers", "transitive_callers", "test_callers", "internal_callers", "external_callers"]
+    },
+    "get_batch_summaries": {
+      "current_issues": [
+        "Returns 'compact one-line summaries' which are often just the hollow fallback",
+        "Max 20 files per call — too low for module-level exploration",
+        "No indication of summary quality/confidence"
+      ],
+      "improvements": [
+        "Return quality_score per summary (high/medium/low based on quality gate results)",
+        "Increase max files to 50 per call",
+        "For low-quality summaries, include a note: 'Summary may be incomplete — call get_implementation_context for richer detail'",
+        "Add symbol_count per file in the response",
+        "Add last_modified timestamp per file"
+      ]
+    },
+    "health_check": {
+      "current_issues": [
+        "Returns basic stats but no quality metrics",
+        "No per-tool latency data",
+        "No adoption rate metrics",
+        "Verbose mode builds file tree on-the-fly (slow)"
+      ],
+      "improvements": [
+        "Add quality_metrics section from quality-metrics.json",
+        "Add index_freshness: age in seconds, staleness flag if >300s",
+        "Add adoption_rate from AdoptionAnalyzer reports",
+        "Add per-tool: call_count, avg_latency_ms, fallback_rate from last 24h",
+        "Add parse_errors: count and list of files with parse failures",
+        "Add embedding_index_status: present/missing/stale"
+      ]
+    },
+    "search_architecture": {
+      "current_issues": [
+        "Searches only architecture.md — a single file",
+        "Keyword grep only — no semantic understanding",
+        "Returns ±3 lines context — often insufficient"
+      ],
+      "improvements": [
+        "Expand search corpus: include all file summaries + module descriptions + artifact JSONs",
+        "Add semantic: true parameter to search via embedding index",
+        "Increase context window to ±10 lines",
+        "Add source_type field to each result (architecture_doc / file_summary / module_description)",
+        "Support multi-term queries with AND/OR logic"
+      ]
+    }
+  },
+
+  "indexing_architecture": {
+    "index_storage": {
+      "format": "JSON files on disk in .knowledge/ directory",
+      "files": {
+        "index.json": "KnowledgeIndex — metadata, module list, build info, quality metrics",
+        "symbols.json": "SymbolEntry[] — all symbols with enhanced fields",
+        "dependencies.json": "DependencyGraph — module and file-level dependency edges",
+        "summaries/cache.json": "Record<filePath, FileSummary> — all file summaries",
+        "embeddings.json": "Record<id, {vector: number[], metadata: EmbeddingMetadata}> — semantic search index",
+        "code-snippets.json": "Record<qualifiedName, {snippet: string, startLine: number, endLine: number}> — indexed code snippets",
+        "enriched-call-graph.json": "EnrichedCallGraph — call edges with site snippets and argument patterns",
+        "external-deps.json": "ExternalDependencyMap — npm/pip/cargo packages with versions and usage locations",
+        "quality-metrics.json": "QualityMetrics — accuracy scores, coverage stats, adoption rates"
+      },
+      "locking": "File-level write lock using .knowledge/.build.lock; readers proceed during build using previous generation",
+      "versioning": "buildGeneration counter in index.json; readers check generation matches before trusting cached results"
+    },
+    "coverage_requirements": {
+      "source_files": "All files matching: **/*.ts, **/*.js, **/*.tsx, **/*.jsx, **/*.py, **/*.go, **/*.rs, **/*.java, **/*.cs, **/*.rb",
+      "config_files": "package.json, tsconfig.json, *.config.{ts,js,mjs}, pyproject.toml, Cargo.toml, go.mod",
+      "test_files": "**/*.{test,spec}.{ts,js,tsx,jsx}, **/test_*.py, **/*_test.go",
+      "exclusions": "node_modules/, .git/, dist/, build/, __pycache__/, *.min.js, *.d.ts",
+      "max_file_size_kb": 500,
+      "max_files_per_codebase": 50000
+    },
+    "symbol_coverage": [
+      "All functions (named, arrow, anonymous assigned to const/let)",
+      "All classes with all methods",
+      "All interfaces and type aliases",
+      "All enums with all members",
+      "All decorators/annotations",
+      "All module-level constants that are exported",
+      "All default exports"
+    ],
+    "relationship_coverage": {
+      "call_graph": "Direct calls (AST-derived) + dynamic imports (marked separately)",
+      "dependency_tree": "File-level imports and module-level aggregation",
+      "type_hierarchy": "Class extends/implements chains; interface extends chains",
+      "data_flow": "Heuristic: track where return values from key functions are assigned",
+      "module_boundaries": "Explicit boundary at module root (top-level directory)"
+    },
+    "metadata_per_file": [
+      "lastModified (file mtime)",
+      "contentHash (SHA-256 of file content)",
+      "sizeBytes",
+      "lineCount",
+      "complexityScore (sum of cyclomatic complexity of all functions)",
+      "symbolCount",
+      "importCount",
+      "exportCount",
+      "hasTests (boolean — co-located test file exists)",
+      "isTestFile (boolean)",
+      "parseErrors (list of parse error messages)"
+    ],
+    "incremental_update_strategy": {
+      "change_detection": "Compare current mtime + contentHash against index entries",
+      "propagation": "When file A changes: re-index A + all files that import A (one-hop reverse dependency expansion)",
+      "batch_size": "Process up to 20 files per incremental cycle to avoid blocking queries",
+      "priority_queue": "Changed files first, then their importers, then full rebuild of call graph",
+      "atomic_publish": "Write to .knowledge/.next/ then atomically rename to .knowledge/ after build completes",
+      "fallback": "If incremental fails, trigger full rebuild"
+    },
+    "memory_management": {
+      "max_index_size_gb": 2,
+      "in_memory_cache": "LRU cache of last 100 queried symbols and 50 file summaries (per process)",
+      "cache_ttl_seconds": 60,
+      "cache_invalidation": "On each new buildGeneration, flush in-memory cache",
+      "large_codebase_handling": "Paginate symbol results; stream large files through AST parser without loading full content into memory"
+    }
+  },
+
+  "memory": {
+    "short_term": "Per-build context: list of changed files, parse errors, build progress. Held in IndexOrchestrator memory for duration of one build cycle.",
+    "long_term": "Persistent index files in .knowledge/ directory. Summaries include contentHash for change detection. Quality metrics accumulate across builds.",
+    "episodic": "workspace/logs/adoption-report-{date}.json — tracks which queries caused fallbacks, which symbols are most queried, which summaries are consistently rated low quality by AdoptionAnalyzer.",
+    "context_management": "IndexOrchestrator maintains a build manifest in memory listing all in-progress file tasks. Completed tasks are written to disk immediately. No full codebase held in memory simultaneously.",
+    "agent_query_memory": "Query patterns logged in workspace/logs/run-{id}.jsonl with tool name, params, latency, and whether a file read followed within 2 turns (fallback signal)."
+  },
+
+  "guardrails": {
+    "max_tokens_per_run": 500000,
+    "max_tool_calls_per_run": 1000,
+    "max_cost_per_run_usd": 2.0,
+    "max_wall_clock_minutes": 60,
+    "max_files_per_parse_batch": 20,
+    "max_parse_timeout_seconds_per_file": 10,
+    "max_llm_summarization_per_build": 200,
+    "max_embedding_texts_per_call": 100,
+    "max_response_bytes_by_tool": {
+      "get_project_overview": 8000,
+      "get_module_context": 10000,
+      "get_implementation_context": 15000,
+      "find_symbol": 6000,
+      "find_callers": 5000,
+      "get_batch_summaries": 8000,
+      "get_file_summary": 3000,
+      "get_dependencies": 3000,
+      "search_architecture": 4000,
+      "health_check": 3000,
+      "default": 4000
+    },
+    "escalation_triggers": [
+      "3 consecutive file parse failures in a row — pause parsing, alert IndexOrchestrator",
+      "Summary quality score drops below 70% — trigger full re-summarization",
+      "Index staleness exceeds 10 minutes despite watcher being active — alert and rebuild",
+      "Embedding API returns error for >5 consecutive calls — disable semantic search, fall back to substring",
+      "Build takes > 10 minutes — emit warning, continue but log slow build",
+      "Index file write fails (disk full, permissions) — abort build, preserve previous index",
+      "Query latency p99 exceeds 2000ms — alert, investigate slow index loading"
+    ],
+    "human_approval_required_for": [
+      "Disabling a tool due to accuracy issues (requires approval before returning isError on valid queries)",
+      "Major index schema changes that would invalidate all cached summaries",
+      "Adding support for a new programming language (AST parser integration)",
+      "Increasing max_cost_per_run_usd above $5.00",
+      "Publishing a degraded index (quality score < 60%)"
+    ],
+    "safety_boundaries": {
+      "source_files": "Read-only — indexing pipeline never modifies source files",
+      "knowledge_directory": "Read-write for index files only — never writes outside .knowledge/",
+      "workspace_logs": "Append-only writes to workspace/logs/",
+      "external_network": "Embedding API calls only — no other outbound network access during indexing"
+    },
+    "error_handling": {
+      "missing_index": "Return degraded response with message indicating staleness; attempt live scan of source file as fallback for single-file queries",
+      "parse_failure": "Log error, skip symbol extraction for that file, return partial results with parse_error flag",
+      "corrupt_index": "Detect via JSON parse error on load; trigger rebuild; return 'index rebuilding' message to agents",
+      "stale_index": "Include index_age_seconds in all tool responses; flag as STALE if > 300s; agents can decide whether to trust",
+      "concurrent_access": "Build process uses .build.lock; query tools read previous generation while new generation builds",
+      "timeout": "Per-file 10s parse timeout; if exceeded, log and skip; do not block other files",
+      "embedding_api_unavailable": "Gracefully degrade to substring search; log availability miss; retry after 60s backoff"
+    }
+  },
+
+  "response_budget_redesign": {
+    "principle": "Dynamic budget based on query type and agent context. Rich queries get large budgets; lightweight listing queries stay compact.",
+    "implementation": "Replace MAX_RESPONSE_BYTES = 3800 constant with a per-tool configurable limit (see guardrails.max_response_bytes_by_tool)",
+    "prioritization_rules": [
+      "Priority 0 (always included): file/symbol identity, location, type",
+      "Priority 1 (included unless budget exhausted): purpose/summary, signature",
+      "Priority 2 (include if budget allows): code_snippet, callers/callees",
+      "Priority 3 (include if budget allows): usage examples, related files",
+      "Priority 4 (include if budget allows): patterns, metrics, metadata"
+    ],
+    "pagination": "Add next_page_token to responses that exceed budget; agent can request next page without re-querying index"
+  },
+
+  "evaluation": {
+    "success_criteria": [
+      "MCP tool adoption rate >= 90% (agents use MCP as first call for codebase queries)",
+      "Follow-up file read rate after MCP call <= 10% (down from ~80%)",
+      "Symbol resolution accuracy >= 95% for exact name queries",
+      "Symbol resolution accuracy >= 80% for fuzzy/semantic queries",
+      "Query response latency < 500ms p99 for find_symbol, get_file_summary",
+      "Query response latency < 1000ms p99 for get_implementation_context, find_callers",
+      "Summary quality score >= 85% (no hollow fallback summaries)",
+      "Index coverage >= 99% of source files within 30 seconds of change detection",
+      "Zero cases of get_project_overview returning 'Unknown' for a TypeScript project"
+    ],
+    "test_scenarios": 25,
+    "test_scenario_categories": [
+      {
+        "category": "Symbol Lookup Accuracy",
+        "scenarios": 5,
+        "description": "Query known symbols by exact name, partial name, typo variant, and semantic description. Verify top-1 result is correct.",
+        "test_cases": [
+          "find_symbol('handler') → should return all handler functions with correct files",
+          "find_symbol('loadSymbol') → should fuzzy-match to 'loadSymbols'",
+          "find_symbol('file reader', semantic=true) → should return read_source_file or similar",
+          "find_symbol('HandlerFunc', type='function') → cross-language test (Go)",
+          "find_symbol('') → should return graceful error, not crash"
+        ]
+      },
+      {
+        "category": "Context Completeness",
+        "scenarios": 5,
+        "description": "Call get_implementation_context on various files. Verify agent can answer standard questions without a follow-up Read.",
+        "test_cases": [
+          "get_implementation_context('tools/find-symbol.ts') → agent should answer 'what parameters does find_symbol accept?' without Read",
+          "get_implementation_context('server.ts') → agent should list all registered tools without Read",
+          "get_implementation_context('types.ts') → agent should describe SymbolEntry shape without Read",
+          "get_implementation_context('tools/lib/response-budget.ts') → agent should know the budget constant without Read",
+          "get_implementation_context on a file with 500+ lines → verify pagination works and response is still useful"
+        ]
+      },
+      {
+        "category": "Module Understanding",
+        "scenarios": 4,
+        "description": "Query module context and verify agent understands module responsibilities and boundaries.",
+        "test_cases": [
+          "get_module_context('tools') → should describe all 19 tool files with meaningful purposes",
+          "get_module_context('tools/lib') → should describe 6 library files with their roles",
+          "get_module_context('mcp-server') → should describe the top-level server module",
+          "get_module_context with non-existent module → should return helpful list of available modules"
+        ]
+      },
+      {
+        "category": "Caller Tracing",
+        "scenarios": 4,
+        "description": "Test find_callers returns enough context for agents to understand call patterns without file reads.",
+        "test_cases": [
+          "find_callers('handler', maxDepth=2) → should show call-site snippets for all call locations",
+          "find_callers('loadIndex') → should distinguish test callers from production callers",
+          "find_callers('buildResponse') → should show which tools call buildResponse and with what arguments",
+          "find_callers('nonExistentSymbol') → should return helpful error with find_symbol suggestion"
+        ]
+      },
+      {
+        "category": "Project Overview Accuracy",
+        "scenarios": 3,
+        "description": "Verify get_project_overview returns accurate tech stack and complete module map.",
+        "test_cases": [
+          "get_project_overview() on TypeScript project → Languages must include 'TypeScript', not 'Unknown'",
+          "get_project_overview() → must list all npm dependencies with versions",
+          "get_project_overview(depth=3) → must include all 26 source files in tree"
+        ]
+      },
+      {
+        "category": "Failure Mode Resilience",
+        "scenarios": 4,
+        "description": "Test system behavior under degraded conditions.",
+        "test_cases": [
+          "Stale index (> 5 minutes old) → tools should include STALE warning in response",
+          "Corrupt symbols.json → find_symbol should return error with rebuild instruction, not crash",
+          "File deleted after indexing → get_implementation_context should note file_not_found, suggest rebuild",
+          "Circular dependency in code → get_dependencies should surface cycle information without infinite loop"
+        ]
+      }
+    ],
+    "failure_modes_tested": [
+      "Index out of sync (file modified, index not rebuilt) — verify staleness signal propagates",
+      "Missing symbols for newly added file — verify watcher triggers incremental update",
+      "Circular dependencies causing infinite BFS — verify loop detection",
+      "Polyglot repo (TS + Python) — verify both languages indexed correctly",
+      "Large monorepo (5000+ files) — verify performance and pagination",
+      "Stale cache used despite fresh files — verify contentHash invalidation",
+      "Concurrent index write + read — verify read gets consistent view",
+      "LLM summarizer API failure — verify graceful fallback to static summary",
+      "Embedding API rate limit — verify semantic search falls back to substring",
+      "Symbol overloads — verify all signatures indexed, correct one returned",
+      "Parse error in one file — verify other files indexed successfully",
+      "Adversarial input to find_symbol (SQL injection patterns, path traversal) — verify sanitization"
+    ],
+    "benchmark_approach": {
+      "baseline": "Record MCP vs Read/Grep/Glob call ratios across 10 agent sessions before improvements",
+      "post_improvement": "Record same ratios after each major improvement phase",
+      "ground_truth_eval": "For symbol accuracy: manually curate 200 {query, expected_symbol} pairs; automate weekly evaluation",
+      "agent_blind_test": "Run 20 standard codebase tasks with agent using only MCP tools (no Read/Grep); measure task completion rate and quality"
+    }
+  },
+
+  "implementation_phases": {
+    "phase_1": {
+      "name": "Critical Path Fixes (Week 1-2)",
+      "priority": "highest",
+      "items": [
+        "Fix tech stack detection for TypeScript/JavaScript projects (tsconfig.json detection)",
+        "Replace hollow summaries: improve LLMSummarizer prompt to require specific content, add quality gate",
+        "Increase response budgets per tool (from universal 3800 to tool-specific limits)",
+        "Add code_snippet field to find_symbol and get_implementation_context responses",
+        "Inline top-3 callers in find_symbol results (eliminate mandatory find_callers follow-up)",
+        "Fix file path normalization: return relative paths consistently",
+        "Add index_age_seconds and is_stale fields to all tool responses"
+      ],
+      "expected_adoption_lift": "+30 percentage points (from ~40% to ~70%)"
+    },
+    "phase_2": {
+      "name": "Richness Expansion (Week 3-4)",
+      "priority": "high",
+      "items": [
+        "Implement CallGraphEnricher: add call-site snippets and argument patterns to find_callers",
+        "Add external-deps.json: npm/pip package inventory with versions",
+        "Implement IndexValidator: quality metrics, staleness detection, accuracy sampling",
+        "Add per-symbol usage_examples from test files",
+        "Implement response pagination with next_page_token",
+        "Expand get_module_context: test_files, external_api, change_impact sections",
+        "Add file line ranges to FileParser output to enable precise code snippet extraction"
+      ],
+      "expected_adoption_lift": "+20 percentage points (from ~70% to ~90%)"
+    },
+    "phase_3": {
+      "name": "Semantic Intelligence (Week 5-6)",
+      "priority": "medium",
+      "items": [
+        "Implement EmbeddingIndexer: vector index for all summaries and docstrings",
+        "Add semantic: true parameter to find_symbol",
+        "Add fuzzy match fallback (Levenshtein) to find_symbol",
+        "Implement AdoptionAnalyzer: parse run logs, identify fallback patterns",
+        "Expand search_architecture to cover all summaries, not just architecture.md",
+        "Add multi-language support (Python, Go) to FileParser",
+        "Add health_check quality_metrics and adoption_rate sections"
+      ],
+      "expected_adoption_lift": "+5 percentage points (from ~90% to ~95%)"
+    },
+    "phase_4": {
+      "name": "Observability & Continuous Improvement (Week 7-8)",
+      "priority": "medium",
+      "items": [
+        "Implement per-tool latency logging in server.ts",
+        "Set up automated weekly symbol accuracy evaluation",
+        "Implement AdoptionAnalyzer weekly report generation",
+        "Add monitoring dashboard for index quality metrics",
+        "Implement automatic re-summarization of low-quality summaries on each rebuild",
+        "Add type hierarchy indexing (class extends/implements chains)"
+      ],
+      "expected_adoption_lift": "+2-3 percentage points (from ~95% to ~97-98%)"
+    }
+  },
+
+  "monitoring_and_observability": {
+    "metrics_to_track": [
+      "tool_call_count_per_tool (per run, per day)",
+      "tool_latency_p50_ms, tool_latency_p95_ms, tool_latency_p99_ms (per tool)",
+      "fallback_events_count (MCP call followed by Read on same file)",
+      "adoption_rate_pct (MCP calls / total codebase queries)",
+      "symbol_resolution_accuracy_pct (from weekly eval)",
+      "summary_quality_score_pct (% passing quality gate)",
+      "index_freshness_seconds (age of index at query time)",
+      "stale_query_count (queries served by stale index)",
+      "parse_error_count_per_build",
+      "build_duration_ms",
+      "embedding_api_error_rate",
+      "index_size_bytes"
+    ],
+    "log_format": "JSONL, one event per line, written to workspace/logs/mcp-metrics-{date}.jsonl",
+    "alerting": [
+      "adoption_rate_pct < 70% → alert: MCP tools may be regressing",
+      "summary_quality_score_pct < 75% → alert: LLM summarizer may be failing",
+      "index_freshness_seconds > 600 → alert: watcher may be stuck",
+      "parse_error_count > 10 in one build → alert: potential AST parser issue",
+      "tool_latency_p99_ms > 2000 → alert: index loading is too slow"
+    ],
+    "dashboards": [
+      "MCP adoption rate over time (agents preferring MCP vs file reads)",
+      "Per-tool call frequency and latency distribution",
+      "Index quality score trend",
+      "Top 20 most-queried symbols",
+      "Top 10 fallback triggers (which queries cause file reads)"
+    ]
+  },
+
+  "architecture_diagram": {
+    "description": "Orchestrator pattern with 4 specialized sub-agents coordinated by IndexOrchestrator",
+    "data_flow": [
+      "FileSystemWatcher → [file change event] → IndexOrchestrator",
+      "IndexOrchestrator → [parse jobs] → FileParser (per changed file)",
+      "FileParser → [parsed AST data] → IndexOrchestrator",
+      "IndexOrchestrator → [file content + callers] → LLMSummarizer",
+      "LLMSummarizer → [rich summaries] → IndexOrchestrator",
+      "IndexOrchestrator → [summary texts] → EmbeddingIndexer",
+      "EmbeddingIndexer → [vector index] → .knowledge/embeddings.json",
+      "IndexOrchestrator → [call edges + AST] → CallGraphEnricher",
+      "CallGraphEnricher → [enriched call graph] → .knowledge/enriched-call-graph.json",
+      "IndexOrchestrator → [publish] → .knowledge/ (atomic rename)",
+      "IndexValidator → [monitor] → .knowledge/ + source files → quality-metrics.json",
+      "MCP Tool (e.g. find_symbol) → QueryEnricher → .knowledge/ → enriched response → Agent",
+      "Agent run logs → AdoptionAnalyzer → improvement recommendations → IndexOrchestrator"
+    ]
+  }
+}

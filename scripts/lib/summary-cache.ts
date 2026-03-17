@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
 import type { SourceFile } from 'ts-morph';
-import { FileSummary, SymbolEntry } from '../../src/types.js';
+import { FileSummary, SymbolEntry, RichnessLevel } from '../../src/types.js';
 import { Summarizer } from './summarizer.js';
 import { atomicWrite } from './atomic-writer.js';
 
@@ -46,6 +46,7 @@ export class SummaryCache {
 
 /**
  * Gets a cached summary if the content hasn't changed, otherwise generates a new one.
+ * Includes richness level in the hash so switching levels invalidates the cache.
  */
 export async function getOrGenerateSummary(
     filePath: string,
@@ -53,16 +54,20 @@ export async function getOrGenerateSummary(
     symbols: SymbolEntry[],
     summarizer: Summarizer,
     cache: SummaryCache,
-    sourceFile?: SourceFile
+    sourceFile?: SourceFile,
+    richness?: RichnessLevel
 ): Promise<FileSummary> {
-    const hash = crypto.createHash('sha256').update(content).digest('hex');
+    const hash = crypto.createHash('sha256')
+        .update(content)
+        .update(richness ?? 'minimal')
+        .digest('hex');
 
     const cached = cache.get(filePath, hash);
     if (cached) {
         return cached;
     }
 
-    const summary = await summarizer.summarizeFile(filePath, content, symbols, sourceFile);
+    const summary = await summarizer.summarizeFile(filePath, content, symbols, sourceFile, richness);
     summary.contentHash = hash;
     cache.set(filePath, summary);
     return summary;

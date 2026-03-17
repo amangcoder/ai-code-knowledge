@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
-import { SymbolEntry, FileSummary } from '../../src/types.js';
+import { SymbolEntry, FileSummary, RichnessLevel, KnowledgeIndex } from '../../src/types.js';
 import { atomicWrite } from './atomic-writer.js';
 import { invertCallGraph } from './call-graph.js';
 import { createSummarizer } from './summarizer-factory.js';
@@ -34,6 +34,17 @@ function loadSummaryCache(knowledgeRoot: string): Record<string, FileSummary> {
     }
 }
 
+function loadRichnessLevel(knowledgeRoot: string): RichnessLevel {
+    const indexPath = path.join(knowledgeRoot, 'index.json');
+    if (!fs.existsSync(indexPath)) return 'minimal';
+    try {
+        const index = JSON.parse(fs.readFileSync(indexPath, 'utf-8')) as KnowledgeIndex;
+        return index.richness ?? 'minimal';
+    } catch {
+        return 'minimal';
+    }
+}
+
 function makeFileContext(filePath: string, content: string, projectRoot: string): FileContext {
     return {
         filePath,
@@ -54,6 +65,7 @@ export async function handleFileChange(
     projectRoot: string
 ): Promise<void> {
     const normalizedPath = normalizeFilePath(filePath, projectRoot);
+    const richness = loadRichnessLevel(knowledgeRoot);
 
     // Load current artifacts
     const allSymbols = loadSymbols(knowledgeRoot);
@@ -87,7 +99,7 @@ export async function handleFileChange(
     }
 
     // Extract symbols
-    const newSymbols = adapter.extractSymbols(ctx);
+    const newSymbols = adapter.extractSymbols(ctx, richness);
     const allMergedSymbols = [...filteredSymbols, ...newSymbols];
 
     // Build call graph
@@ -107,7 +119,7 @@ export async function handleFileChange(
 
     // Update summaries cache for the changed file
     const contentHash = crypto.createHash('sha256').update(content).digest('hex');
-    const summarizer = createSummarizer();
+    const summarizer = createSummarizer(richness);
     const fileSymbols = mergedSymbols.filter(s => s.file === normalizedPath);
     const summary = await summarizer.summarizeFile(normalizedPath, content, fileSymbols);
     summary.contentHash = contentHash;
@@ -136,6 +148,8 @@ export async function handleBatchFileChanges(
     knowledgeRoot: string,
     projectRoot: string
 ): Promise<void> {
+    const richness = loadRichnessLevel(knowledgeRoot);
+
     // 1. Handle deletions first
     const deletions = files.filter(f => f.type === 'delete');
     const changes = files.filter(f => f.type === 'change');
@@ -201,7 +215,7 @@ export async function handleBatchFileChanges(
 
         for (const file of langFiles) {
             const ctx = makeFileContext(file.absolutePath, file.content, projectRoot);
-            allNewSymbols.push(...adapter.extractSymbols(ctx));
+            allNewSymbols.push(...adapter.extractSymbols(ctx, richness));
         }
     }
 
@@ -233,7 +247,7 @@ export async function handleBatchFileChanges(
     mergedSymbols = invertCallGraph(mergedSymbols);
 
     // 8. Update summaries for all changed files
-    const summarizer = createSummarizer();
+    const summarizer = createSummarizer(richness);
     for (const [, langFiles] of filesByAdapter) {
         for (const file of langFiles) {
             const contentHash = crypto.createHash('sha256').update(file.content).digest('hex');

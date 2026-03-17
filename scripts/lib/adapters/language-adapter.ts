@@ -1,4 +1,4 @@
-import type { SymbolEntry } from '../../../src/types.js';
+import type { SymbolEntry, RichnessLevel } from '../../../src/types.js';
 import type { ImportInfo } from '../dependency-extractor.js';
 
 /**
@@ -40,8 +40,9 @@ export interface LanguageAdapter {
 
     /**
      * Extract symbols (functions, classes, methods, etc.) from a single file.
+     * At 'standard'+ richness, includes JSDoc, parameter docs, return types, decorators.
      */
-    extractSymbols(ctx: FileContext): SymbolEntry[];
+    extractSymbols(ctx: FileContext, richness?: RichnessLevel): SymbolEntry[];
 
     /**
      * Extract import/dependency information from a single file.
@@ -66,4 +67,4 @@ export interface LanguageAdapter {
     dispose?(): void;
 }
 
-export type { SymbolEntry, ImportInfo };
+export type { SymbolEntry, ImportInfo, RichnessLevel };

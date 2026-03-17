@@ -1,3 +1,20 @@
+export type RichnessLevel = 'minimal' | 'standard' | 'rich';
+
+export interface ParameterDoc {
+    name: string;
+    type: string;
+    description?: string;
+    optional?: boolean;
+    defaultValue?: string;
+}
+
+export interface PublicAPIEntry {
+    name: string;
+    type: string;
+    signature: string;
+    jsdoc?: string;
+}
+
 export interface SymbolEntry {
     name: string;
     qualifiedName: string;        // "OrderService.createOrder"
@@ -11,6 +28,13 @@ export interface SymbolEntry {
     throws: string[];
     isExported: boolean;
     language?: string;
+    // Standard-level fields
+    jsdoc?: string;
+    parameters?: ParameterDoc[];
+    returnType?: string;
+    decorators?: string[];
+    // Rich-level fields
+    complexity?: number;
 }
 
 export interface DependencyGraph {
@@ -29,6 +53,15 @@ export interface FileSummary {
     throws: string[];
     lastUpdated: string;
     contentHash: string;
+    // Standard-level fields
+    detailedPurpose?: string;
+    publicAPI?: PublicAPIEntry[];
+    internalPatterns?: string[];
+    // Rich-level fields
+    architecturalRole?: string;
+    complexityScore?: number;
+    testFiles?: string[];
+    llmDescription?: string;
 }
 
 export interface KnowledgeIndex {
@@ -41,9 +74,18 @@ export interface KnowledgeIndex {
     buildInProgress?: boolean;
     buildGeneration?: number;
     symbolCounts?: Record<string, number>;
+    richness?: RichnessLevel;
 }
 
 export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';
+
+/** Schema definition for a pipeline artifact type. */
+export interface ArtifactSchema {
+    requiredKeys: string[];
+    keyTypes: Record<string, string>;
+    exampleStructure: Record<string, unknown>;
+    notes: string;
+}
 
 /** MCP tool handler response format. */
 export interface CallToolResult {

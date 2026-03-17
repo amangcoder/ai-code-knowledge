@@ -1,7 +1,10 @@
 import * as path from 'node:path';
 
+import type { RichnessLevel } from '../../src/types.js';
+
 export interface ModuleConfig {
     moduleRoots?: string[];
+    richness?: RichnessLevel;
 }
 
 /**

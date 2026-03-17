@@ -2,7 +2,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { Project, SourceFile } from 'ts-morph';
 import type { LanguageAdapter, FileContext } from './language-adapter.js';
-import type { SymbolEntry } from '../../../src/types.js';
+import type { SymbolEntry, RichnessLevel } from '../../../src/types.js';
 import type { ImportInfo } from '../dependency-extractor.js';
 import { extractSymbols } from '../symbol-extractor.js';
 import { buildCallGraph, rebuildCallGraphForFile, rebuildCallGraphForFiles } from '../call-graph.js';
@@ -58,7 +58,7 @@ export class TypeScriptAdapter implements LanguageAdapter {
         }
     }
 
-    extractSymbols(ctx: FileContext): SymbolEntry[] {
+    extractSymbols(ctx: FileContext, richness?: RichnessLevel): SymbolEntry[] {
         if (!this.project) {
             throw new Error('TypeScriptAdapter: initialize() must be called before extractSymbols()');
         }
@@ -68,7 +68,7 @@ export class TypeScriptAdapter implements LanguageAdapter {
             sourceFile = this.project.addSourceFileAtPath(ctx.filePath);
         }
 
-        const symbols = extractSymbols(sourceFile, ctx.projectRoot);
+        const symbols = extractSymbols(sourceFile, ctx.projectRoot, richness);
         const lang = this.detectSubLanguage(ctx.filePath);
         symbols.forEach(s => s.language = lang);
         return symbols;

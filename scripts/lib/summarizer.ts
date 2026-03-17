@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { SourceFile } from 'ts-morph';
-import { SymbolEntry, FileSummary } from '../../src/types.js';
+import { SymbolEntry, FileSummary, RichnessLevel, PublicAPIEntry } from '../../src/types.js';
 import * as path from 'node:path';
 
 /**
@@ -11,12 +11,14 @@ export interface Summarizer {
         filePath: string,
         content: string,
         symbols: SymbolEntry[],
-        sourceFile?: SourceFile
+        sourceFile?: SourceFile,
+        richness?: RichnessLevel
     ): Promise<FileSummary>
 }
 
 /**
  * Zod schema for validating LLM-generated file summary responses.
+ * At standard/rich levels, additional fields are accepted.
  */
 export const FileSummaryResponseSchema = z.object({
     purpose: z.string(),
@@ -24,6 +26,12 @@ export const FileSummaryResponseSchema = z.object({
     dependencies: z.array(z.string()),
     sideEffects: z.array(z.string()),
     throws: z.array(z.string()),
+    // Standard-level fields
+    detailedPurpose: z.string(),
+    internalPatterns: z.array(z.string()),
+    // Rich-level fields
+    architecturalRole: z.string(),
+    llmDescription: z.string(),
 }).partial();
 
 function getLanguageInfo(filePath: string): { languageName: string; codeFence: string } {
@@ -37,12 +45,49 @@ function getLanguageInfo(filePath: string): { languageName: string; codeFence: s
 
 /**
  * Builds a structured prompt for the LLM to summarize a file.
+ * At standard/rich levels, requests additional fields.
  */
-export function buildPrompt(filePath: string, content: string, symbols: SymbolEntry[]): string {
+export function buildPrompt(filePath: string, content: string, symbols: SymbolEntry[], richness?: RichnessLevel): string {
     const { languageName, codeFence } = getLanguageInfo(filePath);
-    const symbolList = symbols.length > 0
-        ? symbols.map(s => `- ${s.name} (${s.type}): ${s.signature}`).join('\n')
-        : "No symbols detected.";
+    const isStandardPlus = richness === 'standard' || richness === 'rich';
+    const isRich = richness === 'rich';
+
+    // Build symbol list with more detail at standard+ levels
+    let symbolList: string;
+    if (symbols.length === 0) {
+        symbolList = "No symbols detected.";
+    } else if (isStandardPlus) {
+        symbolList = symbols.map(s => {
+            let line = `- ${s.name} (${s.type}): ${s.signature}`;
+            if (s.jsdoc) line += `\n  JSDoc: ${s.jsdoc.split('\n')[0]}`;
+            if (s.parameters?.length) {
+                line += `\n  Params: ${s.parameters.map(p => `${p.name}: ${p.type}`).join(', ')}`;
+            }
+            if (s.returnType) line += `\n  Returns: ${s.returnType}`;
+            return line;
+        }).join('\n');
+    } else {
+        symbolList = symbols.map(s => `- ${s.name} (${s.type}): ${s.signature}`).join('\n');
+    }
+
+    let fieldInstructions = `Return your result as a JSON object with these fields:
+1. "purpose": (string) What is the main goal of this file?
+2. "exports": (string[]) What are the primary exported functions/classes?
+3. "dependencies": (string[]) What internal or external modules does it import?
+4. "sideEffects": (string[]) Does it perform I/O, network calls, or global state changes?
+5. "throws": (string[]) What notable errors or exceptions might it throw?`;
+
+    if (isStandardPlus) {
+        fieldInstructions += `
+6. "detailedPurpose": (string) A 2-3 sentence description of what this file does, its role in the system, and how it's used.
+7. "internalPatterns": (string[]) Design patterns used (e.g., "singleton", "factory", "middleware", "barrel-file", "adapter").`;
+    }
+
+    if (isRich) {
+        fieldInstructions += `
+8. "architecturalRole": (string) Classification of this file's role: one of "controller", "service", "utility", "model", "config", "adapter", "middleware", "test", "types", "entry-point", or "other".
+9. "llmDescription": (string) A comprehensive paragraph describing the file's purpose, key algorithms, design decisions, and how it fits into the broader architecture.`;
+    }
 
     return `You are a technical documentation agent. Provide a structured summary of the following ${languageName} file.
 
@@ -56,12 +101,7 @@ ${content}
 Extracted Symbols:
 ${symbolList}
 
-Return your result as a JSON object with these fields:
-1. "purpose": (string) What is the main goal of this file?
-2. "exports": (string[]) What are the primary exported functions/classes?
-3. "dependencies": (string[]) What internal or external modules does it import?
-4. "sideEffects": (string[]) Does it perform I/O, network calls, or global state changes?
-5. "throws": (string[]) What notable errors or exceptions might it throw?
+${fieldInstructions}
 
 Output ONLY valid JSON, no markdown, no explanation.`;
 }
