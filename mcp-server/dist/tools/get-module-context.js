@@ -1,24 +1,60 @@
 import { loadIndex, loadSymbols, loadDependencies, loadSummaryCache } from './lib/data-loader.js';
-import { buildResponse } from './lib/response-budget.js';
+import { buildResponse, TOOL_BUDGETS } from './lib/response-budget.js';
+import { resolveProjectRoot, computeClosestMatches } from './lib/path-utils.js';
+import { buildFooterSection } from './lib/metadata-footer.js';
 function fileInModule(filePath, moduleName) {
     const normalized = filePath.replace(/\\/g, '/');
     return normalized.startsWith(moduleName + '/') || normalized === moduleName;
+}
+/** Infers architectural role label from file path when not explicitly set. */
+function inferArchitecturalRole(filePath) {
+    const normalized = filePath.replace(/\\/g, '/');
+    const filename = normalized.split('/').pop() ?? '';
+    if (filename === 'server.ts' || filename === 'index.ts' || filename === 'main.ts') {
+        return 'entry-point';
+    }
+    if (normalized.includes('/lib/')) {
+        return 'utility';
+    }
+    if (filename.startsWith('get-') ||
+        filename.startsWith('find-') ||
+        filename.startsWith('search-') ||
+        filename.startsWith('health-') ||
+        filename.startsWith('validate-')) {
+        return 'handler';
+    }
+    return 'module';
 }
 export function handler(args, knowledgeRoot = '.knowledge') {
     const index = loadIndex(knowledgeRoot);
     if (!index) {
         return {
-            content: [{ type: 'text', text: 'Knowledge base not found. Run "npm run build-knowledge" first.' }],
+            content: [{
+                    type: 'text',
+                    text: 'Knowledge base not found. The knowledge index has not been built yet for this project.',
+                }],
             isError: true,
         };
     }
+    const projectRoot = resolveProjectRoot(knowledgeRoot);
     const moduleName = args.module;
     if (!index.modules.includes(moduleName)) {
+        const suggestions = computeClosestMatches(moduleName, index.modules, 3);
+        const lines = [
+            `Module "${moduleName}" not found.`,
+            '',
+            `Available modules:`,
+            ...index.modules.map(m => `  - ${m}`),
+        ];
+        if (suggestions.length > 0) {
+            lines.push('');
+            lines.push(`Did you mean: ${suggestions.join(', ')}?`);
+        }
+        lines.push('');
+        lines.push(`Tip: Use get_project_overview() to see all modules.`);
+        lines.push(`Format example: get_module_context(module="${index.modules[0] ?? 'tools'}")`);
         return {
-            content: [{
-                    type: 'text',
-                    text: `Module "${moduleName}" not found.\n\nAvailable modules:\n${index.modules.map(m => `  - ${m}`).join('\n')}`,
-                }],
+            content: [{ type: 'text', text: lines.join('\n') }],
             isError: true,
         };
     }
@@ -89,13 +125,16 @@ export function handler(args, knowledgeRoot = '.knowledge') {
         content: `=== Module: ${moduleName} (${moduleFiles.length} files) ===\n\n${roleLines.join('\n')}`,
         priority: 0,
     });
-    // Files with one-line summaries
+    // Files with architectural role prefix labels and 150-char descriptions
     if (moduleFiles.length > 0) {
         const fileLines = moduleFiles.map(f => {
-            const purpose = moduleSummaries[f]?.purpose ?? '';
-            const shortPurpose = purpose.length > 60 ? purpose.slice(0, 57) + '...' : purpose;
+            const s = moduleSummaries[f];
+            const purpose = s?.llmDescription ?? s?.detailedPurpose ?? s?.purpose ?? '';
+            // Up to 150 chars (previously 60)
+            const shortPurpose = purpose.length > 150 ? purpose.slice(0, 147) + '...' : purpose;
             const shortName = f.replace(moduleName + '/', '');
-            return `  ${shortName} — ${shortPurpose}`;
+            const role = s?.architecturalRole ?? inferArchitecturalRole(f);
+            return `  [${role}] ${shortName} — ${shortPurpose}`;
         });
         sections.push({
             label: 'Files',
@@ -103,21 +142,51 @@ export function handler(args, knowledgeRoot = '.knowledge') {
             priority: 1,
         });
     }
-    // Exported symbols
+    // Architectural role distribution
+    const roleCounts = {};
+    for (const [filePath, s] of Object.entries(moduleSummaries)) {
+        const role = s.architecturalRole ?? inferArchitecturalRole(filePath);
+        roleCounts[role] = (roleCounts[role] ?? 0) + 1;
+    }
+    if (Object.keys(roleCounts).length > 0) {
+        const roleStr = Object.entries(roleCounts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([role, count]) => `${count} ${role}${count > 1 ? 's' : ''}`)
+            .join(', ');
+        sections.push({
+            label: 'Architectural Roles',
+            content: `  ${roleStr}`,
+            priority: 2,
+        });
+    }
+    // Exported symbols — full signatures with return type and first JSDoc line; no 80-char truncation
     if (exportedSymbols.length > 0) {
         const sigLines = exportedSymbols
             .slice(0, 20)
             .map(s => {
-            const sig = s.signature.length > 80 ? s.signature.slice(0, 77) + '...' : s.signature;
-            return `  ${s.type} ${sig}`;
+            // Full signature — no truncation
+            const parts = [`  ${s.type} ${s.signature}`];
+            if (s.returnType)
+                parts.push(`    Returns: ${s.returnType}`);
+            // First line of JSDoc (strip comment markers)
+            if (s.jsdoc) {
+                const firstDocLine = s.jsdoc
+                    .replace(/^\/\*\*\s*/, '')
+                    .split('\n')
+                    .map(l => l.replace(/^\s*\*\s?/, '').trim())
+                    .find(l => l.length > 0);
+                if (firstDocLine)
+                    parts.push(`    // ${firstDocLine}`);
+            }
+            return parts.join('\n');
         });
         if (exportedSymbols.length > 20) {
-            sigLines.push(`  ... and ${exportedSymbols.length - 20} more`);
+            sigLines.push(`  ... and ${exportedSymbols.length - 20} more — use get_implementation_context(file="<path>") for full detail`);
         }
         sections.push({
             label: `Exported Symbols (${exportedSymbols.length})`,
             content: sigLines.join('\n'),
-            priority: 2,
+            priority: 3,
         });
     }
     // Internal dependencies
@@ -125,7 +194,7 @@ export function handler(args, knowledgeRoot = '.knowledge') {
         sections.push({
             label: 'Internal Dependencies',
             content: internalDeps.slice(0, 10).join('\n'),
-            priority: 3,
+            priority: 4,
         });
     }
     // Patterns
@@ -141,10 +210,13 @@ export function handler(args, knowledgeRoot = '.knowledge') {
         sections.push({
             label: 'Patterns',
             content: patternLines.join('\n'),
-            priority: 4,
+            priority: 5,
         });
     }
+    // Metadata footer
+    sections.push(buildFooterSection(index, projectRoot));
+    const budget = TOOL_BUDGETS['get_module_context'] ?? 14000;
     return {
-        content: [{ type: 'text', text: buildResponse(sections) }],
+        content: [{ type: 'text', text: buildResponse(sections, budget) }],
     };
 }

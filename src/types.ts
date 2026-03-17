@@ -35,6 +35,9 @@ export interface SymbolEntry {
     decorators?: string[];
     // Rich-level fields
     complexity?: number;
+    isAsync?: boolean;
+    accessModifier?: string;
+    deprecationNotice?: string;
 }
 
 export interface DependencyGraph {
@@ -75,9 +78,18 @@ export interface KnowledgeIndex {
     buildGeneration?: number;
     symbolCounts?: Record<string, number>;
     richness?: RichnessLevel;
+    coverageErrors?: string[];
 }
 
 export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';
+
+export interface SummarizerConfig {
+    mode?: SummarizerMode;
+    model?: string;
+    apiKey?: string;
+    maxDescriptionLength?: number;
+    timeoutMs?: number;
+}
 
 /** Schema definition for a pipeline artifact type. */
 export interface ArtifactSchema {

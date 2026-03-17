@@ -1,0 +1,557 @@
+{
+  "title": "Code Intelligence Engine — Vector Search, Knowledge Graph & Semantic Retrieval",
+  "version": "1.0",
+  "status": "proposed",
+  "created": "2026-03-17",
+  "overview": "Upgrade the AI Code Knowledge System from heuristic/substring search to a multi-layered intelligence engine combining hybrid BM25+vector retrieval, a heterogeneous knowledge graph, cross-cutting feature summaries, and agentic query routing. This is driven by the need to scale from ~100 files to 3000-4000 file codebases where current substring matching and token-based search produce too many false positives and miss semantic relationships. The system adds four new storage layers under .knowledge/ (vectors, graph, features, BM25 index) and exposes three new MCP tools (semantic_search, explore_graph, get_feature_context) while enhancing existing tools with vector reranking and graph-aware context.",
+
+  "motivation": {
+    "problem": "At 3000+ files, the current system's substring-based find_symbol returns hundreds of noisy matches, find_template_file's token matching produces excessive false positives, and agents cannot efficiently answer cross-cutting questions like 'how does authentication work across the codebase'. The system lacks semantic understanding — it can find exact names but cannot discover conceptually related code.",
+    "research_backing": [
+      "CodeSage (2023-2024): Code-specific embeddings outperform OpenAI text-embedding-3-large by 34% on code-to-code search",
+      "CodeXEmbed (COLM 2025): Multilingual code embeddings, 20%+ over previous SOTA on CoIR benchmark",
+      "Prometheus (July 2025): Unified FileNode/ASTNode/TextNode knowledge graph with working memory for multi-hop code navigation",
+      "LocAgent (ACL 2025): Heterogeneous graph + LLM multi-hop reasoning for code localization",
+      "Code Graph Model (NeurIPS 2025): Graph-structured attention achieving 43% on SWE-bench Lite",
+      "Hybrid BM25+Vector retrieval with RRF: 15-30% recall improvement over single-method retrieval (consensus from 2024-2025 IR research)",
+      "RepoSummary (2025): Feature-oriented cross-cutting summarization outperforms file-level summaries for 'how does X work' queries",
+      "Agentic RAG Survey (Jan 2025): Query routing + retrieval self-evaluation patterns for autonomous agent retrieval"
+    ],
+    "scale_impact": {
+      "93_files": "Current system works well — substring search is manageable, agent can guess file locations",
+      "500_files": "Performance degrades — find_symbol noise increases, get_project_overview gets truncated",
+      "3000_files": "System breaks down — agent cannot narrow search space, feature-level questions unanswerable, tool call counts explode"
+    }
+  },
+
+  "architecture": {
+    "layers": [
+      {
+        "name": "Layer 1: Hybrid Search Engine",
+        "purpose": "Combine keyword precision (BM25) with semantic understanding (vector embeddings) for 15-30% better recall than either alone",
+        "storage": ".knowledge/vectors/*.lance (LanceDB tables)",
+        "components": [
+          "EmbeddingGenerator — produces CodeSage embeddings during build-knowledge",
+          "HybridSearchEngine — LanceDB native hybrid search (BM25 + ANN vector)",
+          "ReciprocalRankFusion — merges BM25 and vector result lists (k=60)",
+          "ColBERTReranker — precision reranking on top-K candidates"
+        ],
+        "embedding_strategy": {
+          "model_primary": "CodeSage-Base (768 dims, +34-41% over OpenAI embeddings on code-to-code search, available on HuggingFace)",
+          "implementation": "SentenceTransformers library with model='codesage/codesage-base'. Handles batching, normalization, and EOS token automatically.",
+          "model_alternatives": [
+            "CodeSage-Large (1024 dims, +34-41% quality, max performance when speed not critical)",
+            "CodeSage-Small (512 dims, lighter, faster for resource-constrained environments)",
+            "CodeXEmbed-1B (768 dims, open source alternative, +20% vs previous SOTA)",
+            "Ollama nomic-embed-text (local, free, privacy-preserving, aligns with existing Ollama summarizer)"
+          ],
+          "what_to_embed": {
+            "files": "{purpose}. {detailedPurpose}. Exports: {exports}. Patterns: {internalPatterns}. Role: {architecturalRole}. Dependencies: {dependencies}",
+            "symbols": "{qualifiedName}: {signature}. {jsdoc}. Parameters: {params with types}",
+            "features": "{feature_name}: {description}. Key symbols: {keySymbols}. Data flow: {dataFlow}"
+          },
+          "estimated_vectors": {
+            "100_file_project": "~300 vectors (files + symbols)",
+            "3000_file_project": "~8000-12000 vectors",
+            "storage": "~10-20MB for 10K vectors"
+          },
+          "codesage_setup": {
+            "dependencies": ["sentence-transformers", "torch (or cpu variant)"],
+            "code_example": "from sentence_transformers import SentenceTransformer; model = SentenceTransformer('codesage/codesage-base', trust_remote_code=True); embeddings = model.encode(texts, batch_size=32, show_progress_bar=True)"
+          }
+        }
+      },
+      {
+        "name": "Layer 2: Heterogeneous Knowledge Graph",
+        "purpose": "Unify AST nodes, file metadata, module structure, and feature mappings into a single traversable graph enabling multi-hop queries impossible with flat indexes",
+        "storage": ".knowledge/graph/nodes.json, .knowledge/graph/edges.json",
+        "node_types": [
+          { "type": "file", "source": "summaries/cache.json", "metadata": "purpose, architecturalRole, exports" },
+          { "type": "symbol", "source": "symbols.json", "metadata": "signature, kind, complexity, jsdoc" },
+          { "type": "module", "source": "dependencies.json", "metadata": "file count, symbol count" },
+          { "type": "feature", "source": "features/cache.json (new)", "metadata": "description, data flow" },
+          { "type": "package", "source": "dependencies.json (external)", "metadata": "version, usage count" }
+        ],
+        "edge_types": [
+          { "type": "contains", "example": "module → file, file → symbol", "source": "derived from file paths + symbols.json" },
+          { "type": "calls", "example": "symbol → symbol", "source": "existing calls[]/calledBy[] in symbols.json" },
+          { "type": "imports", "example": "file → file", "source": "existing fileDeps in dependencies.json" },
+          { "type": "depends_on", "example": "module → module", "source": "existing module edges in dependencies.json" },
+          { "type": "implements", "example": "file → feature", "source": "feature discovery clustering (new)" },
+          { "type": "similar_to", "example": "file → file", "source": "computed lazily from vector proximity, cached" }
+        ],
+        "query_capabilities": [
+          "Multi-hop traversal: 'find all callers of functions that import module X' (calls + imports, depth 3)",
+          "Reverse reachability: 'what features does this file participate in?' (reverse implements edge)",
+          "Neighborhood expansion: 'show me everything 2 hops from AuthService' (any edge type, configurable depth)",
+          "Typed path queries: 'files that contain symbols that call PaymentService.charge' (contains + calls)",
+          "Impact radius: 'what modules are affected if I change this file?' (imports + depends_on, transitive)"
+        ]
+      },
+      {
+        "name": "Layer 3: Feature-Oriented Cross-Cutting Summaries",
+        "purpose": "Pre-compute feature-level understanding that spans multiple modules, enabling agents to answer 'how does X work' without reading 40 modules",
+        "storage": ".knowledge/features/index.json, .knowledge/features/cache.json",
+        "discovery_method": {
+          "step_1": "Cluster file embeddings using HDBSCAN (density-based, no need to predefine K)",
+          "step_2": "For each cluster, extract member file summaries + key symbols",
+          "step_3": "LLM generates feature name, description, entry points, data flow, key symbols",
+          "step_4": "Create feature → file edges in knowledge graph"
+        },
+        "feature_summary_schema": {
+          "name": "string — e.g., 'authentication', 'order-processing', 'payment-integration'",
+          "description": "string — 2-3 sentence overview of what this feature does",
+          "involvedFiles": "string[] — all files that participate in this feature",
+          "entryPoints": "string[] — where the feature flow starts (API endpoints, event handlers)",
+          "dataFlow": "string — how data moves through the feature end-to-end",
+          "keySymbols": "string[] — most important functions/classes for this feature",
+          "relatedFeatures": "string[] — other features that interact with this one"
+        },
+        "update_strategy": "Full recomputation on full rebuild only. Incremental builds skip feature discovery (too expensive for single-file changes). Features are regenerated when >10% of files change or on explicit --rebuild-features flag."
+      },
+      {
+        "name": "Layer 4: Query Intelligence (Router + Reranker + Working Memory)",
+        "purpose": "Automatically classify queries, select optimal retrieval strategy, rerank results, and maintain session context across tool calls",
+        "components": [
+          {
+            "name": "QueryRouter",
+            "purpose": "Classify incoming query into strategy without requiring the agent to choose",
+            "routing_rules": [
+              { "pattern": "Exact symbol name (PascalCase/camelCase identifier)", "strategy": "exact", "tool": "existing symbolMap O(1) lookup" },
+              { "pattern": "'How does X work' / conceptual questions", "strategy": "feature", "tools": "feature vector search → graph traversal" },
+              { "pattern": "'Find files like X' / 'similar to'", "strategy": "semantic", "tool": "vector similarity search" },
+              { "pattern": "'What calls/imports/depends on X'", "strategy": "graph", "tool": "graph multi-hop traversal" },
+              { "pattern": "Natural language / ambiguous", "strategy": "hybrid", "tools": "BM25 + vector + rerank" }
+            ]
+          },
+          {
+            "name": "ColBERTReranker",
+            "purpose": "Precision-optimize the top-K results from hybrid retrieval using late-interaction cross-encoding",
+            "model": "Jina ColBERT v2 (or cross-encoder fallback)",
+            "when_applied": "When hybrid search returns >10 candidates, rerank top 50 → return top K",
+            "expected_impact": "+5-10% precision over RRF alone"
+          },
+          {
+            "name": "WorkingMemory",
+            "purpose": "Session-scoped cache that retains previously explored context across sequential MCP tool calls within a single agent session",
+            "behavior": [
+              "Each MCP tool call checks working memory for relevant prior results before executing",
+              "Results are cached with 5-minute TTL and 50-entry LRU eviction",
+              "Agent can reference previously fetched context without re-querying",
+              "Session auto-expires after 10 minutes of inactivity"
+            ],
+            "inspired_by": "Prometheus (2025) working memory pattern for multi-step code navigation"
+          }
+        ]
+      }
+    ],
+
+    "storage_layout": {
+      "description": "All new storage lives under .knowledge/ — zero external infrastructure",
+      "tree": [
+        ".knowledge/",
+        "├── index.json                    # existing — manifest (unchanged)",
+        "├── symbols.json                  # existing — AST + call graph (unchanged)",
+        "├── dependencies.json             # existing — import graph (unchanged)",
+        "├── summaries/cache.json          # existing — file summaries (unchanged)",
+        "├── architecture.md               # existing — human docs (unchanged)",
+        "├── vectors/                      # NEW — LanceDB embedded tables",
+        "│   ├── files.lance               # file summary embeddings",
+        "│   ├── symbols.lance             # symbol signature embeddings",
+        "│   └── features.lance            # feature summary embeddings",
+        "├── graph/                        # NEW — unified knowledge graph",
+        "│   ├── nodes.json                # all node types with metadata",
+        "│   └── edges.json                # all edge types with weights",
+        "└── features/                     # NEW — cross-cutting feature summaries",
+        "    ├── index.json                # feature registry",
+        "    └── cache.json                # LLM-generated feature summaries"
+      ]
+    }
+  },
+
+  "new_mcp_tools": [
+    {
+      "name": "semantic_search",
+      "description": "Natural language search across the entire codebase using hybrid BM25 + vector retrieval with reranking. Use when the agent needs to find code by description rather than exact name.",
+      "input_schema": {
+        "query": { "type": "string", "description": "Natural language search query" },
+        "scope": { "type": "string", "enum": ["files", "symbols", "features", "all"], "default": "all", "description": "Limit search to specific entity type" },
+        "topK": { "type": "number", "default": 10, "description": "Number of results to return" }
+      },
+      "output": "Ranked list of files/symbols/features with relevance scores, snippets, and metadata",
+      "retrieval_pipeline": [
+        "1. QueryRouter classifies query → selects BM25/vector/hybrid strategy",
+        "2. LanceDB hybrid search returns topK * 3 candidates (over-fetch for reranking)",
+        "3. Reciprocal Rank Fusion (k=60) merges BM25 and vector result lists",
+        "4. ColBERT reranker refines top 50 → returns top K",
+        "5. Results enriched with file summary metadata from summaries/cache.json",
+        "6. Results cached in working memory for subsequent tool calls"
+      ],
+      "example_queries": [
+        "middleware that validates authentication tokens",
+        "error handling patterns in API routes",
+        "database connection pooling logic",
+        "files related to payment processing"
+      ],
+      "response_budget": "14KB (matches existing tool budgets)"
+    },
+    {
+      "name": "explore_graph",
+      "description": "Traverse the code knowledge graph to find all code connected to a starting point via specific relationship types. Enables multi-hop queries impossible with flat indexes.",
+      "input_schema": {
+        "start": { "type": "string", "description": "Starting node ID. Format: 'file:src/auth.ts', 'symbol:AuthService.login', 'module:auth', 'feature:authentication'" },
+        "edgeTypes": { "type": "array", "items": { "type": "string", "enum": ["calls", "imports", "contains", "depends_on", "implements", "similar_to"] }, "default": ["calls", "imports"], "description": "Edge types to follow" },
+        "maxDepth": { "type": "number", "default": 2, "description": "Maximum traversal depth (1-5)" },
+        "direction": { "type": "string", "enum": ["outgoing", "incoming", "both"], "default": "outgoing", "description": "Edge traversal direction" }
+      },
+      "output": "Graph substructure: nodes visited (with metadata), edges traversed, depth at which each node was found",
+      "example_queries": [
+        "{ start: 'symbol:AuthService.login', edgeTypes: ['calls'], maxDepth: 3, direction: 'outgoing' } → full call tree from login",
+        "{ start: 'file:src/models/user.ts', edgeTypes: ['imports'], direction: 'incoming' } → all files that import user model",
+        "{ start: 'module:payments', edgeTypes: ['depends_on', 'contains'], maxDepth: 2 } → payment module's full dependency neighborhood",
+        "{ start: 'feature:authentication', edgeTypes: ['implements'], direction: 'incoming' } → all files participating in auth feature"
+      ],
+      "response_budget": "16KB"
+    },
+    {
+      "name": "get_feature_context",
+      "description": "Understand how a feature or capability works across the entire codebase. Returns cross-cutting summaries spanning multiple modules with data flow, entry points, and key symbols.",
+      "input_schema": {
+        "query": { "type": "string", "description": "Feature name or natural language description of the capability" },
+        "topK": { "type": "number", "default": 3, "description": "Number of matching features to return" }
+      },
+      "output": "Feature summaries with involved files, entry points, data flow description, key symbols, and related features",
+      "retrieval_pipeline": [
+        "1. Vector search over features.lance table using query embedding",
+        "2. Top-K features retrieved with similarity scores",
+        "3. Each feature enriched with graph context (involved files, symbol details)",
+        "4. Data flow narrative included from feature cache",
+        "5. Related features linked via shared files"
+      ],
+      "example_queries": [
+        "authentication and authorization",
+        "how orders are processed end to end",
+        "payment integration flow",
+        "user onboarding"
+      ],
+      "response_budget": "20KB (rich output like get_implementation_context)"
+    }
+  ],
+
+  "enhanced_existing_tools": [
+    {
+      "tool": "find_symbol",
+      "enhancement": "When substring matching returns >20 results, apply vector reranking using the query as embedding input against symbols.lance. Reduces noise from O(hundreds) to top-10 most semantically relevant matches.",
+      "backward_compatible": true,
+      "fallback": "If vector index unavailable, falls back to existing substring + Levenshtein ranking"
+    },
+    {
+      "tool": "find_template_file",
+      "enhancement": "Replace token-matching with vector similarity search over files.lance. Dramatically improves accuracy for natural language template descriptions.",
+      "backward_compatible": true,
+      "fallback": "If vector index unavailable, falls back to existing token matching"
+    },
+    {
+      "tool": "get_project_overview",
+      "enhancement": "Add a 'key features' section powered by feature summaries, giving agents an immediate understanding of what the project does, not just its structure.",
+      "backward_compatible": true,
+      "fallback": "Section omitted if features not yet generated"
+    },
+    {
+      "tool": "get_implementation_context",
+      "enhancement": "Add 'similar files' section using vector proximity from files.lance. Helps agents discover related code when modifying a file.",
+      "backward_compatible": true,
+      "fallback": "Section omitted if vector index unavailable"
+    }
+  ],
+
+  "build_pipeline_changes": {
+    "existing_phases_unchanged": [
+      "Phase 1: Symbol Extraction (ts-morph AST walk → symbols.json)",
+      "Phase 2: Call Graph Building (calls[]/calledBy[] → symbols.json)",
+      "Phase 3: Dependency Extraction (imports → dependencies.json)",
+      "Phase 4: LLM Summarization (file summaries → summaries/cache.json)",
+      "Phase 5: Complexity Scoring (cyclomatic → symbols.json)",
+      "Phase 6: Index Building (manifest → index.json)"
+    ],
+    "new_phases": [
+      {
+        "phase": "Phase 7: Embedding Generation",
+        "trigger": "After Phase 4 (requires summaries) and Phase 1 (requires symbols)",
+        "input": "summaries/cache.json + symbols.json",
+        "output": "vectors/files.lance, vectors/symbols.lance",
+        "incremental": true,
+        "incremental_strategy": "Only re-embed files whose contentHash changed (same hash mechanism as summary cache). LanceDB supports upsert by ID.",
+        "cost": "~$0.02 per 4000 files with text-embedding-3-small, or free with local Ollama embeddings",
+        "duration": "~30 seconds for 4000 files (batched API calls or local model)"
+      },
+      {
+        "phase": "Phase 8: Graph Building",
+        "trigger": "After Phase 1, 2, 3, 4 (requires all existing artifacts)",
+        "input": "symbols.json + dependencies.json + summaries/cache.json",
+        "output": "graph/nodes.json, graph/edges.json",
+        "incremental": true,
+        "incremental_strategy": "Rebuild affected subgraph only — remove nodes/edges for changed files, re-insert updated ones. Module and feature nodes only rebuilt on full rebuild.",
+        "cost": "Free (pure computation, no API calls)",
+        "duration": "<5 seconds for 4000 files (JSON transformation)"
+      },
+      {
+        "phase": "Phase 9: Feature Discovery",
+        "trigger": "After Phase 7 (requires embeddings)",
+        "input": "vectors/files.lance + summaries/cache.json + symbols.json",
+        "output": "features/index.json, features/cache.json, vectors/features.lance",
+        "incremental": false,
+        "incremental_strategy": "Full rebuild only. Triggered when >10% of files changed or --rebuild-features flag. Too expensive for single-file incremental (requires reclustering + LLM calls).",
+        "cost": "~$0.10-0.50 per full rebuild (LLM calls for ~20-50 feature summaries)",
+        "duration": "~2-5 minutes for 4000 files (dominated by LLM summarization)"
+      }
+    ],
+    "cli_changes": {
+      "new_flags": [
+        "--skip-vectors: Skip embedding generation (for environments without embedding API access)",
+        "--skip-features: Skip feature discovery (save cost on incremental builds)",
+        "--rebuild-features: Force feature rediscovery even if <10% files changed",
+        "--embedding-model <name>: Override embedding model (codesage | codexembed | ollama | openai)"
+      ],
+      "env_vars": [
+        "EMBEDDING_MODEL: Default embedding model selection",
+        "EMBEDDING_API_KEY: API key for cloud embedding models (not needed for Ollama)",
+        "EMBEDDING_BATCH_SIZE: Batch size for embedding API calls (default: 100)"
+      ]
+    }
+  },
+
+  "dependencies": {
+    "new_runtime": [
+      { "package": "lancedb", "version": "^0.5", "purpose": "Embedded vector database with native hybrid search (BM25 + ANN). Zero-server, stores data as Lance files.", "size": "~15MB" },
+      { "package": "@lancedb/lancedb", "version": "^0.5", "purpose": "Node.js bindings for LanceDB", "note": "May be combined with above depending on package structure at implementation time" }
+    ],
+    "new_dev": [
+      { "package": "hdbscan", "version": "^1.0", "purpose": "Density-based clustering for feature discovery. Only used during build, not at query time.", "alternative": "Could use simple k-means from ml-kmeans if HDBSCAN is too heavy" }
+    ],
+    "optional": [
+      { "package": "@xenova/transformers", "version": "^2.17", "purpose": "Run CodeSage/CodeXEmbed locally via ONNX runtime. Avoids API dependency for embeddings.", "note": "~200MB model download on first run" },
+      { "package": "cohere-ai", "version": "^7", "purpose": "Cohere Rerank API as alternative to local ColBERT. Higher quality but requires API key.", "note": "Optional — system works without reranking, just with slightly lower precision" }
+    ],
+    "embedding_model_options": {
+      "cloud_options": [
+        { "model": "CodeSage-Large", "provider": "Salesforce/HuggingFace", "dimensions": 1024, "code_optimized": true, "cost": "Free via HuggingFace Inference API or self-hosted" },
+        { "model": "CodeXEmbed-400M", "provider": "HuggingFace", "dimensions": 768, "code_optimized": true, "cost": "Free via HuggingFace" },
+        { "model": "text-embedding-3-small", "provider": "OpenAI", "dimensions": 1536, "code_optimized": false, "cost": "$0.02 per 1M tokens" },
+        { "model": "voyage-code-3", "provider": "Voyage AI", "dimensions": 1024, "code_optimized": true, "cost": "$0.06 per 1M tokens" }
+      ],
+      "local_options": [
+        { "model": "nomic-embed-text", "provider": "Ollama", "dimensions": 768, "code_optimized": false, "cost": "Free (local)", "note": "Aligns with existing Ollama summarizer infrastructure" },
+        { "model": "CodeSage-Large via @xenova/transformers", "provider": "Local ONNX", "dimensions": 1024, "code_optimized": true, "cost": "Free (local)", "note": "Best quality local option" }
+      ],
+      "recommendation": "Default to Ollama nomic-embed-text for zero-cost local operation. Use CodeSage-Large for maximum quality when API access is available."
+    }
+  },
+
+  "performance_characteristics": {
+    "query_latency": {
+      "semantic_search": "<100ms (LanceDB ANN + RRF fusion)",
+      "explore_graph": "<50ms (in-memory graph traversal, BFS with index)",
+      "get_feature_context": "<150ms (vector search + graph enrichment)",
+      "find_symbol_with_rerank": "<120ms (existing lookup + vector rerank when >20 results)",
+      "working_memory_hit": "<1ms (in-memory LRU cache)"
+    },
+    "build_time_additions": {
+      "embedding_generation_100_files": "~5 seconds (local) / ~2 seconds (API)",
+      "embedding_generation_3000_files": "~60 seconds (local) / ~15 seconds (API)",
+      "graph_building": "<5 seconds regardless of project size",
+      "feature_discovery": "~2-5 minutes for 3000 files (LLM-bound)",
+      "incremental_embedding_update": "<2 seconds for single file change"
+    },
+    "storage_overhead": {
+      "100_file_project": "~2MB (vectors) + ~100KB (graph) + ~50KB (features) = ~2.2MB",
+      "3000_file_project": "~15MB (vectors) + ~3MB (graph) + ~500KB (features) = ~18.5MB"
+    },
+    "memory_usage": {
+      "vector_index": "Loaded lazily via LanceDB (memory-mapped, not fully loaded)",
+      "graph": "Loaded into memory on first query (~3MB for 3000 files), cached with existing 30-second invalidation",
+      "working_memory": "50-entry LRU, auto-eviction, ~1MB max per session"
+    }
+  },
+
+  "implementation_phases": [
+    {
+      "phase": "Phase 1: Hybrid Search Foundation",
+      "estimated_effort": "2-3 days",
+      "deliverables": [
+        "scripts/lib/embedding-generator.ts — generates embeddings from summaries + symbols",
+        "mcp-server/tools/lib/vector-search.ts — LanceDB hybrid search + RRF",
+        "mcp-server/tools/semantic-search.ts — new MCP tool handler",
+        "Integration into build-knowledge.ts — new Phase 7",
+        "Update to find-symbol.ts — vector reranking fallback when >20 results",
+        "Update to find-template-file.ts — vector-based matching"
+      ],
+      "acceptance_criteria": [
+        "semantic_search('authentication middleware') returns relevant auth-related files ranked by relevance",
+        "find_symbol with >20 substring matches reranks using vectors and returns more relevant top-10",
+        "Embedding generation runs incrementally (only changed files re-embedded)",
+        "System works without embeddings (graceful fallback to existing behavior)",
+        "npm run build-knowledge --skip-vectors works without error"
+      ],
+      "independently_valuable": true
+    },
+    {
+      "phase": "Phase 2: Knowledge Graph",
+      "estimated_effort": "2-3 days",
+      "deliverables": [
+        "scripts/lib/graph-builder.ts — builds heterogeneous graph from existing artifacts",
+        "mcp-server/tools/lib/graph-query.ts — multi-hop BFS with edge type filtering",
+        "mcp-server/tools/explore-graph.ts — new MCP tool handler",
+        "Integration into build-knowledge.ts — new Phase 8",
+        "graph/nodes.json and graph/edges.json schema + builder"
+      ],
+      "acceptance_criteria": [
+        "explore_graph('symbol:X', ['calls'], 2) returns the same results as find_callers for depth-2 (backward compatible)",
+        "explore_graph('file:X', ['imports'], 'incoming') returns all files that import X",
+        "Graph builds in <5 seconds for 3000-file project",
+        "Multi-hop queries like 'all callers of functions in module X' work correctly",
+        "Graph rebuilds incrementally for changed files"
+      ],
+      "independently_valuable": true
+    },
+    {
+      "phase": "Phase 3: Feature Discovery",
+      "estimated_effort": "2 days",
+      "deliverables": [
+        "scripts/lib/feature-extractor.ts — HDBSCAN clustering + LLM feature naming",
+        "mcp-server/tools/get-feature-context.ts — new MCP tool handler",
+        "Integration into build-knowledge.ts — new Phase 9",
+        "features/index.json and features/cache.json schema + builder",
+        "Feature nodes + implements edges added to knowledge graph",
+        "Feature embeddings stored in vectors/features.lance"
+      ],
+      "acceptance_criteria": [
+        "Feature discovery identifies meaningful feature clusters (not random groupings)",
+        "get_feature_context('authentication') returns involved files, entry points, and data flow",
+        "Features are linked to files via graph edges",
+        "Feature summaries are searchable via semantic_search",
+        "get_project_overview includes top features section"
+      ],
+      "independently_valuable": true,
+      "depends_on": ["Phase 1 (requires embeddings for clustering)", "Phase 2 (requires graph for feature→file edges)"]
+    },
+    {
+      "phase": "Phase 4: Query Intelligence",
+      "estimated_effort": "2 days",
+      "deliverables": [
+        "mcp-server/tools/lib/query-router.ts — classifies queries into retrieval strategies",
+        "mcp-server/tools/lib/working-memory.ts — session-scoped context cache",
+        "mcp-server/tools/lib/reranker.ts — ColBERT v2 integration (optional dependency)",
+        "Enhanced get_implementation_context.ts — 'similar files' section",
+        "Enhanced get_project_overview.ts — 'key features' section"
+      ],
+      "acceptance_criteria": [
+        "Query router correctly classifies exact symbol names vs natural language vs graph queries",
+        "Working memory prevents redundant re-fetching within a 5-minute session window",
+        "Reranker improves precision when available, system works without it",
+        "get_implementation_context shows top-3 similar files when vector index exists",
+        "get_project_overview shows discovered features when available"
+      ],
+      "independently_valuable": true,
+      "depends_on": ["Phase 1", "Phase 2", "Phase 3"]
+    }
+  ],
+
+  "updated_tool_order": {
+    "description": "Updated preferred tool order for CLAUDE.md after all phases are complete",
+    "order": [
+      "1. get_project_overview (first call — now includes key features)",
+      "2. semantic_search (natural language discovery — NEW)",
+      "3. get_feature_context (cross-cutting understanding — NEW)",
+      "4. get_module_context (understand a specific module)",
+      "5. get_implementation_context (understand a file before modifying — now includes similar files)",
+      "6. explore_graph (multi-hop relationship traversal — NEW)",
+      "7. get_batch_summaries (when you know which files you need)",
+      "8. find_symbol (exact symbol lookup — now with vector reranking)",
+      "9. find_callers (call graph traversal)",
+      "10. get_dependencies (module relationships)",
+      "11. get_file_summary (single file, lightweight)",
+      "12. search_architecture (human-authored docs)"
+    ]
+  },
+
+  "risks_and_mitigations": [
+    {
+      "risk": "Embedding model dependency adds infrastructure complexity",
+      "severity": "medium",
+      "mitigation": "Default to local Ollama embeddings (already supported). Cloud embeddings are optional. System gracefully degrades to existing behavior when vectors unavailable."
+    },
+    {
+      "risk": "LanceDB native binary compatibility across platforms",
+      "severity": "medium",
+      "mitigation": "LanceDB publishes pre-built binaries for macOS, Linux, Windows. Falls back to pure-JS Vectra if native build fails."
+    },
+    {
+      "risk": "Feature discovery produces low-quality clusters on some codebases",
+      "severity": "low",
+      "mitigation": "Feature summaries are LLM-validated (bad clusters produce incoherent summaries that can be filtered). Users can manually define features via features/manual.json override."
+    },
+    {
+      "risk": "Build time increases significantly for large projects",
+      "severity": "medium",
+      "mitigation": "All new phases are incremental except feature discovery. Phases can be skipped via CLI flags (--skip-vectors, --skip-features). Embedding generation is parallelizable."
+    },
+    {
+      "risk": "Storage growth for vector indexes in version control",
+      "severity": "low",
+      "mitigation": ".knowledge/vectors/ added to .gitignore by default. Vectors are regenerated from summaries (derived data, not source of truth)."
+    }
+  ],
+
+  "success_metrics": [
+    {
+      "metric": "Tool calls per agent task",
+      "baseline": "5-8 tool calls for 'find and modify relevant code' on 3000-file project",
+      "target": "2-4 tool calls (semantic_search directly surfaces relevant files)",
+      "measurement": "Count MCP tool invocations in agent transcripts for standardized tasks"
+    },
+    {
+      "metric": "Search precision at K=10",
+      "baseline": "~40% (substring matching returns many irrelevant results at scale)",
+      "target": ">80% (hybrid search + reranking surfaces correct files)",
+      "measurement": "Manual relevance judgment on 50 test queries across 3 projects"
+    },
+    {
+      "metric": "Cross-cutting query success rate",
+      "baseline": "~10% (agents fail to find all relevant files for 'how does X work' queries)",
+      "target": ">70% (feature summaries provide pre-computed cross-cutting context)",
+      "measurement": "Evaluate get_feature_context output completeness against human-labeled feature file lists"
+    },
+    {
+      "metric": "Build time overhead",
+      "baseline": "~15 seconds for 3000 files (existing pipeline)",
+      "target": "<90 seconds total including embeddings and graph (6x overhead acceptable)",
+      "measurement": "CI timing on standardized 3000-file TypeScript project"
+    }
+  ],
+
+  "constraints": [
+    "All new storage must remain under .knowledge/ — no external databases, no running services",
+    "System must work fully offline with local Ollama embeddings — cloud APIs are optional enhancements",
+    "Existing MCP tools must remain backward compatible — new features are additive, not breaking",
+    "No new runtime dependencies may exceed 20MB installed size (LanceDB is the largest at ~15MB)",
+    "Vector indexes are derived data and must be regenerable from summaries + symbols (not a source of truth)",
+    "Build pipeline must remain idempotent — running twice on unchanged project produces identical output",
+    "All new tools must respect the existing response-budget.ts byte limits and section priority system",
+    "Feature discovery LLM calls must use the existing summarizer-factory.ts infrastructure (Anthropic/Ollama/Claude Code backends)"
+  ],
+
+  "acceptance_criteria": [
+    "semantic_search MCP tool returns relevant results for natural language queries on a 3000-file project",
+    "explore_graph MCP tool supports multi-hop traversal across all 6 edge types with configurable depth",
+    "get_feature_context MCP tool returns cross-cutting feature summaries with involved files and data flow",
+    "find_symbol with >20 substring matches applies vector reranking and returns more precise top-10",
+    "Embedding generation runs incrementally — only changed files are re-embedded",
+    "Graph building completes in <5 seconds for 3000-file project",
+    "System works without vector index (graceful degradation to existing behavior)",
+    "System works without cloud API keys (local Ollama embeddings as default)",
+    "All existing tests continue to pass without modification",
+    "Build time for 3000-file project with all phases enabled is under 90 seconds (excluding feature discovery)",
+    "Storage overhead for vector index + graph is under 20MB for 3000-file project"
+  ]
+}

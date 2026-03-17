@@ -99,22 +99,27 @@
     "mcp-server/tools/lib/artifact-schemas.ts",
     "mcp-server/tools/validate-artifact-draft.ts",
     "scripts/lib/complexity.ts",
-    "scripts/lib/test-mapper.ts"
+    "scripts/lib/test-mapper.ts",
+    "mcp-server/src/build-knowledge.ts",
+    "mcp-server/src/indexer.ts",
+    "mcp-server/src/summarizer.ts",
+    "mcp-server/tools/lib/cache.ts",
+    "mcp-server/tools/lib/metadata-footer.ts"
   ],
   "hasSymbols": true,
   "hasDependencies": true,
-  "lastBuilt": "2026-03-17T03:54:03.690Z",
-  "fileCount": 93,
+  "lastBuilt": "2026-03-17T10:19:31.501Z",
+  "fileCount": 98,
   "symbolCounts": {
-    "function": 154,
-    "interface": 35,
-    "type": 7,
+    "function": 214,
+    "interface": 43,
+    "type": 8,
     "class": 14,
     "method": 48,
     "constructor": "function Object() { [native code] }1111111",
-    "module-init": 35
+    "module-init": 38
   },
   "buildInProgress": false,
-  "buildGeneration": 9,
-  "richness": "standard"
+  "buildGeneration": 11,
+  "richness": "minimal"
 }

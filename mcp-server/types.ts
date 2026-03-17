@@ -43,15 +43,9 @@ export interface SymbolEntry {
     decorators?: string[];
     // Rich-level fields
     complexity?: number;
-    // Semantic enrichment fields (all optional for backward compatibility)
-    implements?: string[];          // interface names a class implements
-    extends?: string;               // parent class or interface name
-    implementedBy?: string[];       // inverted index — types implementing this interface
     isAsync?: boolean;
-    isAbstract?: boolean;
-    isStatic?: boolean;
-    accessModifier?: 'public' | 'protected' | 'private';
-    deprecationNotice?: string;     // from @deprecated JSDoc tag
+    accessModifier?: string;
+    deprecationNotice?: string;
 }
 
 export interface DependencyGraph {
@@ -92,12 +86,18 @@ export interface KnowledgeIndex {
     buildGeneration?: number;
     symbolCounts?: Record<string, number>;
     richness?: RichnessLevel;
-    // Enrichment fields (all optional for backward compatibility with old indexes)
-    richnessMap?: Record<string, RichnessLevel>;    // per-file richness level
-    coverageErrors?: Record<string, string>;         // file path → error message for parse failures
+    coverageErrors?: string[];
 }
 
 export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';
+
+export interface SummarizerConfig {
+    mode?: SummarizerMode;
+    model?: string;
+    apiKey?: string;
+    maxDescriptionLength?: number;
+    timeoutMs?: number;
+}
 
 /** Schema definition for a pipeline artifact type. */
 export interface ArtifactSchema {

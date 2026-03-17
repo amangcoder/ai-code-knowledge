@@ -17,64 +17,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "c56cc03ec86536005d01003d5ac404269fe970f0aced174581f2d6f58173b4d6",
-    "detailedPurpose": "Schema definition for a pipeline artifact type. Exports: ParameterDoc, PublicAPIEntry, SymbolEntry, DependencyGraph, FileSummary and 5 more.",
-    "publicAPI": [
-      {
-        "name": "ParameterDoc",
-        "type": "interface",
-        "signature": "export interface ParameterDoc"
-      },
-      {
-        "name": "PublicAPIEntry",
-        "type": "interface",
-        "signature": "export interface PublicAPIEntry"
-      },
-      {
-        "name": "SymbolEntry",
-        "type": "interface",
-        "signature": "export interface SymbolEntry"
-      },
-      {
-        "name": "DependencyGraph",
-        "type": "interface",
-        "signature": "export interface DependencyGraph"
-      },
-      {
-        "name": "FileSummary",
-        "type": "interface",
-        "signature": "export interface FileSummary"
-      },
-      {
-        "name": "KnowledgeIndex",
-        "type": "interface",
-        "signature": "export interface KnowledgeIndex"
-      },
-      {
-        "name": "ArtifactSchema",
-        "type": "interface",
-        "signature": "export interface ArtifactSchema",
-        "jsdoc": "/** Schema definition for a pipeline artifact type. */"
-      },
-      {
-        "name": "CallToolResult",
-        "type": "interface",
-        "signature": "export interface CallToolResult",
-        "jsdoc": "/** MCP tool handler response format. */"
-      },
-      {
-        "name": "RichnessLevel",
-        "type": "type",
-        "signature": "export type RichnessLevel = 'minimal' | 'standard' | 'rich';"
-      },
-      {
-        "name": "SummarizerMode",
-        "type": "type",
-        "signature": "export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "5b485642afb2047a5c618ea02184e9c1b34f8c38c9cfa13da9f2f8c25b766bfb"
   },
   "scripts/build-dependencies.ts": {
     "file": "scripts/build-dependencies.ts",
@@ -89,11 +33,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "4788f1aa53ed73d69e8f49e10d4661123838a64ee3386bb84b6f0973db8ca867",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "2908268fce14d7f82be1f874d5ca9839ab5db78b4704e582d08dc1445ca94f44"
   },
   "scripts/build-knowledge.ts": {
     "file": "scripts/build-knowledge.ts",
@@ -118,11 +59,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "7e2c6b9d9070b68e4d807e1bd5cb511cf37f7637e05e17dba5fdf2b575805f5b",
-    "detailedPurpose": "Internal module with 4 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "450c886bc97f94b715a1ea914170d2d3239c2f4fe9a231c7325ff24cb4df2f8c"
   },
   "scripts/build-symbols.ts": {
     "file": "scripts/build-symbols.ts",
@@ -138,11 +76,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "cd43827e9e6f72bece8a6b6cb242376f8b93d571ade13a18652c13e2dc7c64d0",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "27a690993467fb50c6089d6be4974f0c91e01fea0d230a36917ad5b232da66b4"
   },
   "scripts/watch.ts": {
     "file": "scripts/watch.ts",
@@ -157,11 +92,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "313952c21cff60d2add0026bf62f9511f13e0cd7bee64a7d1f124821216ff23a",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "00726eb326d2576996d074b4dc2da3da504c59710dd556aa426fcf5e409a0712"
   },
   "mcp-server/server.ts": {
     "file": "mcp-server/server.ts",
@@ -192,11 +124,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.684Z",
-    "contentHash": "4f50329e089abfadb0b974ced3b740b3eea47486586adae72bc94e63f2656e69",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.563Z",
+    "contentHash": "ea31506fc9bd1929712e54f541e7898f28c016e3fa25ec8e740bf725a2dadaa5"
   },
   "mcp-server/types.ts": {
     "file": "mcp-server/types.ts",
@@ -216,65 +145,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "d386d4a745b4bd27ba10b25b0e32ff64cb4ee90b24a55bf8052fbce1bdf46d28",
-    "detailedPurpose": "Schema definition for a pipeline artifact type. Exports: ParameterDoc, PublicAPIEntry, SymbolEntry, DependencyGraph, FileSummary and 5 more.",
-    "publicAPI": [
-      {
-        "name": "ParameterDoc",
-        "type": "interface",
-        "signature": "export interface ParameterDoc"
-      },
-      {
-        "name": "PublicAPIEntry",
-        "type": "interface",
-        "signature": "export interface PublicAPIEntry"
-      },
-      {
-        "name": "SymbolEntry",
-        "type": "interface",
-        "signature": "export interface SymbolEntry"
-      },
-      {
-        "name": "DependencyGraph",
-        "type": "interface",
-        "signature": "export interface DependencyGraph"
-      },
-      {
-        "name": "FileSummary",
-        "type": "interface",
-        "signature": "export interface FileSummary"
-      },
-      {
-        "name": "KnowledgeIndex",
-        "type": "interface",
-        "signature": "export interface KnowledgeIndex"
-      },
-      {
-        "name": "ArtifactSchema",
-        "type": "interface",
-        "signature": "export interface ArtifactSchema",
-        "jsdoc": "/** Schema definition for a pipeline artifact type. */"
-      },
-      {
-        "name": "CallToolResult",
-        "type": "interface",
-        "signature": "export interface CallToolResult",
-        "jsdoc": "/** MCP tool handler response format. */"
-      },
-      {
-        "name": "RichnessLevel",
-        "type": "type",
-        "signature": "export type RichnessLevel = 'minimal' | 'standard' | 'rich';",
-        "jsdoc": "/**\n * AUTO-GENERATED from src/types.ts — do not edit directly.\n * Run \"npm run sync-types\" to regenerate.\n *\n * Kept separate from src/types.ts because tsconfig.mcp.json uses\n * rootDir: \"mcp-server\", which cannot import from src/.\n */"
-      },
-      {
-        "name": "SummarizerMode",
-        "type": "type",
-        "signature": "export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "e5cd5aab07926208889d30b01b3e37d618cbac62d13dc6dc7d63036a8e322f25"
   },
   "scripts/lib/atomic-writer.ts": {
     "file": "scripts/lib/atomic-writer.ts",
@@ -289,18 +161,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "273197799cb67d59fc1e909db05611539ff358ef738301903e96cc366bfdb653",
-    "detailedPurpose": "Writes data to a file atomically by writing to a .tmp file first, then renaming. Exports: atomicWrite.",
-    "publicAPI": [
-      {
-        "name": "atomicWrite",
-        "type": "function",
-        "signature": "export async function atomicWrite(filePath: string, data: string): Promise<void>",
-        "jsdoc": "/**\n * Writes data to a file atomically by writing to a .tmp file first, then renaming.\n * Creates parent directories as needed. If the rename fails, the .tmp file is cleaned up.\n */"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "e937e9bdb86426213d42fdce24a4ba3c7635041371a3745ac7d2d176007d8b83"
   },
   "scripts/lib/call-graph.ts": {
     "file": "scripts/lib/call-graph.ts",
@@ -318,38 +180,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "faa954abc8cad5f51eea5723cf17e95d642e74be89bb4d9b9f01b1d3271fe0a2",
-    "detailedPurpose": "Builds a call graph by identifying project symbols called by each symbol. Exports: buildCallGraph, rebuildCallGraphForFile, rebuildCallGraphForFiles, invertCallGraph.",
-    "publicAPI": [
-      {
-        "name": "buildCallGraph",
-        "type": "function",
-        "signature": "export function buildCallGraph(project: Project, symbols: SymbolEntry[], projectRoot?: string): SymbolEntry[]",
-        "jsdoc": "/**\n * Builds a call graph by identifying project symbols called by each symbol.\n * Does not mutate the input array.\n */"
-      },
-      {
-        "name": "rebuildCallGraphForFile",
-        "type": "function",
-        "signature": "export function rebuildCallGraphForFile(\n    project: Project,\n    symbols: SymbolEntry[],\n    absoluteFilePath: string,\n    projectRoot: string\n): SymbolEntry[]",
-        "jsdoc": "/**\n * Rebuilds call graph entries for a single changed file, then inverts the full graph.\n * More efficient than rebuilding the entire call graph for incremental updates.\n */"
-      },
-      {
-        "name": "rebuildCallGraphForFiles",
-        "type": "function",
-        "signature": "export function rebuildCallGraphForFiles(\n    project: Project,\n    symbols: SymbolEntry[],\n    absoluteFilePaths: string[],\n    projectRoot: string\n): SymbolEntry[]",
-        "jsdoc": "/**\n * Rebuilds call graph entries for multiple changed files without inverting.\n * Used by batch processing to avoid cross-file staleness: all files are processed\n * against the same symbol set, then a single invertCallGraph pass is done by the caller.\n * Does not mutate the input array.\n */"
-      },
-      {
-        "name": "invertCallGraph",
-        "type": "function",
-        "signature": "export function invertCallGraph(symbols: SymbolEntry[]): SymbolEntry[]",
-        "jsdoc": "/**\n * Inverts the call graph to populate the 'calledBy' array for each symbol.\n * Does not mutate the input array.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "5dbb611339f9cfd0e8d583ccf545f79e41f7ff8e4a6935b39589d26fa203e2dd"
   },
   "scripts/lib/dependency-extractor.ts": {
     "file": "scripts/lib/dependency-extractor.ts",
@@ -365,23 +197,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "6010008dde9a0540529807a433074e3cdba53e8c7bb97ff3ef3660f4b347e052",
-    "detailedPurpose": "Extracts all relative file dependencies from a SourceFile. Exports: extractFileDeps, ImportInfo.",
-    "publicAPI": [
-      {
-        "name": "extractFileDeps",
-        "type": "function",
-        "signature": "export function extractFileDeps(sourceFile: SourceFile): ImportInfo[]",
-        "jsdoc": "/**\n * Extracts all relative file dependencies from a SourceFile.\n * Resolves them to absolute paths.\n */"
-      },
-      {
-        "name": "ImportInfo",
-        "type": "interface",
-        "signature": "export interface ImportInfo"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "82c26c2ccafb2cfe3589920eae33d2202c5823e3bc694519434153fcc6f08058"
   },
   "scripts/lib/dependency-graph.ts": {
     "file": "scripts/lib/dependency-graph.ts",
@@ -397,20 +214,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "a47b2066a6af0849a1f56e0a6ddaf44944127e032a854963664366da366f3629",
-    "detailedPurpose": "Builds a module-level dependency graph with cycle detection. Exports: buildDependencyGraph.",
-    "publicAPI": [
-      {
-        "name": "buildDependencyGraph",
-        "type": "function",
-        "signature": "export function buildDependencyGraph(fileDeps: Record<string, ImportInfo[]>, projectRoot: string, moduleConfig?: ModuleConfig): DependencyGraph",
-        "jsdoc": "/**\n * Builds a module-level dependency graph with cycle detection.\n * @param fileDeps Map of absolute file path -> array of ImportInfo objects.\n * @param projectRoot Absolute path to project root.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "2e36c2f20b85c92f8db196648e8a0f1ce6a4e6fd1462445325079c6b397d6eb4"
   },
   "scripts/lib/incremental-updater.ts": {
     "file": "scripts/lib/incremental-updater.ts",
@@ -436,32 +241,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "e965eb0dacef280610003978e002ec84ab7270ca29aeea62b6e80cc95dd2ff5e",
-    "detailedPurpose": "Re-processes a single changed file: removes old symbol entries, re-extracts symbols, Exports: handleFileChange, handleBatchFileChanges, handleFileDeletion.",
-    "publicAPI": [
-      {
-        "name": "handleFileChange",
-        "type": "function",
-        "signature": "export async function handleFileChange(\n    filePath: string,\n    knowledgeRoot: string,\n    projectRoot: string\n): Promise<void>",
-        "jsdoc": "/**\n * Re-processes a single changed file: removes old symbol entries, re-extracts symbols,\n * rebuilds call graph entries, updates summaries cache, and writes both artifacts atomically.\n * Must complete in under 1 second for a single file.\n */"
-      },
-      {
-        "name": "handleBatchFileChanges",
-        "type": "function",
-        "signature": "export async function handleBatchFileChanges(\n    files: Array<{ path: string; type: 'change' | 'delete' }>,\n    knowledgeRoot: string,\n    projectRoot: string\n): Promise<void>",
-        "jsdoc": "/**\n * Processes multiple interdependent file changes in a single pass to avoid cross-file\n * call graph staleness. When files A and B both change in one batch, this ensures that\n * A's call graph is rebuilt against B's fresh symbols (and vice versa), then a single\n * invertCallGraph pass produces consistent calledBy edges.\n */"
-      },
-      {
-        "name": "handleFileDeletion",
-        "type": "function",
-        "signature": "export async function handleFileDeletion(\n    filePath: string,\n    knowledgeRoot: string\n): Promise<void>",
-        "jsdoc": "/**\n * Removes entries for a deleted file from symbols.json and summaries cache, writing atomically.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "048f929b599d6c54eb819730b7c5f145b2a8f61acc1c4c632c17b3420d3b90c9"
   },
   "scripts/lib/index-builder.ts": {
     "file": "scripts/lib/index-builder.ts",
@@ -478,26 +259,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "70301f14efc21bd627bf463e4dfbed6ad866ce2108b4425b50798b2c7a9de094",
-    "detailedPurpose": "Reads .knowledge/ artifacts and produces a KnowledgeIndex. Exports: buildIndex, writeIndex.",
-    "publicAPI": [
-      {
-        "name": "buildIndex",
-        "type": "function",
-        "signature": "export async function buildIndex(knowledgeRoot: string): Promise<KnowledgeIndex>",
-        "jsdoc": "/**\n * Reads .knowledge/ artifacts and produces a KnowledgeIndex.\n */"
-      },
-      {
-        "name": "writeIndex",
-        "type": "function",
-        "signature": "export async function writeIndex(knowledgeRoot: string, index: KnowledgeIndex): Promise<void>",
-        "jsdoc": "/**\n * Writes a KnowledgeIndex to <knowledgeRoot>/index.json atomically.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "2da291aa1356b844df938ec2940bc8eb277249b240e0207f021b86b796720449"
   },
   "scripts/lib/module-grouper.ts": {
     "file": "scripts/lib/module-grouper.ts",
@@ -512,23 +275,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "e2011fc4344135f868251896fa8790b2ab32f0bf658d438d8acc138c333346a8",
-    "detailedPurpose": "Groups files by their parent module directory. Exports: groupFilesByModule, ModuleConfig.",
-    "publicAPI": [
-      {
-        "name": "groupFilesByModule",
-        "type": "function",
-        "signature": "export function groupFilesByModule(filePaths: string[], projectRoot: string, config?: ModuleConfig): Record<string, string[]>",
-        "jsdoc": "/**\n * Groups files by their parent module directory.\n * @param filePaths List of absolute file paths.\n * @param projectRoot Absolute path to the project root.\n * @param config Optional module configuration for custom module roots.\n * @returns A mapping from module name to an array of relative file paths.\n */"
-      },
-      {
-        "name": "ModuleConfig",
-        "type": "interface",
-        "signature": "export interface ModuleConfig"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "8bfbade7d7d969f45418ffdf44c59d278168205391bcb3881805a255b03798d3"
   },
   "scripts/lib/summarizer-factory.ts": {
     "file": "scripts/lib/summarizer-factory.ts",
@@ -546,20 +294,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "b282c02ab771dbb276a1798a5477631d9f1f794a5b75c9d6090b07b39ab2aa82",
-    "detailedPurpose": "Factory function to create a Summarizer based on the SUMMARIZER_MODE environment variable. Exports: createSummarizer.",
-    "publicAPI": [
-      {
-        "name": "createSummarizer",
-        "type": "function",
-        "signature": "export function createSummarizer(richness?: RichnessLevel): Summarizer",
-        "jsdoc": "/**\n * Factory function to create a Summarizer based on the SUMMARIZER_MODE environment variable.\n * Supported modes: 'static' (default), 'ollama', 'anthropic', 'claude-code'.\n *\n * At 'rich' richness with 'static' mode, warns that LLM-dependent fields will be empty.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "23d24b698a93c5b09b0f4539db0322b2767822152b1f01070fe6f08a9f82dbeb"
   },
   "scripts/lib/summarizer.ts": {
     "file": "scripts/lib/summarizer.ts",
@@ -577,32 +313,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "172a5165c0d56c484fb49891e36c5addeac3647cd6cff4bf912c831b4e5d27a0",
-    "detailedPurpose": "Builds a structured prompt for the LLM to summarize a file. Exports: buildPrompt, parseResponse, Summarizer.",
-    "publicAPI": [
-      {
-        "name": "buildPrompt",
-        "type": "function",
-        "signature": "export function buildPrompt(filePath: string, content: string, symbols: SymbolEntry[], richness?: RichnessLevel): string",
-        "jsdoc": "/**\n * Builds a structured prompt for the LLM to summarize a file.\n * At standard/rich levels, requests additional fields.\n */"
-      },
-      {
-        "name": "parseResponse",
-        "type": "function",
-        "signature": "export function parseResponse(raw: string, filePath?: string): Partial<FileSummary>",
-        "jsdoc": "/**\n * Extracts and parses a JSON object from a raw LLM response.\n * Handles markdown code fences. Validates against schema and warns on issues.\n */"
-      },
-      {
-        "name": "Summarizer",
-        "type": "interface",
-        "signature": "export interface Summarizer",
-        "jsdoc": "/**\n * Interface for file summarization strategies.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "828f1256b60bf139eb88aa0e51b5c2d92d7337de1c8b16fb4fe6bd2c7fef3c5a"
   },
   "scripts/lib/summary-cache.ts": {
     "file": "scripts/lib/summary-cache.ts",
@@ -622,23 +334,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "d2453c991a701eeb779ddbea0cda7624fd56c1b86387bd9f840b13a4317f33d2",
-    "detailedPurpose": "Gets a cached summary if the content hasn't changed, otherwise generates a new one. Exports: getOrGenerateSummary, SummaryCache.",
-    "publicAPI": [
-      {
-        "name": "getOrGenerateSummary",
-        "type": "function",
-        "signature": "export async function getOrGenerateSummary(\n    filePath: string,\n    content: string,\n    symbols: SymbolEntry[],\n    summarizer: Summarizer,\n    cache: SummaryCache,\n    sourceFile?: SourceFile,\n    richness?: RichnessLevel\n): Promise<FileSummary>",
-        "jsdoc": "/**\n * Gets a cached summary if the content hasn't changed, otherwise generates a new one.\n * Includes richness level in the hash so switching levels invalidates the cache.\n */"
-      },
-      {
-        "name": "SummaryCache",
-        "type": "class",
-        "signature": "class SummaryCache"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "3c395980840fb3c29efd6566fee7bdd27c4853115db16076d12ddc15a93d3add"
   },
   "scripts/lib/symbol-extractor.ts": {
     "file": "scripts/lib/symbol-extractor.ts",
@@ -653,17 +350,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "0c2d74cc806bda994e58a8a0d68c8771f22432c5b6680da8d7217586751d0b58",
-    "detailedPurpose": "Provides 1 exported function(s): extractSymbols.",
-    "publicAPI": [
-      {
-        "name": "extractSymbols",
-        "type": "function",
-        "signature": "export function extractSymbols(sourceFile: SourceFile, projectRoot: string, richness?: RichnessLevel): SymbolEntry[]"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "0e5ae421a51896e1b25653bac8c977b3c52904105edeb619f90fe5bb1e909041"
   },
   "mcp-server/tools/find-callers.ts": {
     "file": "mcp-server/tools/find-callers.ts",
@@ -673,29 +361,16 @@
       "FindCallersArgs"
     ],
     "dependencies": [
-      "node:fs",
-      "node:path",
-      "../types.js"
+      "../types.js",
+      "./lib/data-loader.js",
+      "./lib/response-budget.js",
+      "./lib/path-utils.js",
+      "./lib/metadata-footer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "136e61905cc23c1710de033ce324f0e955c939d1898f15c2f4565a4896dcdf44",
-    "detailedPurpose": "Handler for the find_callers MCP tool. Exports: handler, FindCallersArgs.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n  args: FindCallersArgs,\n  knowledgeRoot: string\n): CallToolResult",
-        "jsdoc": "/**\n * Handler for the find_callers MCP tool.\n * Returns all callers of a symbol from the calledBy index with file/line info.\n * Supports BFS traversal up to maxDepth levels for transitive callers.\n */"
-      },
-      {
-        "name": "FindCallersArgs",
-        "type": "interface",
-        "signature": "export interface FindCallersArgs"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.564Z",
+    "contentHash": "970f197faf0d54529feadb42fc19410d1cb0bd727d002d201f66af2ae207b76d"
   },
   "mcp-server/tools/find-symbol.ts": {
     "file": "mcp-server/tools/find-symbol.ts",
@@ -705,29 +380,16 @@
       "FindSymbolArgs"
     ],
     "dependencies": [
-      "node:fs/promises",
-      "node:path",
-      "../types.js"
+      "../types.js",
+      "./lib/data-loader.js",
+      "./lib/response-budget.js",
+      "./lib/path-utils.js",
+      "./lib/metadata-footer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "cd9261c8f533276760f04b3d4f8dcf54d5720190a880e16248ff00ed9631fd6d",
-    "detailedPurpose": "Handles the find_symbol MCP tool call. Exports: handler, FindSymbolArgs.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export async function handler(\n    args: FindSymbolArgs,\n    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): Promise<CallToolResult>",
-        "jsdoc": "/**\n * Handles the find_symbol MCP tool call.\n * Searches .knowledge/symbols.json for entries matching the provided name\n * (case-insensitive substring match). Optionally filters by symbol type.\n * Returns up to 20 results sorted by name length ascending.\n */"
-      },
-      {
-        "name": "FindSymbolArgs",
-        "type": "interface",
-        "signature": "export interface FindSymbolArgs"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.564Z",
+    "contentHash": "82fc031e2d3fec96eb3fadb5563c94c62e28ee348e829deb0dfebc12f3918ef5"
   },
   "mcp-server/tools/get-dependencies.ts": {
     "file": "mcp-server/tools/get-dependencies.ts",
@@ -737,29 +399,14 @@
       "GetDependenciesArgs"
     ],
     "dependencies": [
-      "node:fs",
-      "node:path",
-      "../types.js"
+      "../types.js",
+      "./lib/data-loader.js",
+      "./lib/path-utils.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "d9ac506350ea186645eb61f7de1554c30041afb8449e409e70079c213069c0cf",
-    "detailedPurpose": "Handler for the get_dependencies MCP tool. Exports: handler, GetDependenciesArgs.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n  args: GetDependenciesArgs,\n  knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): CallToolResult",
-        "jsdoc": "/**\n * Handler for the get_dependencies MCP tool.\n * Returns direct or transitive module dependencies from .knowledge/dependencies.json.\n * Lists available modules when the requested module is not found.\n */"
-      },
-      {
-        "name": "GetDependenciesArgs",
-        "type": "interface",
-        "signature": "export interface GetDependenciesArgs"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "b5dcd1d388b314452a77617439311d9492c4b3bbf496986b290043ce21c56e1c"
   },
   "mcp-server/tools/get-file-summary.ts": {
     "file": "mcp-server/tools/get-file-summary.ts",
@@ -775,17 +422,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "3d7ca8ae5b21f329520a41f4ab9c4af04aa0b878cdd51428908c9b30610f4c36",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n  args: { file: string },\n  knowledgeRoot: string = '.knowledge'\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "66712559b9a5797a8d48d9d93f79e3d6475c46e0594f70d2bb22788d82f27df8"
   },
   "mcp-server/tools/health-check.ts": {
     "file": "mcp-server/tools/health-check.ts",
@@ -794,25 +432,20 @@
       "handler"
     ],
     "dependencies": [
+      "node:fs",
+      "node:path",
       "../types.js",
       "./lib/data-loader.js",
       "./lib/file-tree.js",
       "./lib/tech-stack.js",
-      "./lib/path-utils.js"
+      "./lib/path-utils.js",
+      "./lib/response-budget.js",
+      "./lib/metadata-footer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "cdc3c7108a2bb76e559d5eb78db7ca0cdc5e0e5e82dbdc47c11c731891a39819",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export async function handler(\n    args: { verbose?: boolean },\n    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): Promise<CallToolResult>"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "5d8f9dee888e99e5b50f1b7a184adcfba192567b1710d762f8a59a88b1273bfd"
   },
   "mcp-server/tools/search-architecture.ts": {
     "file": "mcp-server/tools/search-architecture.ts",
@@ -824,26 +457,15 @@
     "dependencies": [
       "node:fs",
       "node:path",
-      "../types.js"
+      "../types.js",
+      "./lib/data-loader.js",
+      "./lib/response-budget.js",
+      "./lib/path-utils.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "effb7d07fd6da930e72d36b5258b8e7de90936d96e7352ff246019354cf10a13",
-    "detailedPurpose": "Provides 2 exported symbols: handler, SearchArchitectureArgs.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export async function handler(\n  args: SearchArchitectureArgs,\n  knowledgeRoot: string\n): Promise<CallToolResult>"
-      },
-      {
-        "name": "SearchArchitectureArgs",
-        "type": "interface",
-        "signature": "export interface SearchArchitectureArgs"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "b8a54ffbce11aea8f1926a8406f46c1d81cd2a39a42ddb3038ede8a58df5395f"
   },
   "scripts/lib/summarizers/anthropic-summarizer.ts": {
     "file": "scripts/lib/summarizers/anthropic-summarizer.ts",
@@ -860,17 +482,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "bb82fceab09bd1e8bd02a155383297323947e1c1873f3f87152c1fa9a6a89b5d",
-    "detailedPurpose": "Provides 1 exported class(s): AnthropicSummarizer.",
-    "publicAPI": [
-      {
-        "name": "AnthropicSummarizer",
-        "type": "class",
-        "signature": "class AnthropicSummarizer"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "2dbc83c7044aa6c412fb19696df55fec833595127855ce376637c1edb3616e82"
   },
   "scripts/lib/summarizers/ollama-summarizer.ts": {
     "file": "scripts/lib/summarizers/ollama-summarizer.ts",
@@ -886,17 +499,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "8b3b44e154ea6102abda6979b3ddd1b2de32a1b550ffb5f9ee03d50e023aa12f",
-    "detailedPurpose": "Provides 1 exported class(s): OllamaSummarizer.",
-    "publicAPI": [
-      {
-        "name": "OllamaSummarizer",
-        "type": "class",
-        "signature": "class OllamaSummarizer"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "f0ced438627a12260117182766120b15d3ce121d7b908c4363e1b21e19878752"
   },
   "scripts/lib/summarizers/static-summarizer.ts": {
     "file": "scripts/lib/summarizers/static-summarizer.ts",
@@ -913,21 +517,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "089ed3621bcc1dcfa2d9244445204157d6e7a6ec1acdaf88afbb2ac4e354f535",
-    "detailedPurpose": "Provides 1 exported class(s): StaticSummarizer.",
-    "publicAPI": [
-      {
-        "name": "StaticSummarizer",
-        "type": "class",
-        "signature": "class StaticSummarizer"
-      }
-    ],
-    "internalPatterns": [
-      "factory",
-      "singleton",
-      "middleware"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "74fe9e3d72253d80a6547db90a793671a1b57ffaab177c44844e94156ee51e0e"
   },
   "scripts/lib/logger.ts": {
     "file": "scripts/lib/logger.ts",
@@ -940,28 +531,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "e3d1b4f099f8c309c06dc5c051385cf7499d142541d6d6685fb74beb6d2d63b2",
-    "detailedPurpose": "Structured logging utility for the knowledge build pipeline. Exports: logInfo, logError, logWarn.",
-    "publicAPI": [
-      {
-        "name": "logInfo",
-        "type": "function",
-        "signature": "export function logInfo(phase: string, message: string, filePath?: string): void",
-        "jsdoc": "/**\n * Structured logging utility for the knowledge build pipeline.\n * All output goes to stderr (stdout is reserved for MCP protocol in server mode).\n */"
-      },
-      {
-        "name": "logError",
-        "type": "function",
-        "signature": "export function logError(phase: string, error: unknown, filePath?: string): void"
-      },
-      {
-        "name": "logWarn",
-        "type": "function",
-        "signature": "export function logWarn(phase: string, message: string, filePath?: string): void"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "757ed4809814c626efbc10f37758a55566f8263a2ddc898a7668cd317d1c7ec2"
   },
   "scripts/lib/path-utils.ts": {
     "file": "scripts/lib/path-utils.ts",
@@ -974,18 +545,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "a558b35e5fcdd65b8cca13c8dc185e56f7589f142bd32826795bab495ef9a4bb",
-    "detailedPurpose": "Normalizes a file path to a relative path using forward slashes. Exports: normalizeFilePath.",
-    "publicAPI": [
-      {
-        "name": "normalizeFilePath",
-        "type": "function",
-        "signature": "export function normalizeFilePath(filePath: string, projectRoot: string): string",
-        "jsdoc": "/**\n * Normalizes a file path to a relative path using forward slashes.\n * Ensures consistent cache keys across platforms.\n */"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "3c6cf6a500b8e6946b89e702b3ff7ca63fa6e3367c8da1715ea76bac41d1c6f7"
   },
   "scripts/lib/retry.ts": {
     "file": "scripts/lib/retry.ts",
@@ -997,23 +558,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "5bf5e66946d21899a4abee8e94f2dcdb6f63b95d7cf57a1cb2d60e8b77372f1b",
-    "detailedPurpose": "Retries an async function with exponential backoff. Exports: withRetry, RetryOptions.",
-    "publicAPI": [
-      {
-        "name": "withRetry",
-        "type": "function",
-        "signature": "export async function withRetry<T>(\n    fn: () => Promise<T>,\n    opts?: RetryOptions\n): Promise<T>",
-        "jsdoc": "/**\n * Retries an async function with exponential backoff.\n * Delays: baseDelayMs, baseDelayMs*2, baseDelayMs*4, ...\n */"
-      },
-      {
-        "name": "RetryOptions",
-        "type": "interface",
-        "signature": "export interface RetryOptions"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "5de6a21c9a9dc630a47142a53c2ff38fbceb06456d9c0c559f0b582307c37b8f"
   },
   "scripts/lib/summarizers/claude-code-summarizer.ts": {
     "file": "scripts/lib/summarizers/claude-code-summarizer.ts",
@@ -1030,17 +576,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "2b961887d1149b9aa501505b30d7537a5b21f3648a2b4ce23d029d452cbab765",
-    "detailedPurpose": "Provides 1 exported class(s): ClaudeCodeSummarizer.",
-    "publicAPI": [
-      {
-        "name": "ClaudeCodeSummarizer",
-        "type": "class",
-        "signature": "class ClaudeCodeSummarizer"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "ac0b920060f6abb5a8bbc1e6dbfb5fdd87584529540119708d60e7f3f2815fb8"
   },
   "scripts/lib/language-detection.ts": {
     "file": "scripts/lib/language-detection.ts",
@@ -1058,41 +595,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "e48898265b97f7ef781b508a21bd229ff5eaa7f9b9468298b082d623a91b6180",
-    "detailedPurpose": "Detects the language of a file based on its extension. Exports: detectLanguage, detectProjectLanguages, getSourceGlobs, getIgnorePatterns, SupportedLanguage.",
-    "publicAPI": [
-      {
-        "name": "detectLanguage",
-        "type": "function",
-        "signature": "export function detectLanguage(filePath: string): SupportedLanguage | null",
-        "jsdoc": "/**\n * Detects the language of a file based on its extension.\n */"
-      },
-      {
-        "name": "detectProjectLanguages",
-        "type": "function",
-        "signature": "export function detectProjectLanguages(projectRoot: string): SupportedLanguage[]",
-        "jsdoc": "/**\n * Detects which languages are present in a project by checking marker files\n * and scanning for source files.\n */"
-      },
-      {
-        "name": "getSourceGlobs",
-        "type": "function",
-        "signature": "export function getSourceGlobs(languages: SupportedLanguage[]): string[]",
-        "jsdoc": "/**\n * Returns glob patterns for discovering source files of the given languages.\n */"
-      },
-      {
-        "name": "getIgnorePatterns",
-        "type": "function",
-        "signature": "export function getIgnorePatterns(): string[]",
-        "jsdoc": "/**\n * Returns glob ignore patterns for common non-source directories.\n */"
-      },
-      {
-        "name": "SupportedLanguage",
-        "type": "type",
-        "signature": "export type SupportedLanguage = 'typescript' | 'javascript' | 'python';"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "b3175bde00c3f0491f47cc09cc74446196feb241660251585b78bfc13f33cf1a"
   },
   "scripts/lib/python/python-call-graph.ts": {
     "file": "scripts/lib/python/python-call-graph.ts",
@@ -1106,20 +610,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "cc857bdf7123b7c44193a3d2355b461d2bf03b82f1a24cf8261d1ddd8ac96717",
-    "detailedPurpose": "Builds a regex-based call graph for Python symbols. Exports: buildPythonCallGraph.",
-    "publicAPI": [
-      {
-        "name": "buildPythonCallGraph",
-        "type": "function",
-        "signature": "export function buildPythonCallGraph(\n    symbols: SymbolEntry[],\n    fileContents: Map<string, string>,\n    projectRoot: string\n): SymbolEntry[]",
-        "jsdoc": "/**\n * Builds a regex-based call graph for Python symbols.\n *\n * This is intentionally imprecise — it captures most direct calls but won't\n * catch aliased or dynamic calls. The caller (build-knowledge.ts) is expected\n * to run `invertCallGraph()` on the merged result, so this function only\n * populates `calls` arrays.\n *\n * @param symbols     All known Python SymbolEntry objects (will NOT be mutated).\n * @param fileContents Map of absolute file path -> file source text.\n * @param projectRoot Absolute path to the project root (used for relativising paths).\n * @returns A new array of SymbolEntry objects with `calls` populated.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "335f8dd99658d092ed10e6501ac61aa027ef308730102e5c76415e1b28547d22"
   },
   "scripts/lib/python/python-dependency-extractor.ts": {
     "file": "scripts/lib/python/python-dependency-extractor.ts",
@@ -1134,17 +626,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "2ee1df6e2112e9c15508b2ca619acd04fd14c7306f018557d5aea4f27079f543",
-    "detailedPurpose": "Provides 1 exported function(s): extractPythonDeps.",
-    "publicAPI": [
-      {
-        "name": "extractPythonDeps",
-        "type": "function",
-        "signature": "export function extractPythonDeps(filePath: string, content: string, projectRoot: string): ImportInfo[]"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "5ddebcc2d652a834ef8038efd266536a506255b7b29efe0fb79e11a53b06f7ee"
   },
   "scripts/lib/python/python-symbol-extractor.ts": {
     "file": "scripts/lib/python/python-symbol-extractor.ts",
@@ -1158,18 +641,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "aa941e026ce9ef06714801f8dee449c92f56e80d1c372773421d3bb07e7e153d",
-    "detailedPurpose": "Regex-based Python symbol extractor. Exports: extractPythonSymbols.",
-    "publicAPI": [
-      {
-        "name": "extractPythonSymbols",
-        "type": "function",
-        "signature": "export function extractPythonSymbols(\n    filePath: string,\n    content: string,\n    projectRoot: string\n): SymbolEntry[]",
-        "jsdoc": "/**\n * Regex-based Python symbol extractor.\n * Produces SymbolEntry[] from Python source code using line-by-line scanning\n * with indentation tracking. No Python runtime or tree-sitter dependency.\n */"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "95025c94c9573202702e194d870f3071766277e1084ea02f86dbcf73860ae1d5"
   },
   "mcp-server/tools/get-batch-summaries.ts": {
     "file": "mcp-server/tools/get-batch-summaries.ts",
@@ -1180,21 +653,14 @@
     "dependencies": [
       "../types.js",
       "./lib/data-loader.js",
-      "./lib/path-utils.js"
+      "./lib/path-utils.js",
+      "./lib/response-budget.js",
+      "./lib/metadata-footer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "075ff8f6a5c5304437e1b3b2cefb260100b8d06a7c9b8d258ec20d853aeba203",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n    args: { files: string[] },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "f8c57a3e342f151bb34cce284e6f993cc531d1519b1c294ef9620b6f8660035b"
   },
   "mcp-server/tools/get-implementation-context.ts": {
     "file": "mcp-server/tools/get-implementation-context.ts",
@@ -1203,24 +669,18 @@
       "handler"
     ],
     "dependencies": [
+      "node:fs",
+      "node:path",
       "../types.js",
       "./lib/data-loader.js",
       "./lib/path-utils.js",
-      "./lib/response-budget.js"
+      "./lib/response-budget.js",
+      "./lib/metadata-footer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "b87af5a420f83732ef7cc178ad5ace8432a96aad1c5815efa23b15ad0473dcb5",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n    args: { file: string; includePatterns?: boolean },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "61e779c848df814f1637eb76756f8aba40ba713c94dd5ed23b16d08b8a10de4a"
   },
   "mcp-server/tools/get-module-context.ts": {
     "file": "mcp-server/tools/get-module-context.ts",
@@ -1231,21 +691,14 @@
     "dependencies": [
       "../types.js",
       "./lib/data-loader.js",
-      "./lib/response-budget.js"
+      "./lib/response-budget.js",
+      "./lib/path-utils.js",
+      "./lib/metadata-footer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "798771e7e4fa5633b79432acff13df9df92a6b8673a3f88320184782e24276e6",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n    args: { module: string },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "e5bfe660b5fc13ec64aa6fe8727424205c5feccc973d0860853ec1c97064005c"
   },
   "mcp-server/tools/get-project-overview.ts": {
     "file": "mcp-server/tools/get-project-overview.ts",
@@ -1261,21 +714,13 @@
       "./lib/file-tree.js",
       "./lib/tech-stack.js",
       "./lib/path-utils.js",
-      "./lib/response-budget.js"
+      "./lib/response-budget.js",
+      "./lib/metadata-footer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "8507f953b7903edbad98f35cdaeb1b79357dbb601acf52c30b860c1c04699997",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n    args: { depth?: number },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "fac9521e15de5d3fe917f76f9c3128170c3b14ff04431a71d4342b71681b2a01"
   },
   "mcp-server/tools/lib/data-loader.ts": {
     "file": "mcp-server/tools/lib/data-loader.ts",
@@ -1284,41 +729,21 @@
       "loadIndex",
       "loadSymbols",
       "loadDependencies",
-      "loadSummaryCache"
+      "loadSummaryCache",
+      "loadSymbolMap",
+      "loadFileToSymbols"
     ],
     "dependencies": [
       "node:fs",
       "node:path",
-      "../../types.js"
+      "../../types.js",
+      "./cache.js",
+      "./path-utils.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "3cfab5ae170ceccf2da048421b16829d0eaf1f84f37e82ca07736e66a29b24d5",
-    "detailedPurpose": "Provides 4 exported function(s): loadIndex, loadSymbols, loadDependencies, loadSummaryCache.",
-    "publicAPI": [
-      {
-        "name": "loadIndex",
-        "type": "function",
-        "signature": "export function loadIndex(knowledgeRoot: string): KnowledgeIndex | null"
-      },
-      {
-        "name": "loadSymbols",
-        "type": "function",
-        "signature": "export function loadSymbols(knowledgeRoot: string): SymbolEntry[] | null"
-      },
-      {
-        "name": "loadDependencies",
-        "type": "function",
-        "signature": "export function loadDependencies(knowledgeRoot: string): DependencyGraph | null"
-      },
-      {
-        "name": "loadSummaryCache",
-        "type": "function",
-        "signature": "export function loadSummaryCache(knowledgeRoot: string): Record<string, FileSummary> | null"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "f389047e76b5630f139ab00a5d27ce8a00bf016b31c42be8e61b9166baee4cbf"
   },
   "mcp-server/tools/lib/file-tree.ts": {
     "file": "mcp-server/tools/lib/file-tree.ts",
@@ -1332,19 +757,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "d67c424875728d8a80c67f30438fb1dc19ea6b05d8c6e6d3e49bc36b421d7336",
-    "detailedPurpose": "Provides 1 exported function(s): buildFileTree.",
-    "publicAPI": [
-      {
-        "name": "buildFileTree",
-        "type": "function",
-        "signature": "export function buildFileTree(\n    rootDir: string,\n    maxDepth: number = 2,\n    ignoreDirs?: Set<string>,\n): string"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "2dc41b28432c2dab69250badd1e07c3ffd942f095d8527acb62e1be18c7a25f6"
   },
   "mcp-server/tools/lib/path-utils.ts": {
     "file": "mcp-server/tools/lib/path-utils.ts",
@@ -1352,34 +766,19 @@
     "exports": [
       "normalizePath",
       "resolveProjectRoot",
-      "findSummary"
+      "findSummary",
+      "toRelative",
+      "safePath",
+      "computeClosestMatches"
     ],
     "dependencies": [
+      "node:fs",
       "node:path"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "608315b79819f10b64080862fab5e1a1c134f01d8a59862e3bdd08f7d6f46d5a",
-    "detailedPurpose": "Provides 3 exported function(s): normalizePath, resolveProjectRoot, findSummary.",
-    "publicAPI": [
-      {
-        "name": "normalizePath",
-        "type": "function",
-        "signature": "export function normalizePath(filePath: string): string"
-      },
-      {
-        "name": "resolveProjectRoot",
-        "type": "function",
-        "signature": "export function resolveProjectRoot(knowledgeRoot: string): string"
-      },
-      {
-        "name": "findSummary",
-        "type": "function",
-        "signature": "export function findSummary(\n    cache: Record<string, unknown>,\n    normalizedInput: string,\n): string | null"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "56bf9a038ff0f453e092410890dd76c681b9e4703d34e331811e1aa6540e0e70"
   },
   "mcp-server/tools/lib/response-budget.ts": {
     "file": "mcp-server/tools/lib/response-budget.ts",
@@ -1391,24 +790,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "57e386adf6c38796f5f52870062d0008b2f12bb7d3b2d5406778844f12f47bad",
-    "detailedPurpose": "Provides 2 exported symbols: buildResponse, Section.",
-    "publicAPI": [
-      {
-        "name": "buildResponse",
-        "type": "function",
-        "signature": "export function buildResponse(sections: Section[]): string"
-      },
-      {
-        "name": "Section",
-        "type": "interface",
-        "signature": "export interface Section"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "8dfa9384c4b434b1e071ddca41b89a9796ed9b6f365ab9eafd7a528680134090"
   },
   "mcp-server/tools/lib/tech-stack.ts": {
     "file": "mcp-server/tools/lib/tech-stack.ts",
@@ -1424,27 +807,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "0efe0126f1f391d344ac00e3e65fbad8b0a05532924e5d8116e6a48d7c027d66",
-    "detailedPurpose": "Provides 3 exported symbols: detectTechStack, classifyProjectType, TechStack.",
-    "publicAPI": [
-      {
-        "name": "detectTechStack",
-        "type": "function",
-        "signature": "export function detectTechStack(projectRoot: string): TechStack"
-      },
-      {
-        "name": "classifyProjectType",
-        "type": "function",
-        "signature": "export function classifyProjectType(projectRoot: string): string"
-      },
-      {
-        "name": "TechStack",
-        "type": "interface",
-        "signature": "export interface TechStack"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "1de39fc666b8e29ccf13d0bcad25e00ffd0879587bfe8484284b7c2f65033dfc"
   },
   "scripts/lib/adapters/adapter-registry.ts": {
     "file": "scripts/lib/adapters/adapter-registry.ts",
@@ -1459,20 +823,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "9dc8b4ee374446a7945267b3069060c08e673d3c2b056fc7f27af0a160936b4c",
-    "detailedPurpose": "Registry that manages language adapters and provides language detection, Exports: AdapterRegistry.",
-    "publicAPI": [
-      {
-        "name": "AdapterRegistry",
-        "type": "class",
-        "signature": "class AdapterRegistry",
-        "jsdoc": "/**\n * Registry that manages language adapters and provides language detection,\n * file routing, and glob pattern generation from registered adapters.\n *\n * Replaces the hardcoded language-detection.ts with a dynamic, extensible system.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "adapter"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "c4fd11836b043721d5b94b16df2ba961045a725dee02507479bb9fcbb7152aae"
   },
   "scripts/lib/adapters/index.ts": {
     "file": "scripts/lib/adapters/index.ts",
@@ -1487,21 +839,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "d49d4e2386c4e75f4ebc1278779e40ff27751141496704eab2e678773c7f96b8",
-    "detailedPurpose": "Creates a registry with the default set of language adapters (TypeScript/JS + Python). Exports: createDefaultRegistry.",
-    "publicAPI": [
-      {
-        "name": "createDefaultRegistry",
-        "type": "function",
-        "signature": "export function createDefaultRegistry(): AdapterRegistry",
-        "jsdoc": "/**\n * Creates a registry with the default set of language adapters (TypeScript/JS + Python).\n * New language adapters can be registered after creation.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "barrel-file",
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "d4a537472239c78081937bf19817b088b94bcd1c32d1505d0064a96dc2939aa9"
   },
   "scripts/lib/adapters/language-adapter.ts": {
     "file": "scripts/lib/adapters/language-adapter.ts",
@@ -1516,26 +855,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "1e2d06cd125306d51834ea19be6b46c481300a6698d95788eb26186d03c1ca10",
-    "detailedPurpose": "Context passed to adapter extraction methods for a single file. Exports: FileContext, LanguageAdapter.",
-    "publicAPI": [
-      {
-        "name": "FileContext",
-        "type": "interface",
-        "signature": "export interface FileContext",
-        "jsdoc": "/**\n * Context passed to adapter extraction methods for a single file.\n */"
-      },
-      {
-        "name": "LanguageAdapter",
-        "type": "interface",
-        "signature": "export interface LanguageAdapter",
-        "jsdoc": "/**\n * Language adapter interface. Each supported language provides an implementation\n * that handles symbol extraction, dependency extraction, and call graph building.\n *\n * Adapters produce the same SymbolEntry[] / ImportInfo[] output regardless of\n * language, so the orchestration layer can treat all languages uniformly.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "adapter"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "1466a971a8473354366c1b5672e857f83abf21f3ccd2e27577a97faa3c10ece8"
   },
   "scripts/lib/adapters/python-adapter.ts": {
     "file": "scripts/lib/adapters/python-adapter.ts",
@@ -1553,20 +874,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "338e65154fbd846209325e94b6497279ab5edafa24af0334bed29f1c883d26db",
-    "detailedPurpose": "Python adapter. Wraps the existing regex-based Python extractors Exports: PythonAdapter.",
-    "publicAPI": [
-      {
-        "name": "PythonAdapter",
-        "type": "class",
-        "signature": "class PythonAdapter",
-        "jsdoc": "/**\n * Python adapter. Wraps the existing regex-based Python extractors\n * behind the LanguageAdapter interface. Stateless — no initialization needed.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "adapter"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "942e1703fed2325c31337c07a7b650e906ced58e0ca95625c6d5c294b3c697b3"
   },
   "scripts/lib/adapters/typescript-adapter.ts": {
     "file": "scripts/lib/adapters/typescript-adapter.ts",
@@ -1587,20 +896,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "dff9be0ab9e96f64149635f7fff0eb3dfb0a9e8a5a70e2123df1dd26d8957ee7",
-    "detailedPurpose": "TypeScript/JavaScript adapter. Wraps the existing ts-morph-based extractors Exports: TypeScriptAdapter.",
-    "publicAPI": [
-      {
-        "name": "TypeScriptAdapter",
-        "type": "class",
-        "signature": "class TypeScriptAdapter",
-        "jsdoc": "/**\n * TypeScript/JavaScript adapter. Wraps the existing ts-morph-based extractors\n * behind the LanguageAdapter interface. Handles both TS and JS via allowJs.\n */"
-      }
-    ],
-    "internalPatterns": [
-      "adapter"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "23da18236bfc14c0484a52bd60ba6ec9e66e7d0b687c2341ab7f62153a3cdac1"
   },
   "scripts/lib/file-collector.ts": {
     "file": "scripts/lib/file-collector.ts",
@@ -1616,18 +913,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "9f59ef5316e6bf532fdfc2956396d7d9f98fc920441136ec54c0b10b1d608bc6",
-    "detailedPurpose": "Walks the project directory and collects source files grouped by language. Exports: collectSourceFiles.",
-    "publicAPI": [
-      {
-        "name": "collectSourceFiles",
-        "type": "function",
-        "signature": "export function collectSourceFiles(\n    projectRoot: string,\n    registry: AdapterRegistry\n): Map<string, FileContext[]>",
-        "jsdoc": "/**\n * Walks the project directory and collects source files grouped by language.\n * Uses the adapter registry to determine which files belong to which language\n * and which directories to ignore.\n */"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "dcd5c13e2c7e411f39ff47c578d60527baf4c73cdef0b427ab931e6608301fab"
   },
   "test/dependency-graph.test.ts": {
     "file": "test/dependency-graph.test.ts",
@@ -1643,13 +930,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "0bd0fb2767f0d2bebc7d7794568acefea04b9115e09a2a8a6bd3893e8ff87515",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "0910f029e7c210743ed078ffa2f17e19243f72ea135ada5852c891b53fe633aa"
   },
   "test/error-conditions.test.ts": {
     "file": "test/error-conditions.test.ts",
@@ -1668,13 +950,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "19a8ad76625f77f1e3c3a02a5e5db7d4e255cc8cb1fb27e46f085c87b5738791",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "58218060d3324e273af0150854b895ec3b1366cba9422979226c104f08b84140"
   },
   "test/find-callers.test.ts": {
     "file": "test/find-callers.test.ts",
@@ -1690,13 +967,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "0991208739704a39bea41431717bcf31535db12de22de2221fe2affb7ff16591",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "3c984f8e0396081ad8cdaf7873a91f5f13ae16d3fc4c4dcf9eb2494f29c17cbe"
   },
   "test/find-symbol.test.ts": {
     "file": "test/find-symbol.test.ts",
@@ -1713,13 +985,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "7a33cf0fdc260348febf3fba6273b33fa4f1e33cc9127310314d3f9efb0a7587",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "8c10ae9a954f3181b3e988557a065beefa574eb5b0ed0a917d6bdfd13f8b6b95"
   },
   "test/fixtures/sample-js-project/analytics-service.jsx": {
     "file": "test/fixtures/sample-js-project/analytics-service.jsx",
@@ -1733,22 +1000,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "74516a58139161ce8877977dc11155cf2babc622046306df79d3c2fe60426ffb",
-    "detailedPurpose": "Provides 2 exported function(s): trackEvent, AnalyticsDashboard.",
-    "publicAPI": [
-      {
-        "name": "trackEvent",
-        "type": "function",
-        "signature": "export function trackEvent(name, metadata)"
-      },
-      {
-        "name": "AnalyticsDashboard",
-        "type": "function",
-        "signature": "export function AnalyticsDashboard({ events })"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "9560487f9c02c1800b9217b5be27c3eae05d31189afc7cd9742d468e994d364e"
   },
   "test/fixtures/sample-js-project/order-service.js": {
     "file": "test/fixtures/sample-js-project/order-service.js",
@@ -1763,22 +1016,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "e6088d1516767487574342a900553cb625f581831925e8627b24d7c370f24eed",
-    "detailedPurpose": "Provides 2 exported symbols: getOrderStatus, OrderService.",
-    "publicAPI": [
-      {
-        "name": "getOrderStatus",
-        "type": "function",
-        "signature": "export function getOrderStatus(orderId)"
-      },
-      {
-        "name": "OrderService",
-        "type": "class",
-        "signature": "class OrderService"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "6d42038347ff867da89165b6b095a6d16f422d922c4b903ec74cfa1f09c32d50"
   },
   "test/fixtures/sample-js-project/payment-service.js": {
     "file": "test/fixtures/sample-js-project/payment-service.js",
@@ -1790,22 +1029,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "70b83a1bd069ddc00f0a8342ac2ca98f935697a33e098fd8a4c30f05d3431342",
-    "detailedPurpose": "Provides 2 exported symbols: processPayment, PaymentProcessor.",
-    "publicAPI": [
-      {
-        "name": "processPayment",
-        "type": "function",
-        "signature": "function processPayment(amount, customerId)"
-      },
-      {
-        "name": "PaymentProcessor",
-        "type": "class",
-        "signature": "class PaymentProcessor"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "8b0b471c75fad43018c77bfc81592279b43fee3100666bb0bc1abb27a5022655"
   },
   "test/fixtures/sample-project/analytics-service.ts": {
     "file": "test/fixtures/sample-project/analytics-service.ts",
@@ -1818,30 +1043,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "75c6c00dde7b5b581b6544a1ecddadb84c14f26be44fd729c5ec9b320b99b27e",
-    "detailedPurpose": "Tracks an analytics event. This is a leaf node — it makes no calls to other services. Exports: track, formatEvent, TrackEvent.",
-    "publicAPI": [
-      {
-        "name": "track",
-        "type": "function",
-        "signature": "export function track(event: TrackEvent): void",
-        "jsdoc": "/**\n * Tracks an analytics event. This is a leaf node — it makes no calls to other services.\n */"
-      },
-      {
-        "name": "formatEvent",
-        "type": "function",
-        "signature": "(event: TrackEvent): string =>",
-        "jsdoc": "/**\n * Formats a TrackEvent as a JSON string. Arrow function to test const-export extraction.\n */"
-      },
-      {
-        "name": "TrackEvent",
-        "type": "interface",
-        "signature": "export interface TrackEvent",
-        "jsdoc": "/**\n * AnalyticsService - leaf node with no outgoing calls\n */"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "602f4bc2fb2233a5c8ad3d5c66ed0a5e8d3d71eec60c55fa6d1b96eb97ef330f"
   },
   "test/fixtures/sample-project/order-service.ts": {
     "file": "test/fixtures/sample-project/order-service.ts",
@@ -1856,25 +1059,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "4e677308378ee7afccd62362e9e6d2b27a75e774793e20a473eba327b35291c3",
-    "detailedPurpose": "Creates an order by charging the customer and tracking the event. Exports: createOrder, Order.",
-    "publicAPI": [
-      {
-        "name": "createOrder",
-        "type": "function",
-        "signature": "export function createOrder(\n  customerId: string,\n  amount: number,\n  currency: string = \"USD\"\n): Order",
-        "jsdoc": "/**\n * Creates an order by charging the customer and tracking the event.\n * Calls charge() from PaymentService and track() from AnalyticsService.\n */"
-      },
-      {
-        "name": "Order",
-        "type": "interface",
-        "signature": "export interface Order"
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "1e725cbce1a553afeb84f49240c6ad67e7c03f89889870504353314e262879b0"
   },
   "test/fixtures/sample-project/payment-service.ts": {
     "file": "test/fixtures/sample-project/payment-service.ts",
@@ -1888,34 +1074,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "5cac117061d0931b03c35185be66ebca055c5e4efe47ea1f5c474cdd7a78c837",
-    "detailedPurpose": "Charges a customer for the given amount. Exports: charge, PaymentDeclined, ChargeRequest, ChargeResult.",
-    "publicAPI": [
-      {
-        "name": "charge",
-        "type": "function",
-        "signature": "export function charge(request: ChargeRequest): ChargeResult",
-        "jsdoc": "/**\n * Charges a customer for the given amount.\n * Throws PaymentDeclined if the payment cannot be processed.\n */"
-      },
-      {
-        "name": "PaymentDeclined",
-        "type": "class",
-        "signature": "class PaymentDeclined",
-        "jsdoc": "/**\n * PaymentService - handles payment processing\n */"
-      },
-      {
-        "name": "ChargeRequest",
-        "type": "interface",
-        "signature": "export interface ChargeRequest"
-      },
-      {
-        "name": "ChargeResult",
-        "type": "interface",
-        "signature": "export interface ChargeResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "bee959a83446cd0313826c591b1df213d31a0c0a12899d6ac8d0c0d6eb79e854"
   },
   "test/get-dependencies.test.ts": {
     "file": "test/get-dependencies.test.ts",
@@ -1931,14 +1091,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "2696c3c51345552a2967200715a19e26581d8703cb342823b11b81d8c853ce3b",
-    "detailedPurpose": "Internal module with 3 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "factory",
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "b916ed42573171aa1fba40dd5c13dba7f1cfa97c8e6caa0b66d806c6a1bc6a62"
   },
   "test/get-file-summary.test.ts": {
     "file": "test/get-file-summary.test.ts",
@@ -1954,14 +1108,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "3c6aebc2f0e13ce9b29d9514394841c03b1476c540e671598e61bbd703d3f977",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "factory",
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "392deac96e64bf7e8687f766bea2c612ccda9f8ccf12fa102a776152dd120e3a"
   },
   "test/health-check.test.ts": {
     "file": "test/health-check.test.ts",
@@ -1977,13 +1125,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "956ac62d9d0820bdf1d42086b1862f7a4a1d432f4b5e61baa8497b30540a93be",
-    "detailedPurpose": "Internal module with 3 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "fc147f870ee653a8e07d26a9f35c8426f45bede6e8869a56304f9b4bfe03897f"
   },
   "test/incremental-updater.test.ts": {
     "file": "test/incremental-updater.test.ts",
@@ -2002,13 +1145,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "2a9b891f2cb771587e4455c6e8a7964b08762e9a787c7214db755cbc02a52ff5",
-    "detailedPurpose": "Internal module with 3 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "aa578612147129dbaf525a3e5f9200b480ad7739c07879bb5a66264cc38c5d0f"
   },
   "test/index-builder.test.ts": {
     "file": "test/index-builder.test.ts",
@@ -2024,14 +1162,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "ccacddc0acc7619b314ac0004f04a15ba18d9767bdc506b7170d75d75b1d4f61",
-    "detailedPurpose": "Internal module with 3 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "factory",
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "d78d9a3b20ac0d7e6e7475e3e23ce96b6061ca4761d0049c5204c4583d4c32b6"
   },
   "test/js-support.test.ts": {
     "file": "test/js-support.test.ts",
@@ -2045,14 +1177,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "be1e922c0e80754bfdd56ce99c5aa04cc1f3d32065ce8733f7f71118635725d4",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "factory",
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "a567f94cbd7e63b9334fac989fe92a51d9079224f1597c8b35fc54fde1ca9b3b"
   },
   "test/language-detection.test.ts": {
     "file": "test/language-detection.test.ts",
@@ -2068,14 +1194,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "e8cdf28d6d48f66eb8f826b20427d5f52e3817567b32f220900555165cdd3ddb",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "factory",
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "c2c161d4a5eb7e3b2851a6d9ba9ef32b13b321830d0171e985fbaab68aa6ba9b"
   },
   "test/mcp-tools.test.ts": {
     "file": "test/mcp-tools.test.ts",
@@ -2096,13 +1216,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "c5a2517004f78f7f689ffad394adc8b4f194c53eda8332704a823c52b20245e4",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "a217b6f02927e47f544520e4592eab733c56dc2f5bd33caa1108ece9570d10ab"
   },
   "test/module-grouper.test.ts": {
     "file": "test/module-grouper.test.ts",
@@ -2115,13 +1230,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "6c392d0959d538c9dc94374baa4ea4407880d48dc47a28e4921ec729fe5f64d5",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "7a3c2c2fa1223ce71ae7f06e9445bfd00ffc2ad9fa72dcf7786e03eaaa07ea7f"
   },
   "test/multi-language-build.test.ts": {
     "file": "test/multi-language-build.test.ts",
@@ -2140,13 +1250,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "104a8d38a9585f0148fb3ef6d723b115723f7bc4a5edd6f3b64500c9348d472f",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "642b527d3385c706a932ba3cff147951c0a7c0059390a54221704602c90c9ed1"
   },
   "test/perf.test.ts": {
     "file": "test/perf.test.ts",
@@ -2162,13 +1267,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "2b087c3dc6ef1c835c79113674f25dbc25f115af11c399a5f1697443ec9edd35",
-    "detailedPurpose": "Internal module with 5 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "a4c22aac0e4e2fed56319dc89860ab0db91049dd36f7ae7e768b3eeb46664a2d"
   },
   "test/python-call-graph.test.ts": {
     "file": "test/python-call-graph.test.ts",
@@ -2181,14 +1281,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "9a9e73800e24e6eaaf5299b9fb53369b8fe6ccb683209ba8ac8cc80a8c204784",
-    "detailedPurpose": "Internal module with 2 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "factory",
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "6f6115373cea2cf2deb278bb3dddfb2f13cfe41694ac3762c4e54727818365c2"
   },
   "test/python-dependency-extractor.test.ts": {
     "file": "test/python-dependency-extractor.test.ts",
@@ -2203,13 +1297,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "7facd781a1d1a4aad149ee82e92f40759d40c9bccb3a3e4f171fb0a1f042e275",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "5e33cac2337a7f8b683235da47dc19a94d596c47cc6553366b41781d1679b253"
   },
   "test/python-symbol-extractor.test.ts": {
     "file": "test/python-symbol-extractor.test.ts",
@@ -2221,13 +1310,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "ff937c3f39dcb6a1bca6973001765cd559083fd3bbbd5240b57b515f47b45dcb",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "27974a21e889f32d5bdbe1e0045c8e3da71d7fb011239c638b6f2c6e57a50355"
   },
   "test/retry.test.ts": {
     "file": "test/retry.test.ts",
@@ -2239,13 +1323,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "6c83742f02af4c200acf5625a4c6cf9a677f1013dc1816d6a7c9cda446c5541f",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "66dd2492ce7265bdd45946003247937af7fa3a18cef57c6dc0a84533a04ce1d7"
   },
   "test/search-architecture.test.ts": {
     "file": "test/search-architecture.test.ts",
@@ -2260,13 +1339,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "1962aa6dfbe99d8923e9929d7580ba29e47d26082b63134ff6697ffe606da733",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "d5fc0e2c1c656877f7b60138d5af8c5990503dce45de56a97dfb609034344db0"
   },
   "test/summarizer-language.test.ts": {
     "file": "test/summarizer-language.test.ts",
@@ -2279,13 +1353,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "5c8b1f8eed21966d243d41a4dcf298160d46106c947da0a051ff2bae7f63c146",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "323d8e06580c354762c8427d447bc0dd4416b1b908b6db2b0efb1963c3ece71f"
   },
   "test/summarizer-parse.test.ts": {
     "file": "test/summarizer-parse.test.ts",
@@ -2297,13 +1366,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "941212580cbbde506a2d0380bf5ed4b94cf4593dbbcca545fdf67427a7a10abb",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "39cad9581f975b1d27dd84f66c69450e2b946bc04c4c98f886f0073bdd9cfd79"
   },
   "test/symbol-extractor.test.ts": {
     "file": "test/symbol-extractor.test.ts",
@@ -2320,13 +1384,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "69342defacfb08f525a95ca0e1790b02f936bd152392b8f4415902e722eff02c",
-    "detailedPurpose": "Internal module with 1 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": [
-      "test"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "011bfe1299e7ab44f55dfed2aff546c5a0fd9f53536374729fcd930968737307"
   },
   "test/fixtures/sample-python-project/__init__.py": {
     "file": "test/fixtures/sample-python-project/__init__.py",
@@ -2335,11 +1394,8 @@
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "fe6d3468cf5c74d8ec2a95b40f2e05338c37a4202f8fad692d2b64a9cf9b468a",
-    "detailedPurpose": "Internal module with 0 private symbol(s).",
-    "publicAPI": [],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "a703788f832056626d71b7db4d8055243ceafe416d1798cd634b9143c9074b54"
   },
   "test/fixtures/sample-python-project/analytics_service.py": {
     "file": "test/fixtures/sample-python-project/analytics_service.py",
@@ -2357,47 +1413,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "0a30b7b6efa5a71ec45ef1a053f8e442af24153ed0309bfc925dffc49c2a4cf4",
-    "detailedPurpose": "Track an analytics event. Exports: track_event, flush_events, EventBuffer, __init__, add and 1 more.",
-    "publicAPI": [
-      {
-        "name": "track_event",
-        "type": "function",
-        "signature": "@_ensure_initialized def track_event(event_name: str, metadata: dict) -> None",
-        "jsdoc": "Track an analytics event."
-      },
-      {
-        "name": "flush_events",
-        "type": "function",
-        "signature": "async def flush_events() -> int",
-        "jsdoc": "Flush pending events to the analytics backend."
-      },
-      {
-        "name": "EventBuffer",
-        "type": "class",
-        "signature": "class EventBuffer",
-        "jsdoc": "Buffers events before sending."
-      },
-      {
-        "name": "__init__",
-        "type": "method",
-        "signature": "def __init__(max_size: int = 100)"
-      },
-      {
-        "name": "add",
-        "type": "method",
-        "signature": "def add(event: dict) -> None",
-        "jsdoc": "Add an event to the buffer."
-      },
-      {
-        "name": "flush",
-        "type": "method",
-        "signature": "def flush() -> list",
-        "jsdoc": "Flush the buffer."
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "e3aba1e8da3eaee3b20bf781875131ce2bc1d5d623908736bf8fe362bef99443"
   },
   "test/fixtures/sample-python-project/order_service.py": {
     "file": "test/fixtures/sample-python-project/order_service.py",
@@ -2417,41 +1434,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "88b9140406e39b2efe8a42230959b942accf90638ae7c4fa3d91efa2eb5e1ffe",
-    "detailedPurpose": "Handles order creation and management. Exports: OrderService, __init__, create_order, process_payment, get_order_status.",
-    "publicAPI": [
-      {
-        "name": "OrderService",
-        "type": "class",
-        "signature": "class OrderService",
-        "jsdoc": "Handles order creation and management."
-      },
-      {
-        "name": "__init__",
-        "type": "method",
-        "signature": "def __init__(payment_processor: PaymentProcessor)"
-      },
-      {
-        "name": "create_order",
-        "type": "method",
-        "signature": "def create_order(items: list, customer_id: str) -> dict",
-        "jsdoc": "Create a new order."
-      },
-      {
-        "name": "process_payment",
-        "type": "method",
-        "signature": "def process_payment(order_id: str) -> bool",
-        "jsdoc": "Process payment for an order."
-      },
-      {
-        "name": "get_order_status",
-        "type": "function",
-        "signature": "def get_order_status(order_id: str) -> str",
-        "jsdoc": "Get the status of an order."
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "57472eb5fba8cfbb11fc9ae28e663e29abc6be81c1afe5af736c773fca4ad587"
   },
   "test/fixtures/sample-python-project/payment_service.py": {
     "file": "test/fixtures/sample-python-project/payment_service.py",
@@ -2469,49 +1453,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.688Z",
-    "contentHash": "36851d0c61c81fc3d4b3c35f16f4ab059a9cb8aa861a688af15d99ba8d59a029",
-    "detailedPurpose": "Processes payments via external gateway. Exports: PaymentProcessor, __init__, charge, validate_card, is_configured and 1 more.",
-    "publicAPI": [
-      {
-        "name": "PaymentProcessor",
-        "type": "class",
-        "signature": "class PaymentProcessor",
-        "jsdoc": "Processes payments via external gateway."
-      },
-      {
-        "name": "__init__",
-        "type": "method",
-        "signature": "def __init__(api_key: str)"
-      },
-      {
-        "name": "charge",
-        "type": "method",
-        "signature": "def charge(amount: float, customer_id: str) -> bool",
-        "jsdoc": "Charge a customer."
-      },
-      {
-        "name": "validate_card",
-        "type": "method",
-        "signature": "@staticmethod def validate_card(card_number: str) -> bool",
-        "jsdoc": "Validate a credit card number."
-      },
-      {
-        "name": "is_configured",
-        "type": "method",
-        "signature": "@property def is_configured() -> bool",
-        "jsdoc": "Check if the processor is configured."
-      },
-      {
-        "name": "create_processor",
-        "type": "function",
-        "signature": "def create_processor(api_key: Optional[str] = None) -> PaymentProcessor",
-        "jsdoc": "Factory function for PaymentProcessor."
-      }
-    ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "lastUpdated": "2026-03-17T10:16:46.567Z",
+    "contentHash": "4b65ea321af731e0df0d21001198f9c43a002b8c854ecf4a48e104c12cd7b2bc"
   },
   "mcp-server/tools/find-template-file.ts": {
     "file": "mcp-server/tools/find-template-file.ts",
@@ -2526,17 +1469,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "b7eff0866e0c34023d9b109bf7eee2ac97b7db9872436e1db59ea0dbd51ac45c",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n  args: { description: string },\n  knowledgeRoot: string = '.knowledge'\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.564Z",
+    "contentHash": "d59b8c4b5e814c9f2b0ec9a7d4a7d81970692fbac818656305d939a65373f305"
   },
   "mcp-server/tools/get-artifact-schema.ts": {
     "file": "mcp-server/tools/get-artifact-schema.ts",
@@ -2550,17 +1484,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "8c5d78027e15bcfad342247ddf1a68c9ce0cb6a41c2407fd53f54597301a5d42",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n  args: { artifact_type: string },\n  knowledgeRoot: string = '.knowledge'\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "660e3974dd1c83dab99fbcd3191e086c13f37c67593c74b9e84779841fd63d37"
   },
   "mcp-server/tools/get-artifact-store-path.ts": {
     "file": "mcp-server/tools/get-artifact-store-path.ts",
@@ -2574,17 +1499,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "522bc7d58f146f884cd0843073023ef4756d336bc5c671b05154096fddd19c25",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n    args: { artifact_type: string },\n    knowledgeRoot: string = '.knowledge'\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "4271a1f27fd1ad37896aa567542db56c087e342078863b6900909f4ad300b6d9"
   },
   "mcp-server/tools/get-code-patterns.ts": {
     "file": "mcp-server/tools/get-code-patterns.ts",
@@ -2595,21 +1511,13 @@
     "dependencies": [
       "../types.js",
       "./lib/data-loader.js",
-      "./lib/response-budget.js"
+      "./lib/response-budget.js",
+      "./lib/path-utils.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "ac68654d153f8fa4df378ee985adc0550ac51c096894b2091cfe02ae234da73b",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n    args: { pattern_type?: string },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "ce87d31916658f31667f6146fbaa2ae8e80e6f6d040f721b67368015ffb2ea7a"
   },
   "mcp-server/tools/get-cumulative-context.ts": {
     "file": "mcp-server/tools/get-cumulative-context.ts",
@@ -2618,23 +1526,17 @@
       "handler"
     ],
     "dependencies": [
+      "node:fs",
+      "node:path",
       "../types.js",
       "./lib/artifact-schemas.js",
-      "./lib/response-budget.js"
+      "./lib/response-budget.js",
+      "./lib/path-utils.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "1f75b3adefbf362d5125b73afd7bb33b12679a01244db8538b2f7da9508f23df",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n    args: { phase: string },\n    knowledgeRoot: string = '.knowledge'\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "cb2f9572f93dc6b4435e3445de25fd8e2a507d4775f194c851ba64655c24e63c"
   },
   "mcp-server/tools/get-directory-tree.ts": {
     "file": "mcp-server/tools/get-directory-tree.ts",
@@ -2650,17 +1552,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.685Z",
-    "contentHash": "37401676d4270ceea1eace915aa7fc1b5740595f60540b64182d640ce436548a",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n  args: { path?: string; depth?: number },\n  knowledgeRoot: string = '.knowledge'\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "9b2fbb35d133cd184c7c19255baa79abc817f70cc596a4fe41c25960b0f29069"
   },
   "mcp-server/tools/get-static-data-schema.ts": {
     "file": "mcp-server/tools/get-static-data-schema.ts",
@@ -2676,17 +1569,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "72ff591f52523564bd84cb71c96876557c6b6af41a509f7b0ed7a3197c5f34ce",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n    args: Record<string, never>,\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "fd51c0e760d40344c209b14529227f4a68ab22f30fb16c3b85be60796fceb8e3"
   },
   "mcp-server/tools/lib/artifact-schemas.ts": {
     "file": "mcp-server/tools/lib/artifact-schemas.ts",
@@ -2700,24 +1584,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "ee4ebf11c96963b02ecc54ebf048e2a714fb1b764bd544020af57652363976f0",
-    "detailedPurpose": "Returns all phases that come before the given phase in the pipeline. Exports: getPriorPhases, getArtifactTypes.",
-    "publicAPI": [
-      {
-        "name": "getPriorPhases",
-        "type": "function",
-        "signature": "export function getPriorPhases(phase: string): string[]",
-        "jsdoc": "/**\n * Returns all phases that come before the given phase in the pipeline.\n */"
-      },
-      {
-        "name": "getArtifactTypes",
-        "type": "function",
-        "signature": "export function getArtifactTypes(): string[]",
-        "jsdoc": "/**\n * Returns all known artifact type names.\n */"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "641cba84ef54cb99228e326396f2cb5305ed50723f48ac77975fc3351a787063"
   },
   "mcp-server/tools/validate-artifact-draft.ts": {
     "file": "mcp-server/tools/validate-artifact-draft.ts",
@@ -2731,17 +1599,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "cbcb26ee5441e79d0b7d06fa2c3c4c5d367aa964c1be52684c86a378e803dedf",
-    "detailedPurpose": "Provides 1 exported function(s): handler.",
-    "publicAPI": [
-      {
-        "name": "handler",
-        "type": "function",
-        "signature": "export function handler(\n  args: { artifact_type: string; json_content: string },\n  knowledgeRoot: string = '.knowledge'\n): CallToolResult"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "b97b7b6cc397ad39adf4c30d5da1e1f6566a64aa621675d98edfc89b4a30811e"
   },
   "scripts/lib/complexity.ts": {
     "file": "scripts/lib/complexity.ts",
@@ -2755,18 +1614,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.686Z",
-    "contentHash": "62975536e911efe016cae8edc397048217c6bcde4be0fdd0dc13f00a91771206",
-    "detailedPurpose": "Compute cyclomatic complexity for all function/method symbols in a source file Exports: computeFileComplexity.",
-    "publicAPI": [
-      {
-        "name": "computeFileComplexity",
-        "type": "function",
-        "signature": "export function computeFileComplexity(\n    sourceFile: SourceFile,\n    symbols: SymbolEntry[]\n): number",
-        "jsdoc": "/**\n * Compute cyclomatic complexity for all function/method symbols in a source file\n * and attach the result to the symbol entries.\n *\n * Returns the aggregate complexity score for the file (sum of all function complexities).\n */"
-      }
-    ],
-    "internalPatterns": []
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "7dc89f0ace6c595723cd8becad633993801986fa85049404c446c611700c0db4"
   },
   "scripts/lib/test-mapper.ts": {
     "file": "scripts/lib/test-mapper.ts",
@@ -2780,24 +1629,101 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-17T03:54:03.687Z",
-    "contentHash": "294e5ab0575584d30edb8027343725810780d60a5d643119908a40ca948b8177",
-    "detailedPurpose": "Build a mapping from source files to their test files. Exports: buildTestMap, TestMap.",
-    "publicAPI": [
-      {
-        "name": "buildTestMap",
-        "type": "function",
-        "signature": "export function buildTestMap(\n    allFiles: string[],\n    fileDeps: Record<string, string[]>\n): TestMap",
-        "jsdoc": "/**\n * Build a mapping from source files to their test files.\n *\n * Uses two strategies:\n * 1. Naming convention: foo.test.ts tests foo.ts\n * 2. Import analysis: if a test file imports a source file, it's mapped\n *\n * @param allFiles All relative file paths in the project\n * @param fileDeps File-level dependency map (file → imported files)\n */"
-      },
-      {
-        "name": "TestMap",
-        "type": "interface",
-        "signature": "export interface TestMap"
-      }
+    "lastUpdated": "2026-03-17T10:16:46.566Z",
+    "contentHash": "2225e9f650275ca1bbf6bf0392f53b7982eacb2d9064dbe0f902b21166c8ec7a"
+  },
+  "mcp-server/src/build-knowledge.ts": {
+    "file": "mcp-server/src/build-knowledge.ts",
+    "purpose": "build-knowledge module",
+    "exports": [],
+    "dependencies": [
+      "node:path",
+      "./indexer.js",
+      "./summarizer.js"
     ],
-    "internalPatterns": [
-      "factory"
-    ]
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-17T10:16:46.564Z",
+    "contentHash": "9beadbaf90ab06a8c85dfe649491515ace1f60ce8d7833b2ca55b2a70624bab9"
+  },
+  "mcp-server/src/indexer.ts": {
+    "file": "mcp-server/src/indexer.ts",
+    "purpose": "indexer module",
+    "exports": [
+      "computeFileHash",
+      "walkSourceFiles",
+      "detectChangedFiles",
+      "runIndexer",
+      "SymbolEntry",
+      "FileSummary",
+      "DependencyGraph",
+      "KnowledgeIndex",
+      "IndexerOptions"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "node:crypto"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-17T10:16:46.564Z",
+    "contentHash": "1de1bc933e2255d610f8bc05f00de153db1088d27b8678981d5c2b5d11a2cc68"
+  },
+  "mcp-server/src/summarizer.ts": {
+    "file": "mcp-server/src/summarizer.ts",
+    "purpose": "summarizer module",
+    "exports": [
+      "inferArchitecturalRole",
+      "generateStaticDescription",
+      "generateLLMDescription",
+      "enrichSummaryWithLLM",
+      "findTestFiles",
+      "SummarizerConfig",
+      "SummarizerMode"
+    ],
+    "dependencies": [
+      "./indexer.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-17T10:16:46.564Z",
+    "contentHash": "be166c779f3fa3a79707a519366442ba2bd123ac7aa839c435a56230c4dccb0f"
+  },
+  "mcp-server/tools/lib/cache.ts": {
+    "file": "mcp-server/tools/lib/cache.ts",
+    "purpose": "cache module",
+    "exports": [
+      "getOrLoad",
+      "invalidate",
+      "setMaxEntries",
+      "getCacheStats"
+    ],
+    "dependencies": [],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "660e83ba85d6f84ff3e810f917a96c6e430c318f5578457706f23fb14bf7a45f"
+  },
+  "mcp-server/tools/lib/metadata-footer.ts": {
+    "file": "mcp-server/tools/lib/metadata-footer.ts",
+    "purpose": "metadata-footer module",
+    "exports": [
+      "formatAge",
+      "computeStaleness",
+      "buildFooter",
+      "buildFooterSection"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "../../types.js",
+      "./response-budget.js",
+      "./cache.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-17T10:16:46.565Z",
+    "contentHash": "565654ac08fcd3bca8c7ab11b7a96a76973284a4607f3c38b25ceb1e27cbe51d"
   }
 }

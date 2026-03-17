@@ -13,47 +13,485 @@
       "<module-init:scripts/build-knowledge.ts>",
       "<module-init:scripts/build-symbols.ts>",
       "<module-init:scripts/watch.ts>",
-      "<module-init:mcp-server/server.ts>"
+      "<module-init:mcp-server/server.ts>",
+      "<module-init:mcp-server/src/build-knowledge.ts>"
     ],
     "throws": [],
     "isExported": false,
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
-    "name": "loadSymbols",
-    "qualifiedName": "loadSymbols",
-    "file": "mcp-server/tools/find-callers.ts",
-    "line": 21,
-    "signature": "function loadSymbols(knowledgeRoot: string): SymbolEntry[] | null",
+    "name": "parseArgs",
+    "qualifiedName": "parseArgs",
+    "file": "mcp-server/src/build-knowledge.ts",
+    "line": 25,
+    "signature": "function parseArgs(argv: string[]):",
     "type": "function",
-    "module": "tools",
+    "module": "src",
     "calls": [],
     "calledBy": [
-      "handler",
-      "handleFileChange",
-      "handleBatchFileChanges",
-      "handleFileDeletion",
-      "<module-init:test/incremental-updater.test.ts>"
+      "main"
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Loads symbols.json from the knowledge root directory.\n * Returns null if the file does not exist.\n */",
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "main",
+    "qualifiedName": "main",
+    "file": "mcp-server/src/build-knowledge.ts",
+    "line": 61,
+    "signature": "async function main(): Promise<void>",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "<module-init:scripts/build-dependencies.ts>",
+      "<module-init:scripts/build-knowledge.ts>",
+      "<module-init:scripts/build-symbols.ts>",
+      "<module-init:scripts/watch.ts>",
+      "<module-init:mcp-server/server.ts>",
+      "<module-init:mcp-server/src/build-knowledge.ts>"
     ],
-    "returnType": "SymbolEntry[] | null",
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "computeFileHash",
+    "qualifiedName": "computeFileHash",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 96,
+    "signature": "export function computeFileHash(content: string): string",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "detectChangedFiles",
+      "generateStaticSummary"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "walkSourceFiles",
+    "qualifiedName": "walkSourceFiles",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 101,
+    "signature": "export function walkSourceFiles(dir: string, options: { cap?: number } = {}): string[]",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "runIndexerInternal",
+      "findCoverageGaps"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "loadExistingSummaries",
+    "qualifiedName": "loadExistingSummaries",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 136,
+    "signature": "function loadExistingSummaries(knowledgeRoot: string): Record<string, FileSummary>",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "runIndexerInternal"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "loadExistingIndex",
+    "qualifiedName": "loadExistingIndex",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 147,
+    "signature": "function loadExistingIndex(knowledgeRoot: string): KnowledgeIndex | null",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "runIndexer"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "detectChangedFiles",
+    "qualifiedName": "detectChangedFiles",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 158,
+    "signature": "export function detectChangedFiles(\n    sourceFiles: string[],\n    projectRoot: string,\n    existingSummaries: Record<string, FileSummary>\n): Set<string>",
+    "type": "function",
+    "module": "src",
+    "calls": [
+      "computeFileHash"
+    ],
+    "calledBy": [
+      "runIndexerInternal"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "extractSymbols",
+    "qualifiedName": "extractSymbols",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 192,
+    "signature": "function extractSymbols(content: string, relPath: string, moduleName: string): SymbolEntry[]",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "runIndexerInternal",
+      "TypeScriptAdapter.extractSymbols",
+      "main",
+      "<module-init:test/js-support.test.ts>",
+      "<module-init:test/symbol-extractor.test.ts>"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "extractImports",
+    "qualifiedName": "extractImports",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 291,
+    "signature": "function extractImports(content: string, relPath: string): string[]",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "runIndexerInternal"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "detectModule",
+    "qualifiedName": "detectModule",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 315,
+    "signature": "function detectModule(relPath: string): string",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "runIndexerInternal"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "detectCycles",
+    "qualifiedName": "detectCycles",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 321,
+    "signature": "function detectCycles(edges: DependencyGraph['edges']): string[][]",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "runIndexerInternal"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "generateStaticSummary",
+    "qualifiedName": "generateStaticSummary",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 364,
+    "signature": "function generateStaticSummary(\n    relPath: string,\n    content: string,\n    symbols: SymbolEntry[],\n    imports: string[]\n): FileSummary",
+    "type": "function",
+    "module": "src",
+    "calls": [
+      "computeFileHash"
+    ],
+    "calledBy": [
+      "runIndexerInternal"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "runIndexer",
+    "qualifiedName": "runIndexer",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 420,
+    "signature": "export async function runIndexer(options: IndexerOptions): Promise<void>",
+    "type": "function",
+    "module": "src",
+    "calls": [
+      "loadExistingIndex",
+      "runIndexerInternal"
+    ],
+    "calledBy": [
+      "main"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "runIndexerInternal",
+    "qualifiedName": "runIndexerInternal",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 457,
+    "signature": "async function runIndexerInternal(\n    options: IndexerOptions,\n    existingIndex: KnowledgeIndex | null\n): Promise<void>",
+    "type": "function",
+    "module": "src",
+    "calls": [
+      "walkSourceFiles",
+      "loadExistingSummaries",
+      "detectChangedFiles",
+      "detectModule",
+      "extractSymbols",
+      "extractImports",
+      "generateStaticSummary",
+      "detectCycles"
+    ],
+    "calledBy": [
+      "runIndexer"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "SymbolEntry",
+    "qualifiedName": "SymbolEntry",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 15,
+    "signature": "export interface SymbolEntry",
+    "type": "interface",
+    "module": "src",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "FileSummary",
+    "qualifiedName": "FileSummary",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 43,
+    "signature": "export interface FileSummary",
+    "type": "interface",
+    "module": "src",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "DependencyGraph",
+    "qualifiedName": "DependencyGraph",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 61,
+    "signature": "export interface DependencyGraph",
+    "type": "interface",
+    "module": "src",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "KnowledgeIndex",
+    "qualifiedName": "KnowledgeIndex",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 68,
+    "signature": "export interface KnowledgeIndex",
+    "type": "interface",
+    "module": "src",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "IndexerOptions",
+    "qualifiedName": "IndexerOptions",
+    "file": "mcp-server/src/indexer.ts",
+    "line": 83,
+    "signature": "export interface IndexerOptions",
+    "type": "interface",
+    "module": "src",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "inferArchitecturalRole",
+    "qualifiedName": "inferArchitecturalRole",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 34,
+    "signature": "export function inferArchitecturalRole(relPath: string): string",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "generateStaticDescription",
+      "handler"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "generateStaticDescription",
+    "qualifiedName": "generateStaticDescription",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 62,
+    "signature": "export function generateStaticDescription(\n    relPath: string,\n    symbols: SymbolEntry[],\n    imports: string[]\n): string",
+    "type": "function",
+    "module": "src",
+    "calls": [
+      "inferArchitecturalRole"
+    ],
+    "calledBy": [
+      "generateLLMDescription"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "generateLLMDescription",
+    "qualifiedName": "generateLLMDescription",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 103,
+    "signature": "export async function generateLLMDescription(\n    relPath: string,\n    content: string,\n    symbols: SymbolEntry[],\n    config: SummarizerConfig = {}\n): Promise<string>",
+    "type": "function",
+    "module": "src",
+    "calls": [
+      "generateStaticDescription",
+      "callAnthropicAPI",
+      "callClaudeCode"
+    ],
+    "calledBy": [
+      "enrichSummaryWithLLM"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "callAnthropicAPI",
+    "qualifiedName": "callAnthropicAPI",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 141,
+    "signature": "async function callAnthropicAPI(prompt: string, config: Required<SummarizerConfig>): Promise<string>",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "generateLLMDescription"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "callClaudeCode",
+    "qualifiedName": "callClaudeCode",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 175,
+    "signature": "async function callClaudeCode(prompt: string, config: Required<SummarizerConfig>): Promise<string>",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [
+      "generateLLMDescription"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "enrichSummaryWithLLM",
+    "qualifiedName": "enrichSummaryWithLLM",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 193,
+    "signature": "export async function enrichSummaryWithLLM(\n    summary: FileSummary,\n    content: string,\n    symbols: SymbolEntry[],\n    config: SummarizerConfig = {}\n): Promise<FileSummary>",
+    "type": "function",
+    "module": "src",
+    "calls": [
+      "generateLLMDescription"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "findTestFiles",
+    "qualifiedName": "findTestFiles",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 218,
+    "signature": "export function findTestFiles(relPath: string, allFiles: string[]): string[]",
+    "type": "function",
+    "module": "src",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "SummarizerConfig",
+    "qualifiedName": "SummarizerConfig",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 15,
+    "signature": "export interface SummarizerConfig",
+    "type": "interface",
+    "module": "src",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "SummarizerMode",
+    "qualifiedName": "SummarizerMode",
+    "file": "mcp-server/src/summarizer.ts",
+    "line": 13,
+    "signature": "export type SummarizerMode = 'static' | 'anthropic' | 'claude-code';",
+    "type": "type",
+    "module": "src",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
     "language": "typescript"
   },
   {
     "name": "bfsCallers",
     "qualifiedName": "bfsCallers",
     "file": "mcp-server/tools/find-callers.ts",
-    "line": 39,
-    "signature": "function bfsCallers(\n  targetQualifiedName: string,\n  symbolMap: Map<string, SymbolEntry>,\n  maxDepth: number\n): CallerInfo[]",
+    "line": 27,
+    "signature": "function bfsCallers(\n    targetQualifiedName: string,\n    symbolMap: Map<string, SymbolEntry>,\n    maxDepth: number\n): CallerInfo[]",
     "type": "function",
     "module": "tools",
     "calls": [],
@@ -62,30 +500,48 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Performs BFS traversal over the inverted call graph (calledBy) starting\n * from the target symbol, collecting all reachable callers up to `maxDepth`\n * levels. Tracks visited symbols to prevent infinite loops on circular calls.\n */",
-    "parameters": [
-      {
-        "name": "targetQualifiedName",
-        "type": "string"
-      },
-      {
-        "name": "symbolMap",
-        "type": "Map<string, SymbolEntry>"
-      },
-      {
-        "name": "maxDepth",
-        "type": "number"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "bfsCallees",
+    "qualifiedName": "bfsCallees",
+    "file": "mcp-server/tools/find-callers.ts",
+    "line": 68,
+    "signature": "function bfsCallees(\n    targetQualifiedName: string,\n    symbolMap: Map<string, SymbolEntry>,\n    maxDepth: number\n): CallerInfo[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "handler"
     ],
-    "returnType": "CallerInfo[]",
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "disambiguate",
+    "qualifiedName": "disambiguate",
+    "file": "mcp-server/tools/find-callers.ts",
+    "line": 110,
+    "signature": "function disambiguate(\n    symbolInput: string,\n    symbols: SymbolEntry[],\n    projectRoot: string\n): SymbolEntry[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "toRelative"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/find-callers.ts",
-    "line": 86,
-    "signature": "export function handler(\n  args: FindCallersArgs,\n  knowledgeRoot: string\n): CallToolResult",
+    "line": 144,
+    "signature": "export function handler(\n    args: FindCallersArgs,\n    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): CallToolResult",
     "type": "function",
     "module": "tools",
     "calls": [],
@@ -102,25 +558,13 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Handler for the find_callers MCP tool.\n * Returns all callers of a symbol from the calledBy index with file/line info.\n * Supports BFS traversal up to maxDepth levels for transitive callers.\n */",
-    "parameters": [
-      {
-        "name": "args",
-        "type": "FindCallersArgs"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
     "name": "FindCallersArgs",
     "qualifiedName": "FindCallersArgs",
     "file": "mcp-server/tools/find-callers.ts",
-    "line": 5,
+    "line": 7,
     "signature": "export interface FindCallersArgs",
     "type": "interface",
     "module": "tools",
@@ -134,7 +578,7 @@
     "name": "CallerInfo",
     "qualifiedName": "CallerInfo",
     "file": "mcp-server/tools/find-callers.ts",
-    "line": 10,
+    "line": 13,
     "signature": "interface CallerInfo",
     "type": "interface",
     "module": "tools",
@@ -145,11 +589,45 @@
     "language": "typescript"
   },
   {
+    "name": "rankResults",
+    "qualifiedName": "rankResults",
+    "file": "mcp-server/tools/find-symbol.ts",
+    "line": 20,
+    "signature": "function rankResults(results: SymbolEntry[], query: string): SymbolEntry[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "formatSymbolEntry",
+    "qualifiedName": "formatSymbolEntry",
+    "file": "mcp-server/tools/find-symbol.ts",
+    "line": 42,
+    "signature": "function formatSymbolEntry(sym: SymbolEntry, projectRoot: string, symbolMap: Map<string, SymbolEntry>): string[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "toRelative"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/find-symbol.ts",
-    "line": 16,
-    "signature": "export async function handler(\n    args: FindSymbolArgs,\n    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): Promise<CallToolResult>",
+    "line": 117,
+    "signature": "export function handler(\n    args: FindSymbolArgs,\n    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): CallToolResult",
     "type": "function",
     "module": "tools",
     "calls": [],
@@ -166,27 +644,13 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Handles the find_symbol MCP tool call.\n * Searches .knowledge/symbols.json for entries matching the provided name\n * (case-insensitive substring match). Optionally filters by symbol type.\n * Returns up to 20 results sorted by name length ascending.\n */",
-    "parameters": [
-      {
-        "name": "args",
-        "type": "FindSymbolArgs"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'"
-      }
-    ],
-    "returnType": "Promise<CallToolResult>",
     "language": "typescript"
   },
   {
     "name": "FindSymbolArgs",
     "qualifiedName": "FindSymbolArgs",
     "file": "mcp-server/tools/find-symbol.ts",
-    "line": 5,
+    "line": 7,
     "signature": "export interface FindSymbolArgs",
     "type": "interface",
     "module": "tools",
@@ -210,13 +674,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "text",
-        "type": "string"
-      }
-    ],
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -241,19 +698,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ description: string }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
@@ -278,19 +722,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ artifact_type: string }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
@@ -315,27 +746,14 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ artifact_type: string }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
-    "name": "formatCompact",
-    "qualifiedName": "formatCompact",
+    "name": "formatRich",
+    "qualifiedName": "formatRich",
     "file": "mcp-server/tools/get-batch-summaries.ts",
-    "line": 5,
-    "signature": "function formatCompact(summary: FileSummary): string",
+    "line": 10,
+    "signature": "function formatRich(\n    displayPath: string,\n    summary: FileSummary,\n    fileSymbols: SymbolEntry[],\n): string",
     "type": "function",
     "module": "tools",
     "calls": [],
@@ -344,20 +762,13 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "summary",
-        "type": "FileSummary"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-batch-summaries.ts",
-    "line": 16,
+    "line": 49,
     "signature": "export function handler(\n    args: { files: string[] },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult",
     "type": "function",
     "module": "tools",
@@ -375,26 +786,13 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ files: string[] }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
     "name": "isTestFile",
     "qualifiedName": "isTestFile",
     "file": "mcp-server/tools/get-code-patterns.ts",
-    "line": 24,
+    "line": 25,
     "signature": "function isTestFile(filePath: string): boolean",
     "type": "function",
     "module": "tools",
@@ -405,20 +803,13 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "boolean",
     "language": "typescript"
   },
   {
     "name": "classifyFile",
     "qualifiedName": "classifyFile",
     "file": "mcp-server/tools/get-code-patterns.ts",
-    "line": 28,
+    "line": 29,
     "signature": "function classifyFile(filePath: string, summary: FileSummary): PatternType[]",
     "type": "function",
     "module": "tools",
@@ -430,45 +821,83 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "summary",
-        "type": "FileSummary"
-      }
-    ],
-    "returnType": "PatternType[]",
     "language": "typescript"
   },
   {
     "name": "formatFileEntry",
     "qualifiedName": "formatFileEntry",
     "file": "mcp-server/tools/get-code-patterns.ts",
-    "line": 58,
-    "signature": "function formatFileEntry(summary: FileSummary): string",
+    "line": 60,
+    "signature": "function formatFileEntry(filePath: string, summary: FileSummary, exampleSymbol?: SymbolEntry): string",
     "type": "function",
     "module": "tools",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "handler"
+    ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "summary",
-        "type": "FileSummary"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "countStructuralPatterns",
+    "qualifiedName": "countStructuralPatterns",
+    "file": "mcp-server/tools/get-code-patterns.ts",
+    "line": 75,
+    "signature": "function countStructuralPatterns(symbols: SymbolEntry[], projectRoot: string): Section[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "toRelative"
     ],
-    "returnType": "string",
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "detectDataAccessPattern",
+    "qualifiedName": "detectDataAccessPattern",
+    "file": "mcp-server/tools/get-code-patterns.ts",
+    "line": 141,
+    "signature": "function detectDataAccessPattern(knowledgeRoot: string): string",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "loadDependencies"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "detectStyling",
+    "qualifiedName": "detectStyling",
+    "file": "mcp-server/tools/get-code-patterns.ts",
+    "line": 159,
+    "signature": "function detectStyling(knowledgeRoot: string, cache: Record<string, FileSummary>): string",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "loadDependencies"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-code-patterns.ts",
-    "line": 67,
+    "line": 175,
     "signature": "export function handler(\n    args: { pattern_type?: string },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult",
     "type": "function",
     "module": "tools",
@@ -486,26 +915,13 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ pattern_type?: string }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
     "name": "PatternType",
     "qualifiedName": "PatternType",
     "file": "mcp-server/tools/get-code-patterns.ts",
-    "line": 6,
+    "line": 7,
     "signature": "type PatternType = (typeof VALID_PATTERN_TYPES)[number];",
     "type": "type",
     "module": "tools",
@@ -516,10 +932,46 @@
     "language": "typescript"
   },
   {
+    "name": "resolveArtifactsDir",
+    "qualifiedName": "resolveArtifactsDir",
+    "file": "mcp-server/tools/get-cumulative-context.ts",
+    "line": 12,
+    "signature": "function resolveArtifactsDir(knowledgeRoot: string): string",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "resolveProjectRoot"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "readArtifactPreview",
+    "qualifiedName": "readArtifactPreview",
+    "file": "mcp-server/tools/get-cumulative-context.ts",
+    "line": 25,
+    "signature": "function readArtifactPreview(\n    artifactType: string,\n    artifactsDir: string\n):",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "safePath"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-cumulative-context.ts",
-    "line": 5,
+    "line": 87,
     "signature": "export function handler(\n    args: { phase: string },\n    knowledgeRoot: string = '.knowledge'\n): CallToolResult",
     "type": "function",
     "module": "tools",
@@ -537,50 +989,13 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ phase: string }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
-    "language": "typescript"
-  },
-  {
-    "name": "loadDependencies",
-    "qualifiedName": "loadDependencies",
-    "file": "mcp-server/tools/get-dependencies.ts",
-    "line": 21,
-    "signature": "function loadDependencies(knowledgeRoot: string): DependencyGraph | null",
-    "type": "function",
-    "module": "tools",
-    "calls": [],
-    "calledBy": [
-      "handler"
-    ],
-    "throws": [],
-    "isExported": false,
-    "jsdoc": "/**\n * Loads dependencies.json from the knowledge root directory.\n * Returns null if the file does not exist.\n */",
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "DependencyGraph | null",
     "language": "typescript"
   },
   {
     "name": "bfsTraverse",
     "qualifiedName": "bfsTraverse",
     "file": "mcp-server/tools/get-dependencies.ts",
-    "line": 39,
+    "line": 22,
     "signature": "function bfsTraverse(\n  startModule: string,\n  edges: DependencyGraph['edges'],\n  maxDepth: number\n): DependencyResult[]",
     "type": "function",
     "module": "tools",
@@ -590,29 +1005,13 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Performs BFS traversal over the dependency graph starting from the given\n * module, collecting all reachable dependencies up to `maxDepth` levels.\n * Tracks visited nodes to prevent infinite loops on cyclic graphs.\n */",
-    "parameters": [
-      {
-        "name": "startModule",
-        "type": "string"
-      },
-      {
-        "name": "edges",
-        "type": "DependencyGraph['edges']"
-      },
-      {
-        "name": "maxDepth",
-        "type": "number"
-      }
-    ],
-    "returnType": "DependencyResult[]",
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-dependencies.ts",
-    "line": 85,
+    "line": 68,
     "signature": "export function handler(\n  args: GetDependenciesArgs,\n  knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): CallToolResult",
     "type": "function",
     "module": "tools",
@@ -630,20 +1029,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Handler for the get_dependencies MCP tool.\n * Returns direct or transitive module dependencies from .knowledge/dependencies.json.\n * Lists available modules when the requested module is not found.\n */",
-    "parameters": [
-      {
-        "name": "args",
-        "type": "GetDependenciesArgs"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
@@ -696,19 +1081,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ path?: string; depth?: number }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
@@ -725,13 +1097,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "summary",
-        "type": "FileSummary"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -756,26 +1121,29 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ file: string }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "isSensitiveFile",
+    "qualifiedName": "isSensitiveFile",
+    "file": "mcp-server/tools/get-implementation-context.ts",
+    "line": 17,
+    "signature": "function isSensitiveFile(filePath: string): boolean",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "extractCodeSnippet"
     ],
-    "returnType": "CallToolResult",
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "getSiblings",
     "qualifiedName": "getSiblings",
     "file": "mcp-server/tools/get-implementation-context.ts",
-    "line": 6,
+    "line": 21,
     "signature": "function getSiblings(filePath: string, cache: Record<string, FileSummary>): string[]",
     "type": "function",
     "module": "tools",
@@ -785,24 +1153,13 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "cache",
-        "type": "Record<string, FileSummary>"
-      }
-    ],
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
     "name": "getModule",
     "qualifiedName": "getModule",
     "file": "mcp-server/tools/get-implementation-context.ts",
-    "line": 15,
+    "line": 30,
     "signature": "function getModule(filePath: string): string",
     "type": "function",
     "module": "tools",
@@ -812,20 +1169,13 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
     "name": "classifyImports",
     "qualifiedName": "classifyImports",
     "file": "mcp-server/tools/get-implementation-context.ts",
-    "line": 20,
+    "line": 35,
     "signature": "function classifyImports(deps: string[]):",
     "type": "function",
     "module": "tools",
@@ -835,20 +1185,32 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "deps",
-        "type": "string[]"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "extractCodeSnippet",
+    "qualifiedName": "extractCodeSnippet",
+    "file": "mcp-server/tools/get-implementation-context.ts",
+    "line": 55,
+    "signature": "function extractCodeSnippet(\n    absolutePath: string,\n    startLine: number,\n    lineCount: number,\n    projectRoot: string\n): string | null",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "safePath",
+      "isSensitiveFile"
     ],
-    "returnType": "{ node: string[]; external: string[]; relative: string[] }",
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-implementation-context.ts",
-    "line": 36,
+    "line": 82,
     "signature": "export function handler(\n    args: { file: string; includePatterns?: boolean },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult",
     "type": "function",
     "module": "tools",
@@ -866,26 +1228,13 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ file: string; includePatterns?: boolean }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
     "name": "fileInModule",
     "qualifiedName": "fileInModule",
     "file": "mcp-server/tools/get-module-context.ts",
-    "line": 5,
+    "line": 7,
     "signature": "function fileInModule(filePath: string, moduleName: string): boolean",
     "type": "function",
     "module": "tools",
@@ -895,24 +1244,30 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "moduleName",
-        "type": "string"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "inferArchitecturalRole",
+    "qualifiedName": "inferArchitecturalRole",
+    "file": "mcp-server/tools/get-module-context.ts",
+    "line": 13,
+    "signature": "function inferArchitecturalRole(filePath: string): string",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "generateStaticDescription",
+      "handler"
     ],
-    "returnType": "boolean",
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-module-context.ts",
-    "line": 10,
+    "line": 35,
     "signature": "export function handler(\n    args: { module: string },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult",
     "type": "function",
     "module": "tools",
@@ -930,26 +1285,13 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ module: string }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
     "name": "getProjectName",
     "qualifiedName": "getProjectName",
     "file": "mcp-server/tools/get-project-overview.ts",
-    "line": 10,
+    "line": 20,
     "signature": "function getProjectName(projectRoot: string): string",
     "type": "function",
     "module": "tools",
@@ -959,20 +1301,13 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
     "name": "getMainEntry",
     "qualifiedName": "getMainEntry",
     "file": "mcp-server/tools/get-project-overview.ts",
-    "line": 20,
+    "line": 30,
     "signature": "function getMainEntry(projectRoot: string): string | null",
     "type": "function",
     "module": "tools",
@@ -982,20 +1317,13 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "string | null",
     "language": "typescript"
   },
   {
     "name": "computeSymbolCounts",
     "qualifiedName": "computeSymbolCounts",
     "file": "mcp-server/tools/get-project-overview.ts",
-    "line": 30,
+    "line": 40,
     "signature": "function computeSymbolCounts(symbols: SymbolEntry[]): Record<string, number>",
     "type": "function",
     "module": "tools",
@@ -1005,21 +1333,32 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      }
-    ],
-    "returnType": "Record<string, number>",
     "language": "typescript"
   },
   {
     "name": "findEntryPoints",
     "qualifiedName": "findEntryPoints",
     "file": "mcp-server/tools/get-project-overview.ts",
-    "line": 38,
-    "signature": "function findEntryPoints(symbols: SymbolEntry[], mainEntry: string | null): string[]",
+    "line": 48,
+    "signature": "function findEntryPoints(symbols: SymbolEntry[], mainEntry: string | null, projectRoot: string): string[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "toRelative"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "detectLanguagesFromExtensions",
+    "qualifiedName": "detectLanguagesFromExtensions",
+    "file": "mcp-server/tools/get-project-overview.ts",
+    "line": 66,
+    "signature": "function detectLanguagesFromExtensions(projectRoot: string): string[]",
     "type": "function",
     "module": "tools",
     "calls": [],
@@ -1028,24 +1367,29 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "mainEntry",
-        "type": "string | null"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "buildModuleDependencyTable",
+    "qualifiedName": "buildModuleDependencyTable",
+    "file": "mcp-server/tools/get-project-overview.ts",
+    "line": 95,
+    "signature": "function buildModuleDependencyTable(\n    graph: DependencyGraph,\n    modules: string[],\n    symbols: SymbolEntry[]\n): string[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "handler"
     ],
-    "returnType": "string[]",
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-project-overview.ts",
-    "line": 56,
+    "line": 120,
     "signature": "export function handler(\n    args: { depth?: number },\n    knowledgeRoot: string = '.knowledge',\n): CallToolResult",
     "type": "function",
     "module": "tools",
@@ -1063,19 +1407,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ depth?: number }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
@@ -1092,13 +1423,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "boolean",
     "language": "typescript"
   },
   {
@@ -1123,26 +1447,96 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "Record<string, never>"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "walkSourceFiles",
+    "qualifiedName": "walkSourceFiles",
+    "file": "mcp-server/tools/health-check.ts",
+    "line": 19,
+    "signature": "function walkSourceFiles(projectRoot: string): string[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "runIndexerInternal",
+      "findCoverageGaps"
     ],
-    "returnType": "CallToolResult",
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "findCoverageGaps",
+    "qualifiedName": "findCoverageGaps",
+    "file": "mcp-server/tools/health-check.ts",
+    "line": 62,
+    "signature": "function findCoverageGaps(\n    projectRoot: string,\n    summaryCache: Record<string, FileSummary>\n): string[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "walkSourceFiles"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "findStaleFiles",
+    "qualifiedName": "findStaleFiles",
+    "file": "mcp-server/tools/health-check.ts",
+    "line": 90,
+    "signature": "function findStaleFiles(\n    projectRoot: string,\n    summaryCache: Record<string, FileSummary>,\n    indexTimestamp: string\n): string[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "computeModuleCounts",
+    "qualifiedName": "computeModuleCounts",
+    "file": "mcp-server/tools/health-check.ts",
+    "line": 116,
+    "signature": "function computeModuleCounts(summaryCache: Record<string, FileSummary>): Record<string, number>",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "computeReadinessScore",
+    "qualifiedName": "computeReadinessScore",
+    "file": "mcp-server/tools/health-check.ts",
+    "line": 131,
+    "signature": "function computeReadinessScore(\n    gaps: number,\n    stale: number,\n    errors: number,\n    richness: RichnessLevel | undefined\n): number",
+    "type": "function",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/health-check.ts",
-    "line": 7,
+    "line": 146,
     "signature": "export async function handler(\n    args: { verbose?: boolean },\n    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): Promise<CallToolResult>",
     "type": "function",
     "module": "tools",
@@ -1160,19 +1554,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ verbose?: boolean }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'"
-      }
-    ],
-    "returnType": "Promise<CallToolResult>",
     "language": "typescript"
   },
   {
@@ -1189,14 +1570,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Returns all phases that come before the given phase in the pipeline.\n */",
-    "parameters": [
-      {
-        "name": "phase",
-        "type": "string"
-      }
-    ],
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -1213,43 +1586,192 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Returns all known artifact type names.\n */",
-    "returnType": "string[]",
+    "language": "typescript"
+  },
+  {
+    "name": "parseMaxEntries",
+    "qualifiedName": "parseMaxEntries",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 20,
+    "signature": "function parseMaxEntries(): number",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "<module-init:mcp-server/tools/lib/cache.ts>"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "evictOldest",
+    "qualifiedName": "evictOldest",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 51,
+    "signature": "function evictOldest(): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "getOrLoad",
+      "setMaxEntries"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "touch",
+    "qualifiedName": "touch",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 59,
+    "signature": "function touch<T>(key: string, entry: CacheEntry<T>): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "getOrLoad"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "getOrLoad",
+    "qualifiedName": "getOrLoad",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 77,
+    "signature": "export function getOrLoad<T>(\n    key: string,\n    loader: () => T | null,\n    currentTimestamp: string\n): T | null",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "touch",
+      "evictOldest"
+    ],
+    "calledBy": [
+      "loadIndex",
+      "loadDependencies",
+      "computeStaleness",
+      "loadSummaryCache",
+      "loadSymbols"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "invalidate",
+    "qualifiedName": "invalidate",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 115,
+    "signature": "export function invalidate(key?: string): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "setMaxEntries",
+    "qualifiedName": "setMaxEntries",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 127,
+    "signature": "export function setMaxEntries(n: number): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "evictOldest"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "getCacheStats",
+    "qualifiedName": "getCacheStats",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 138,
+    "signature": "export function getCacheStats():",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "CacheEntry",
+    "qualifiedName": "CacheEntry",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 9,
+    "signature": "interface CacheEntry<T>",
+    "type": "interface",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "safeReadFile",
+    "qualifiedName": "safeReadFile",
+    "file": "mcp-server/tools/lib/data-loader.ts",
+    "line": 10,
+    "signature": "function safeReadFile(filePath: string): string | null",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "loadIndex",
+      "loadDependencies",
+      "loadSummaryCache",
+      "loadSymbols"
+    ],
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "loadIndex",
     "qualifiedName": "loadIndex",
     "file": "mcp-server/tools/lib/data-loader.ts",
-    "line": 5,
+    "line": 30,
     "signature": "export function loadIndex(knowledgeRoot: string): KnowledgeIndex | null",
     "type": "function",
     "module": "lib",
-    "calls": [],
+    "calls": [
+      "getOrLoad",
+      "safeReadFile"
+    ],
     "calledBy": [
-      "handler"
+      "loadDependencies",
+      "handler",
+      "loadSummaryCache",
+      "loadSymbols"
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "KnowledgeIndex | null",
     "language": "typescript"
   },
   {
     "name": "loadSymbols",
     "qualifiedName": "loadSymbols",
     "file": "mcp-server/tools/lib/data-loader.ts",
-    "line": 15,
+    "line": 54,
     "signature": "export function loadSymbols(knowledgeRoot: string): SymbolEntry[] | null",
     "type": "function",
     "module": "lib",
     "calls": [],
     "calledBy": [
+      "loadSymbolMap",
+      "loadFileToSymbols",
+      "searchSymbolJsdoc",
       "handler",
       "handleFileChange",
       "handleBatchFileChanges",
@@ -1258,48 +1780,41 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[] | null",
     "language": "typescript"
   },
   {
     "name": "loadDependencies",
     "qualifiedName": "loadDependencies",
     "file": "mcp-server/tools/lib/data-loader.ts",
-    "line": 26,
+    "line": 80,
     "signature": "export function loadDependencies(knowledgeRoot: string): DependencyGraph | null",
     "type": "function",
     "module": "lib",
-    "calls": [],
+    "calls": [
+      "loadIndex",
+      "getOrLoad",
+      "safeReadFile"
+    ],
     "calledBy": [
+      "detectDataAccessPattern",
+      "detectStyling",
       "handler"
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "DependencyGraph | null",
     "language": "typescript"
   },
   {
     "name": "loadSummaryCache",
     "qualifiedName": "loadSummaryCache",
     "file": "mcp-server/tools/lib/data-loader.ts",
-    "line": 36,
+    "line": 105,
     "signature": "export function loadSummaryCache(knowledgeRoot: string): Record<string, FileSummary> | null",
     "type": "function",
     "module": "lib",
     "calls": [],
     "calledBy": [
+      "searchFileSummaries",
       "handler",
       "handleFileChange",
       "handleBatchFileChanges",
@@ -1307,13 +1822,42 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "loadSymbolMap",
+    "qualifiedName": "loadSymbolMap",
+    "file": "mcp-server/tools/lib/data-loader.ts",
+    "line": 131,
+    "signature": "export function loadSymbolMap(knowledgeRoot: string): Map<string, SymbolEntry> | null",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "loadSymbols"
     ],
-    "returnType": "Record<string, FileSummary> | null",
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "loadFileToSymbols",
+    "qualifiedName": "loadFileToSymbols",
+    "file": "mcp-server/tools/lib/data-loader.ts",
+    "line": 146,
+    "signature": "export function loadFileToSymbols(knowledgeRoot: string): Map<string, SymbolEntry[]> | null",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "loadSymbols",
+      "resolveProjectRoot",
+      "toRelative"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": true,
     "language": "typescript"
   },
   {
@@ -1330,31 +1874,102 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "rootDir",
-        "type": "string"
-      },
-      {
-        "name": "maxDepth",
-        "type": "number",
-        "optional": true,
-        "defaultValue": "2"
-      },
-      {
-        "name": "ignoreDirs",
-        "type": "Set<string>",
-        "optional": true
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "formatAge",
+    "qualifiedName": "formatAge",
+    "file": "mcp-server/tools/lib/metadata-footer.ts",
+    "line": 15,
+    "signature": "export function formatAge(isoTimestamp: string): string",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "buildFooter"
     ],
-    "returnType": "string",
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "collectSourceFiles",
+    "qualifiedName": "collectSourceFiles",
+    "file": "mcp-server/tools/lib/metadata-footer.ts",
+    "line": 33,
+    "signature": "function collectSourceFiles(dir: string): string[]",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "computeStaleness",
+      "main"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "computeStaleness",
+    "qualifiedName": "computeStaleness",
+    "file": "mcp-server/tools/lib/metadata-footer.ts",
+    "line": 70,
+    "signature": "export function computeStaleness(index: KnowledgeIndex, projectRoot: string): boolean",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "getOrLoad",
+      "collectSourceFiles"
+    ],
+    "calledBy": [
+      "buildFooter"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "buildFooter",
+    "qualifiedName": "buildFooter",
+    "file": "mcp-server/tools/lib/metadata-footer.ts",
+    "line": 114,
+    "signature": "export function buildFooter(index: KnowledgeIndex, projectRoot: string): string",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "formatAge",
+      "computeStaleness"
+    ],
+    "calledBy": [
+      "buildFooterSection"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "buildFooterSection",
+    "qualifiedName": "buildFooterSection",
+    "file": "mcp-server/tools/lib/metadata-footer.ts",
+    "line": 137,
+    "signature": "export function buildFooterSection(index: KnowledgeIndex, projectRoot: string): Section",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "buildFooter"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": true,
     "language": "typescript"
   },
   {
     "name": "normalizePath",
     "qualifiedName": "normalizePath",
     "file": "mcp-server/tools/lib/path-utils.ts",
-    "line": 3,
+    "line": 4,
     "signature": "export function normalizePath(filePath: string): string",
     "type": "function",
     "module": "lib",
@@ -1364,43 +1979,31 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
     "name": "resolveProjectRoot",
     "qualifiedName": "resolveProjectRoot",
     "file": "mcp-server/tools/lib/path-utils.ts",
-    "line": 16,
+    "line": 15,
     "signature": "export function resolveProjectRoot(knowledgeRoot: string): string",
     "type": "function",
     "module": "lib",
     "calls": [],
     "calledBy": [
+      "resolveArtifactsDir",
+      "loadFileToSymbols",
       "handler"
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
     "name": "findSummary",
     "qualifiedName": "findSummary",
     "file": "mcp-server/tools/lib/path-utils.ts",
-    "line": 22,
+    "line": 21,
     "signature": "export function findSummary(\n    cache: Record<string, unknown>,\n    normalizedInput: string,\n): string | null",
     "type": "function",
     "module": "lib",
@@ -1410,25 +2013,54 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "cache",
-        "type": "Record<string, unknown>"
-      },
-      {
-        "name": "normalizedInput",
-        "type": "string"
-      }
-    ],
-    "returnType": "string | null",
     "language": "typescript"
   },
   {
-    "name": "buildResponse",
-    "qualifiedName": "buildResponse",
-    "file": "mcp-server/tools/lib/response-budget.ts",
-    "line": 9,
-    "signature": "export function buildResponse(sections: Section[]): string",
+    "name": "toRelative",
+    "qualifiedName": "toRelative",
+    "file": "mcp-server/tools/lib/path-utils.ts",
+    "line": 53,
+    "signature": "export function toRelative(absolutePath: string, projectRoot: string): string",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "disambiguate",
+      "formatSymbolEntry",
+      "countStructuralPatterns",
+      "findEntryPoints",
+      "loadFileToSymbols",
+      "searchFileSummaries",
+      "searchSymbolJsdoc",
+      "handler"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "safePath",
+    "qualifiedName": "safePath",
+    "file": "mcp-server/tools/lib/path-utils.ts",
+    "line": 78,
+    "signature": "export function safePath(userInput: string, projectRoot: string): string | null",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "readArtifactPreview",
+      "extractCodeSnippet"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "computeClosestMatches",
+    "qualifiedName": "computeClosestMatches",
+    "file": "mcp-server/tools/lib/path-utils.ts",
+    "line": 117,
+    "signature": "export function computeClosestMatches(\n    query: string,\n    candidates: string[],\n    topN: number = 3,\n): string[]",
     "type": "function",
     "module": "lib",
     "calls": [],
@@ -1437,20 +2069,47 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "sections",
-        "type": "Section[]"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "buildResponse",
+    "qualifiedName": "buildResponse",
+    "file": "mcp-server/tools/lib/response-budget.ts",
+    "line": 43,
+    "signature": "export function buildResponse(sections: Section[], toolBudget?: number): string",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "formatSectionBlock"
     ],
-    "returnType": "string",
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "formatSectionBlock",
+    "qualifiedName": "formatSectionBlock",
+    "file": "mcp-server/tools/lib/response-budget.ts",
+    "line": 90,
+    "signature": "function formatSectionBlock(section: Section): string",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "buildResponse"
+    ],
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "Section",
     "qualifiedName": "Section",
     "file": "mcp-server/tools/lib/response-budget.ts",
-    "line": 3,
+    "line": 26,
     "signature": "export interface Section",
     "type": "interface",
     "module": "lib",
@@ -1474,13 +2133,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "TechStack",
     "language": "typescript"
   },
   {
@@ -1497,13 +2149,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -1524,32 +2169,80 @@
     "name": "mergeRanges",
     "qualifiedName": "mergeRanges",
     "file": "mcp-server/tools/search-architecture.ts",
-    "line": 15,
+    "line": 24,
     "signature": "function mergeRanges(ranges: Array<[number, number]>): Array<[number, number]>",
     "type": "function",
     "module": "tools",
     "calls": [],
     "calledBy": [
+      "searchArchitectureDoc"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "searchArchitectureDoc",
+    "qualifiedName": "searchArchitectureDoc",
+    "file": "mcp-server/tools/search-architecture.ts",
+    "line": 45,
+    "signature": "function searchArchitectureDoc(\n  knowledgeRoot: string,\n  query: string\n): SearchResult[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "mergeRanges"
+    ],
+    "calledBy": [
       "handler"
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Merges overlapping or adjacent line ranges into consolidated ranges.\n * Each range is [start, end] inclusive (0-based indices).\n */",
-    "parameters": [
-      {
-        "name": "ranges",
-        "type": "Array<[number, number]>"
-      }
+    "language": "typescript"
+  },
+  {
+    "name": "searchFileSummaries",
+    "qualifiedName": "searchFileSummaries",
+    "file": "mcp-server/tools/search-architecture.ts",
+    "line": 93,
+    "signature": "function searchFileSummaries(\n  knowledgeRoot: string,\n  query: string,\n  projectRoot: string\n): SearchResult[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "loadSummaryCache",
+      "toRelative"
     ],
-    "returnType": "Array<[number, number]>",
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "searchSymbolJsdoc",
+    "qualifiedName": "searchSymbolJsdoc",
+    "file": "mcp-server/tools/search-architecture.ts",
+    "line": 125,
+    "signature": "function searchSymbolJsdoc(\n  knowledgeRoot: string,\n  query: string,\n  projectRoot: string\n): SearchResult[]",
+    "type": "function",
+    "module": "tools",
+    "calls": [
+      "loadSymbols",
+      "toRelative"
+    ],
+    "calledBy": [
+      "handler"
+    ],
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/search-architecture.ts",
-    "line": 35,
-    "signature": "export async function handler(\n  args: SearchArchitectureArgs,\n  knowledgeRoot: string\n): Promise<CallToolResult>",
+    "line": 161,
+    "signature": "export function handler(\n  args: SearchArchitectureArgs,\n  knowledgeRoot: string = '.knowledge'\n): CallToolResult",
     "type": "function",
     "module": "tools",
     "calls": [],
@@ -1566,24 +2259,13 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "SearchArchitectureArgs"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "Promise<CallToolResult>",
     "language": "typescript"
   },
   {
     "name": "SearchArchitectureArgs",
     "qualifiedName": "SearchArchitectureArgs",
     "file": "mcp-server/tools/search-architecture.ts",
-    "line": 7,
+    "line": 10,
     "signature": "export interface SearchArchitectureArgs",
     "type": "interface",
     "module": "tools",
@@ -1591,6 +2273,20 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "SearchResult",
+    "qualifiedName": "SearchResult",
+    "file": "mcp-server/tools/search-architecture.ts",
+    "line": 14,
+    "signature": "interface SearchResult",
+    "type": "interface",
+    "module": "tools",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false,
     "language": "typescript"
   },
   {
@@ -1602,35 +2298,59 @@
     "type": "function",
     "module": "tools",
     "calls": [
+      "resolveProjectRoot",
+      "loadIndex",
       "loadSymbols",
+      "disambiguate",
+      "computeClosestMatches",
+      "toRelative",
+      "bfsCallees",
       "bfsCallers",
+      "buildFooterSection",
+      "buildResponse",
+      "rankResults",
+      "formatSymbolEntry",
       "loadSummaryCache",
       "tokenize",
       "getArtifactTypes",
+      "loadFileToSymbols",
       "normalizePath",
       "findSummary",
-      "formatCompact",
+      "formatRich",
       "classifyFile",
-      "buildResponse",
+      "detectStyling",
+      "detectDataAccessPattern",
+      "countStructuralPatterns",
+      "formatFileEntry",
       "getPriorPhases",
+      "resolveArtifactsDir",
+      "readArtifactPreview",
       "loadDependencies",
       "bfsTraverse",
-      "resolveProjectRoot",
       "buildFileTree",
       "formatSummary",
+      "extractCodeSnippet",
       "getSiblings",
       "getModule",
       "classifyImports",
-      "loadIndex",
       "fileInModule",
+      "inferArchitecturalRole",
       "getProjectName",
       "classifyProjectType",
       "detectTechStack",
       "getMainEntry",
       "computeSymbolCounts",
       "findEntryPoints",
+      "detectLanguagesFromExtensions",
+      "buildModuleDependencyTable",
       "isDataFile",
-      "mergeRanges"
+      "findCoverageGaps",
+      "findStaleFiles",
+      "computeModuleCounts",
+      "computeReadinessScore",
+      "searchArchitectureDoc",
+      "searchFileSummaries",
+      "searchSymbolJsdoc"
     ],
     "calledBy": [
       "main",
@@ -1645,19 +2365,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "args",
-        "type": "{ artifact_type: string; json_content: string }"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "'.knowledge'"
-      }
-    ],
-    "returnType": "CallToolResult",
     "language": "typescript"
   },
   {
@@ -1706,7 +2413,7 @@
     "name": "DependencyGraph",
     "qualifiedName": "DependencyGraph",
     "file": "mcp-server/types.ts",
-    "line": 48,
+    "line": 57,
     "signature": "export interface DependencyGraph",
     "type": "interface",
     "module": "mcp-server",
@@ -1720,7 +2427,7 @@
     "name": "FileSummary",
     "qualifiedName": "FileSummary",
     "file": "mcp-server/types.ts",
-    "line": 55,
+    "line": 64,
     "signature": "export interface FileSummary",
     "type": "interface",
     "module": "mcp-server",
@@ -1734,7 +2441,7 @@
     "name": "KnowledgeIndex",
     "qualifiedName": "KnowledgeIndex",
     "file": "mcp-server/types.ts",
-    "line": 75,
+    "line": 84,
     "signature": "export interface KnowledgeIndex",
     "type": "interface",
     "module": "mcp-server",
@@ -1748,7 +2455,7 @@
     "name": "ArtifactSchema",
     "qualifiedName": "ArtifactSchema",
     "file": "mcp-server/types.ts",
-    "line": 91,
+    "line": 103,
     "signature": "export interface ArtifactSchema",
     "type": "interface",
     "module": "mcp-server",
@@ -1756,14 +2463,13 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/** Schema definition for a pipeline artifact type. */",
     "language": "typescript"
   },
   {
     "name": "CallToolResult",
     "qualifiedName": "CallToolResult",
     "file": "mcp-server/types.ts",
-    "line": 99,
+    "line": 111,
     "signature": "export interface CallToolResult",
     "type": "interface",
     "module": "mcp-server",
@@ -1771,7 +2477,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/** MCP tool handler response format. */",
     "language": "typescript"
   },
   {
@@ -1786,14 +2491,13 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * AUTO-GENERATED from src/types.ts — do not edit directly.\n * Run \"npm run sync-types\" to regenerate.\n *\n * Kept separate from src/types.ts because tsconfig.mcp.json uses\n * rootDir: \"mcp-server\", which cannot import from src/.\n */",
     "language": "typescript"
   },
   {
     "name": "SummarizerMode",
     "qualifiedName": "SummarizerMode",
     "file": "mcp-server/types.ts",
-    "line": 88,
+    "line": 100,
     "signature": "export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';",
     "type": "type",
     "module": "mcp-server",
@@ -1817,11 +2521,11 @@
       "<module-init:scripts/build-knowledge.ts>",
       "<module-init:scripts/build-symbols.ts>",
       "<module-init:scripts/watch.ts>",
-      "<module-init:mcp-server/server.ts>"
+      "<module-init:mcp-server/server.ts>",
+      "<module-init:mcp-server/src/build-knowledge.ts>"
     ],
     "throws": [],
     "isExported": false,
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -1840,7 +2544,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "returnType": "{ projectRoot: string; incremental: boolean; richness?: RichnessLevel }",
     "language": "typescript"
   },
   {
@@ -1858,13 +2561,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "msg",
-        "type": "string"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -1881,11 +2577,11 @@
       "<module-init:scripts/build-knowledge.ts>",
       "<module-init:scripts/build-symbols.ts>",
       "<module-init:scripts/watch.ts>",
-      "<module-init:mcp-server/server.ts>"
+      "<module-init:mcp-server/server.ts>",
+      "<module-init:mcp-server/src/build-knowledge.ts>"
     ],
     "throws": [],
     "isExported": false,
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -1902,11 +2598,11 @@
       "<module-init:scripts/build-knowledge.ts>",
       "<module-init:scripts/build-symbols.ts>",
       "<module-init:scripts/watch.ts>",
-      "<module-init:mcp-server/server.ts>"
+      "<module-init:mcp-server/server.ts>",
+      "<module-init:mcp-server/src/build-knowledge.ts>"
     ],
     "throws": [],
     "isExported": false,
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -1921,7 +2617,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Registry that manages language adapters and provides language detection,\n * file routing, and glob pattern generation from registered adapters.\n *\n * Replaces the hardcoded language-detection.ts with a dynamic, extensible system.\n */",
     "language": "typescript"
   },
   {
@@ -1938,14 +2633,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Register an adapter. Maps all its extensions for lookup. */",
-    "parameters": [
-      {
-        "name": "adapter",
-        "type": "LanguageAdapter"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -1960,14 +2647,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Get adapter by file extension (e.g., '.ts'). */",
-    "parameters": [
-      {
-        "name": "ext",
-        "type": "string"
-      }
-    ],
-    "returnType": "LanguageAdapter | undefined",
     "language": "typescript"
   },
   {
@@ -1985,14 +2664,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Get adapter by language name (e.g., 'typescript'). */",
-    "parameters": [
-      {
-        "name": "language",
-        "type": "string"
-      }
-    ],
-    "returnType": "LanguageAdapter | undefined",
     "language": "typescript"
   },
   {
@@ -2013,14 +2684,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Get adapter for a file path based on its extension. */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "LanguageAdapter | undefined",
     "language": "typescript"
   },
   {
@@ -2038,8 +2701,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** All registered adapters. */",
-    "returnType": "LanguageAdapter[]",
     "language": "typescript"
   },
   {
@@ -2058,14 +2719,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n     * Detect which languages are present in a project by checking project markers\n     * and optionally scanning for source files.\n     */",
-    "parameters": [
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -2084,8 +2737,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Returns combined glob patterns for all registered adapters. */",
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -2104,8 +2755,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Returns combined ignore directory patterns from all adapters. */",
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -2124,8 +2773,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Returns ignore dirs as glob patterns suitable for chokidar/minimatch. */",
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -2142,14 +2789,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n     * Groups file paths by their language adapter.\n     * Files without a matching adapter are silently skipped.\n     */",
-    "parameters": [
-      {
-        "name": "filePaths",
-        "type": "string[]"
-      }
-    ],
-    "returnType": "Map<string, string[]>",
     "language": "typescript"
   },
   {
@@ -2166,14 +2805,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Detect language for a single file path. Returns null if unsupported. */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "string | null",
     "language": "typescript"
   },
   {
@@ -2195,25 +2826,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "dir",
-        "type": "string"
-      },
-      {
-        "name": "found",
-        "type": "Set<string>"
-      },
-      {
-        "name": "depth",
-        "type": "number"
-      },
-      {
-        "name": "maxDepth",
-        "type": "number"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -2235,8 +2847,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Creates a registry with the default set of language adapters (TypeScript/JS + Python).\n * New language adapters can be registered after creation.\n */",
-    "returnType": "AdapterRegistry",
     "language": "typescript"
   },
   {
@@ -2251,7 +2861,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Context passed to adapter extraction methods for a single file.\n */",
     "language": "typescript"
   },
   {
@@ -2266,7 +2875,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Language adapter interface. Each supported language provides an implementation\n * that handles symbol extraction, dependency extraction, and call graph building.\n *\n * Adapters produce the same SymbolEntry[] / ImportInfo[] output regardless of\n * language, so the orchestration layer can treat all languages uniformly.\n */",
     "language": "typescript"
   },
   {
@@ -2283,18 +2891,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Extract Python docstrings from source content and attach to symbols.\n * Looks for triple-quoted strings immediately following class/def lines.\n */",
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -2309,7 +2905,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Python adapter. Wraps the existing regex-based Python extractors\n * behind the LanguageAdapter interface. Stateless — no initialization needed.\n */",
     "language": "typescript"
   },
   {
@@ -2327,18 +2922,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "ctx",
-        "type": "FileContext"
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2355,13 +2938,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "ctx",
-        "type": "FileContext"
-      }
-    ],
-    "returnType": "ImportInfo[]",
     "language": "typescript"
   },
   {
@@ -2378,21 +2954,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "fileContents",
-        "type": "Map<string, string>"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2407,7 +2968,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * TypeScript/JavaScript adapter. Wraps the existing ts-morph-based extractors\n * behind the LanguageAdapter interface. Handles both TS and JS via allowJs.\n */",
     "language": "typescript"
   },
   {
@@ -2424,8 +2984,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Get the internal ts-morph Project (for incremental use cases). */",
-    "returnType": "Project | undefined",
     "language": "typescript"
   },
   {
@@ -2443,17 +3001,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePaths",
-        "type": "string[]"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -2471,18 +3018,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "ctx",
-        "type": "FileContext"
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2499,13 +3034,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "ctx",
-        "type": "FileContext"
-      }
-    ],
-    "returnType": "ImportInfo[]",
     "language": "typescript"
   },
   {
@@ -2522,21 +3050,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "_fileContents",
-        "type": "Map<string, string>"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2555,22 +3068,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n     * Rebuild call graph for a single file (incremental update).\n     * This is a TS-specific optimization that the orchestrator can use directly.\n     */",
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "absoluteFilePath",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2589,22 +3086,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n     * Rebuild call graph for multiple files (batch incremental update).\n     */",
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "absoluteFilePaths",
-        "type": "string[]"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2619,8 +3100,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Returns all source files from the ts-morph Project. */",
-    "returnType": "SourceFile[]",
     "language": "typescript"
   },
   {
@@ -2635,7 +3114,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -2652,14 +3130,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/** Distinguish TypeScript from JavaScript based on file extension. */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -2681,18 +3151,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Writes data to a file atomically by writing to a .tmp file first, then renaming.\n * Creates parent directories as needed. If the rename fails, the .tmp file is cleaned up.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "data",
-        "type": "string"
-      }
-    ],
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -2710,26 +3168,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Creates or retrieves a module-init symbol for top-level calls in a file.\n */",
-    "parameters": [
-      {
-        "name": "symbolMap",
-        "type": "Map<string, SymbolEntry>"
-      },
-      {
-        "name": "newSymbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "sourceFile",
-        "type": "SourceFile"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry",
     "language": "typescript"
   },
   {
@@ -2750,30 +3188,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Processes all call expressions in a single source file, populating the calls sets.\n * Uses a Set-based approach internally to avoid O(n²) .includes() checks.\n */",
-    "parameters": [
-      {
-        "name": "sourceFile",
-        "type": "SourceFile"
-      },
-      {
-        "name": "symbolMap",
-        "type": "Map<string, SymbolEntry>"
-      },
-      {
-        "name": "newSymbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      },
-      {
-        "name": "callsSets",
-        "type": "Map<string, Set<string>>"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -2794,23 +3208,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Builds a call graph by identifying project symbols called by each symbol.\n * Does not mutate the input array.\n */",
-    "parameters": [
-      {
-        "name": "project",
-        "type": "Project"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string",
-        "optional": true
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2829,26 +3226,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Rebuilds call graph entries for a single changed file, then inverts the full graph.\n * More efficient than rebuilding the entire call graph for incremental updates.\n */",
-    "parameters": [
-      {
-        "name": "project",
-        "type": "Project"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "absoluteFilePath",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2867,26 +3244,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Rebuilds call graph entries for multiple changed files without inverting.\n * Used by batch processing to avoid cross-file staleness: all files are processed\n * against the same symbol set, then a single invertCallGraph pass is done by the caller.\n * Does not mutate the input array.\n */",
-    "parameters": [
-      {
-        "name": "project",
-        "type": "Project"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "absoluteFilePaths",
-        "type": "string[]"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2907,14 +3264,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Inverts the call graph to populate the 'calledBy' array for each symbol.\n * Does not mutate the input array.\n */",
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -2931,14 +3280,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Count cyclomatic complexity of a given AST subtree.\n * Base complexity = 1, plus 1 for each branch point.\n */",
-    "parameters": [
-      {
-        "name": "node",
-        "type": "Node"
-      }
-    ],
-    "returnType": "number",
     "language": "typescript"
   },
   {
@@ -2955,18 +3296,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Compute cyclomatic complexity for all function/method symbols in a source file\n * and attach the result to the symbol entries.\n *\n * Returns the aggregate complexity score for the file (sum of all function complexities).\n */",
-    "parameters": [
-      {
-        "name": "sourceFile",
-        "type": "SourceFile"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      }
-    ],
-    "returnType": "number",
     "language": "typescript"
   },
   {
@@ -2986,14 +3315,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Extracts all relative file dependencies from a SourceFile.\n * Resolves them to absolute paths.\n */",
-    "parameters": [
-      {
-        "name": "sourceFile",
-        "type": "SourceFile"
-      }
-    ],
-    "returnType": "ImportInfo[]",
     "language": "typescript"
   },
   {
@@ -3027,25 +3348,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Builds a module-level dependency graph with cycle detection.\n * @param fileDeps Map of absolute file path -> array of ImportInfo objects.\n * @param projectRoot Absolute path to project root.\n */",
-    "parameters": [
-      {
-        "name": "fileDeps",
-        "type": "Record<string, ImportInfo[]>",
-        "description": "Map of absolute file path -> array of ImportInfo objects.\n *"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string",
-        "description": "Absolute path to project root."
-      },
-      {
-        "name": "moduleConfig",
-        "type": "ModuleConfig",
-        "optional": true
-      }
-    ],
-    "returnType": "DependencyGraph",
     "language": "typescript"
   },
   {
@@ -3060,22 +3362,11 @@
       "AdapterRegistry.getIgnorePatterns"
     ],
     "calledBy": [
+      "computeStaleness",
       "main"
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Walks the project directory and collects source files grouped by language.\n * Uses the adapter registry to determine which files belong to which language\n * and which directories to ignore.\n */",
-    "parameters": [
-      {
-        "name": "projectRoot",
-        "type": "string"
-      },
-      {
-        "name": "registry",
-        "type": "AdapterRegistry"
-      }
-    ],
-    "returnType": "Map<string, FileContext[]>",
     "language": "typescript"
   },
   {
@@ -3088,6 +3379,9 @@
     "module": "lib",
     "calls": [],
     "calledBy": [
+      "loadSymbolMap",
+      "loadFileToSymbols",
+      "searchSymbolJsdoc",
       "handler",
       "handleFileChange",
       "handleBatchFileChanges",
@@ -3096,13 +3390,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -3113,8 +3400,13 @@
     "signature": "function loadSummaryCache(knowledgeRoot: string): Record<string, FileSummary>",
     "type": "function",
     "module": "lib",
-    "calls": [],
+    "calls": [
+      "loadIndex",
+      "getOrLoad",
+      "safeReadFile"
+    ],
     "calledBy": [
+      "searchFileSummaries",
       "handler",
       "handleFileChange",
       "handleBatchFileChanges",
@@ -3122,13 +3414,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "Record<string, FileSummary>",
     "language": "typescript"
   },
   {
@@ -3146,13 +3431,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "RichnessLevel",
     "language": "typescript"
   },
   {
@@ -3170,21 +3448,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "FileContext",
     "language": "typescript"
   },
   {
@@ -3216,22 +3479,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Re-processes a single changed file: removes old symbol entries, re-extracts symbols,\n * rebuilds call graph entries, updates summaries cache, and writes both artifacts atomically.\n * Must complete in under 1 second for a single file.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -3262,22 +3509,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Processes multiple interdependent file changes in a single pass to avoid cross-file\n * call graph staleness. When files A and B both change in one batch, this ensures that\n * A's call graph is rebuilt against B's fresh symbols (and vice versa), then a single\n * invertCallGraph pass produces consistent calledBy edges.\n */",
-    "parameters": [
-      {
-        "name": "files",
-        "type": "Array<{ path: string; type: 'change' | 'delete' }>"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -3301,18 +3532,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Removes entries for a deleted file from symbols.json and summaries cache, writing atomically.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -3330,14 +3549,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Reads .knowledge/ artifacts and produces a KnowledgeIndex.\n */",
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "Promise<KnowledgeIndex>",
     "language": "typescript"
   },
   {
@@ -3356,18 +3567,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Writes a KnowledgeIndex to <knowledgeRoot>/index.json atomically.\n */",
-    "parameters": [
-      {
-        "name": "knowledgeRoot",
-        "type": "string"
-      },
-      {
-        "name": "index",
-        "type": "KnowledgeIndex"
-      }
-    ],
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -3386,14 +3585,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Detects the language of a file based on its extension.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "SupportedLanguage | null",
     "language": "typescript"
   },
   {
@@ -3413,14 +3604,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Detects which languages are present in a project by checking marker files\n * and scanning for source files.\n */",
-    "parameters": [
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SupportedLanguage[]",
     "language": "typescript"
   },
   {
@@ -3441,26 +3624,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Recursively scans directories (up to maxDepth) looking for source files.\n */",
-    "parameters": [
-      {
-        "name": "dir",
-        "type": "string"
-      },
-      {
-        "name": "found",
-        "type": "Set<SupportedLanguage>"
-      },
-      {
-        "name": "depth",
-        "type": "number"
-      },
-      {
-        "name": "maxDepth",
-        "type": "number"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -3477,14 +3640,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Returns glob patterns for discovering source files of the given languages.\n */",
-    "parameters": [
-      {
-        "name": "languages",
-        "type": "SupportedLanguage[]"
-      }
-    ],
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -3501,8 +3656,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Returns glob ignore patterns for common non-source directories.\n */",
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -3533,23 +3686,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Structured logging utility for the knowledge build pipeline.\n * All output goes to stderr (stdout is reserved for MCP protocol in server mode).\n */",
-    "parameters": [
-      {
-        "name": "phase",
-        "type": "string"
-      },
-      {
-        "name": "message",
-        "type": "string"
-      },
-      {
-        "name": "filePath",
-        "type": "string",
-        "optional": true
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -3567,22 +3703,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "phase",
-        "type": "string"
-      },
-      {
-        "name": "error",
-        "type": "unknown"
-      },
-      {
-        "name": "filePath",
-        "type": "string",
-        "optional": true
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -3597,22 +3717,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "phase",
-        "type": "string"
-      },
-      {
-        "name": "message",
-        "type": "string"
-      },
-      {
-        "name": "filePath",
-        "type": "string",
-        "optional": true
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -3629,23 +3733,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Resolves a relative file path to a module name.\n * Strategy:\n * 1. If moduleRoots is configured, match against roots and use the matched path.\n * 2. Otherwise, use the first directory segment of the relative path.\n * 3. For root-level files (no directory), fall back to the project dir name.\n */",
-    "parameters": [
-      {
-        "name": "relativePath",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      },
-      {
-        "name": "config",
-        "type": "ModuleConfig",
-        "optional": true
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -3665,26 +3752,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Groups files by their parent module directory.\n * @param filePaths List of absolute file paths.\n * @param projectRoot Absolute path to the project root.\n * @param config Optional module configuration for custom module roots.\n * @returns A mapping from module name to an array of relative file paths.\n */",
-    "parameters": [
-      {
-        "name": "filePaths",
-        "type": "string[]",
-        "description": "List of absolute file paths.\n *"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string",
-        "description": "Absolute path to the project root.\n *"
-      },
-      {
-        "name": "config",
-        "type": "ModuleConfig",
-        "optional": true,
-        "description": "Optional module configuration for custom module roots.\n *"
-      }
-    ],
-    "returnType": "Record<string, string[]>",
     "language": "typescript"
   },
   {
@@ -3717,18 +3784,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Normalizes a file path to a relative path using forward slashes.\n * Ensures consistent cache keys across platforms.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -3746,22 +3801,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Creates or retrieves a module-init symbol for top-level calls in a Python file.\n */",
-    "parameters": [
-      {
-        "name": "symbolMap",
-        "type": "Map<string, SymbolEntry>"
-      },
-      {
-        "name": "newSymbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "relativePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry",
     "language": "typescript"
   },
   {
@@ -3778,18 +3817,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Determines the enclosing function/method scope for a given line based on\n * Python indentation. Returns the qualified name of the enclosing def, or\n * null if the line is at module (top-level) scope.\n *\n * `defStack` is mutated: stale entries whose indentation is >= the current\n * line's indentation are popped before the lookup.\n */",
-    "parameters": [
-      {
-        "name": "line",
-        "type": "string"
-      },
-      {
-        "name": "defStack",
-        "type": "Array<{ indent: number; qualifiedName: string }>"
-      }
-    ],
-    "returnType": "string | null",
     "language": "typescript"
   },
   {
@@ -3806,18 +3833,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Adds `calleeQualifiedName` to `caller.calls` if not already present.\n * Uses a parallel Set for O(1) membership checks instead of Array.includes().\n */",
-    "parameters": [
-      {
-        "name": "caller",
-        "type": "SymbolEntry"
-      },
-      {
-        "name": "calleeQualifiedName",
-        "type": "string"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -3840,25 +3855,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Builds a regex-based call graph for Python symbols.\n *\n * This is intentionally imprecise — it captures most direct calls but won't\n * catch aliased or dynamic calls. The caller (build-knowledge.ts) is expected\n * to run `invertCallGraph()` on the merged result, so this function only\n * populates `calls` arrays.\n *\n * @param symbols     All known Python SymbolEntry objects (will NOT be mutated).\n * @param fileContents Map of absolute file path -> file source text.\n * @param projectRoot Absolute path to the project root (used for relativising paths).\n * @returns A new array of SymbolEntry objects with `calls` populated.\n */",
-    "parameters": [
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]",
-        "description": "All known Python SymbolEntry objects (will NOT be mutated).\n *"
-      },
-      {
-        "name": "fileContents",
-        "type": "Map<string, string>",
-        "description": "Map of absolute file path -> file source text.\n *"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string",
-        "description": "Absolute path to the project root (used for relativising paths).\n *"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -3875,14 +3871,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Returns true if the identifier is a Python keyword or builtin statement\n * that uses parentheses but is not a callable symbol.\n */",
-    "parameters": [
-      {
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "returnType": "boolean",
     "language": "typescript"
   },
   {
@@ -3900,13 +3888,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "base",
-        "type": "string"
-      }
-    ],
-    "returnType": "string | null",
     "language": "typescript"
   },
   {
@@ -3925,17 +3906,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "modulePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "string | null",
     "language": "typescript"
   },
   {
@@ -3954,17 +3924,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "modulePath",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "string | null",
     "language": "typescript"
   },
   {
@@ -3985,21 +3944,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "ImportInfo[]",
     "language": "typescript"
   },
   {
@@ -4016,18 +3960,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Determines if a Python symbol name should be considered exported.\n * Top-level symbols are exported unless prefixed with `_`.\n * Methods follow the same rule, but dunder methods (__init__, __str__, etc.) are always exported.\n */",
-    "parameters": [
-      {
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "name": "isMethod",
-        "type": "boolean"
-      }
-    ],
-    "returnType": "boolean",
     "language": "typescript"
   },
   {
@@ -4044,14 +3976,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Strips `self` or `cls` from the beginning of a parameter list string.\n */",
-    "parameters": [
-      {
-        "name": "params",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -4068,18 +3992,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Joins continuation lines for multiline function signatures.\n * Starting from `startIndex`, reads lines until the combined text contains\n * the closing `):` pattern, then returns the joined single line and\n * how many extra lines were consumed.\n */",
-    "parameters": [
-      {
-        "name": "lines",
-        "type": "string[]"
-      },
-      {
-        "name": "startIndex",
-        "type": "number"
-      }
-    ],
-    "returnType": "{ joined: string; consumed: number }",
     "language": "typescript"
   },
   {
@@ -4102,22 +4014,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Regex-based Python symbol extractor.\n * Produces SymbolEntry[] from Python source code using line-by-line scanning\n * with indentation tracking. No Python runtime or tree-sitter dependency.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -4134,13 +4030,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "ms",
-        "type": "number"
-      }
-    ],
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -4162,19 +4051,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Retries an async function with exponential backoff.\n * Delays: baseDelayMs, baseDelayMs*2, baseDelayMs*4, ...\n */",
-    "parameters": [
-      {
-        "name": "fn",
-        "type": "() => Promise<T>"
-      },
-      {
-        "name": "opts",
-        "type": "RetryOptions",
-        "optional": true
-      }
-    ],
-    "returnType": "Promise<T>",
     "language": "typescript"
   },
   {
@@ -4207,15 +4083,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Factory function to create a Summarizer based on the SUMMARIZER_MODE environment variable.\n * Supported modes: 'static' (default), 'ollama', 'anthropic', 'claude-code'.\n *\n * At 'rich' richness with 'static' mode, warns that LLM-dependent fields will be empty.\n */",
-    "parameters": [
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "Summarizer",
     "language": "typescript"
   },
   {
@@ -4232,13 +4099,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "{ languageName: string; codeFence: string }",
     "language": "typescript"
   },
   {
@@ -4260,27 +4120,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Builds a structured prompt for the LLM to summarize a file.\n * At standard/rich levels, requests additional fields.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -4300,19 +4139,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Extracts and parses a JSON object from a raw LLM response.\n * Handles markdown code fences. Validates against schema and warns on issues.\n */",
-    "parameters": [
-      {
-        "name": "raw",
-        "type": "string"
-      },
-      {
-        "name": "filePath",
-        "type": "string",
-        "optional": true
-      }
-    ],
-    "returnType": "Partial<FileSummary>",
     "language": "typescript"
   },
   {
@@ -4327,7 +4153,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Interface for file summarization strategies.\n */",
     "language": "typescript"
   },
   {
@@ -4342,13 +4167,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "error",
-        "type": "unknown"
-      }
-    ],
-    "returnType": "boolean",
     "language": "typescript"
   },
   {
@@ -4382,31 +4200,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "_sourceFile",
-        "type": "unknown",
-        "optional": true
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "Promise<FileSummary>",
     "language": "typescript"
   },
   {
@@ -4421,14 +4214,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "model",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "process.env.ANTHROPIC_MODEL ?? 'claude-haiku-4-5-20251001'"
-      }
-    ],
     "language": "typescript"
   },
   {
@@ -4463,31 +4248,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "_sourceFile",
-        "type": "unknown",
-        "optional": true
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "Promise<FileSummary>",
     "language": "typescript"
   },
   {
@@ -4504,13 +4264,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "prompt",
-        "type": "string"
-      }
-    ],
-    "returnType": "Promise<string>",
     "language": "typescript"
   },
   {
@@ -4525,14 +4278,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "model",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "process.env.CLAUDE_CODE_MODEL ?? 'sonnet'"
-      }
-    ],
     "language": "typescript"
   },
   {
@@ -4547,13 +4292,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "error",
-        "type": "unknown"
-      }
-    ],
-    "returnType": "boolean",
     "language": "typescript"
   },
   {
@@ -4587,31 +4325,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "_sourceFile",
-        "type": "unknown",
-        "optional": true
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "Promise<FileSummary>",
     "language": "typescript"
   },
   {
@@ -4626,20 +4339,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "baseUrl",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'"
-      },
-      {
-        "name": "model",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "process.env.OLLAMA_MODEL ?? 'qwen2.5-coder:7b'"
-      }
-    ],
     "language": "typescript"
   },
   {
@@ -4656,22 +4355,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Detect internal patterns from file structure and symbols.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      }
-    ],
-    "returnType": "string[]",
     "language": "typescript"
   },
   {
@@ -4688,18 +4371,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Build a better purpose string from exports and JSDoc at standard level.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -4735,31 +4406,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "sourceFile",
-        "type": "SourceFile",
-        "optional": true
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "Promise<FileSummary>",
     "language": "typescript"
   },
   {
@@ -4779,40 +4425,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Gets a cached summary if the content hasn't changed, otherwise generates a new one.\n * Includes richness level in the hash so switching levels invalidates the cache.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "content",
-        "type": "string"
-      },
-      {
-        "name": "symbols",
-        "type": "SymbolEntry[]"
-      },
-      {
-        "name": "summarizer",
-        "type": "Summarizer"
-      },
-      {
-        "name": "cache",
-        "type": "SummaryCache"
-      },
-      {
-        "name": "sourceFile",
-        "type": "SourceFile",
-        "optional": true
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "Promise<FileSummary>",
     "language": "typescript"
   },
   {
@@ -4843,7 +4455,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "returnType": "Record<string, FileSummary>",
     "language": "typescript"
   },
   {
@@ -4860,17 +4471,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "contentHash",
-        "type": "string"
-      }
-    ],
-    "returnType": "FileSummary | undefined",
     "language": "typescript"
   },
   {
@@ -4887,17 +4487,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "summary",
-        "type": "FileSummary"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -4914,7 +4503,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -4929,13 +4517,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "projectRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "import(\"/Users/amangupta/Projects/AICoder/scripts/lib/summary-cache\").SummaryCache",
     "language": "typescript"
   },
   {
@@ -4952,13 +4533,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "text",
-        "type": "string"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -4976,14 +4550,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Extract JSDoc text from a node's JSDoc comments.\n */",
-    "parameters": [
-      {
-        "name": "node",
-        "type": "Node"
-      }
-    ],
-    "returnType": "string | undefined",
     "language": "typescript"
   },
   {
@@ -5000,14 +4566,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Extract parameter documentation from a function-like node.\n */",
-    "parameters": [
-      {
-        "name": "node",
-        "type": "Node"
-      }
-    ],
-    "returnType": "ParameterDoc[] | undefined",
     "language": "typescript"
   },
   {
@@ -5024,14 +4582,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Extract return type from a function-like node.\n */",
-    "parameters": [
-      {
-        "name": "node",
-        "type": "Node"
-      }
-    ],
-    "returnType": "string | undefined",
     "language": "typescript"
   },
   {
@@ -5048,14 +4598,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Extract decorator names from a node.\n */",
-    "parameters": [
-      {
-        "name": "node",
-        "type": "Node"
-      }
-    ],
-    "returnType": "string[] | undefined",
     "language": "typescript"
   },
   {
@@ -5077,18 +4619,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Enrich a symbol entry with standard-level metadata (JSDoc, params, return type, decorators).\n */",
-    "parameters": [
-      {
-        "name": "entry",
-        "type": "SymbolEntry"
-      },
-      {
-        "name": "node",
-        "type": "Node"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -5105,6 +4635,7 @@
       "extractJsDoc"
     ],
     "calledBy": [
+      "runIndexerInternal",
       "TypeScriptAdapter.extractSymbols",
       "main",
       "<module-init:test/js-support.test.ts>",
@@ -5112,22 +4643,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "sourceFile",
-        "type": "SourceFile"
-      },
-      {
-        "name": "projectRoot",
-        "type": "string"
-      },
-      {
-        "name": "richness",
-        "type": "RichnessLevel",
-        "optional": true
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -5145,14 +4660,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Check if a file path is a test file.\n */",
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      }
-    ],
-    "returnType": "boolean",
     "language": "typescript"
   },
   {
@@ -5169,14 +4676,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Infer the source file that a test file is testing based on naming conventions.\n * e.g., \"foo.test.ts\" → \"foo.ts\", \"test_bar.py\" → \"bar.py\"\n */",
-    "parameters": [
-      {
-        "name": "testFile",
-        "type": "string"
-      }
-    ],
-    "returnType": "string | undefined",
     "language": "typescript"
   },
   {
@@ -5194,20 +4693,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Build a mapping from source files to their test files.\n *\n * Uses two strategies:\n * 1. Naming convention: foo.test.ts tests foo.ts\n * 2. Import analysis: if a test file imports a source file, it's mapped\n *\n * @param allFiles All relative file paths in the project\n * @param fileDeps File-level dependency map (file → imported files)\n */",
-    "parameters": [
-      {
-        "name": "allFiles",
-        "type": "string[]",
-        "description": "All relative file paths in the project\n *"
-      },
-      {
-        "name": "fileDeps",
-        "type": "Record<string, string[]>",
-        "description": "File-level dependency map (file → imported files)"
-      }
-    ],
-    "returnType": "TestMap",
     "language": "typescript"
   },
   {
@@ -5255,19 +4740,19 @@
       "logInfo",
       "AdapterRegistry.getIgnoreGlobs",
       "logError",
-      "handler"
+      "handler",
+      "runIndexer"
     ],
     "calledBy": [
       "<module-init:scripts/build-dependencies.ts>",
       "<module-init:scripts/build-knowledge.ts>",
       "<module-init:scripts/build-symbols.ts>",
       "<module-init:scripts/watch.ts>",
-      "<module-init:mcp-server/server.ts>"
+      "<module-init:mcp-server/server.ts>",
+      "<module-init:mcp-server/src/build-knowledge.ts>"
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * File Watcher - watches source files for changes and triggers incremental knowledge updates.\n *\n * Usage: tsx scripts/watch.ts [--root <path>]\n */",
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -5366,7 +4851,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/** Schema definition for a pipeline artifact type. */",
     "language": "typescript"
   },
   {
@@ -5381,7 +4865,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/** MCP tool handler response format. */",
     "language": "typescript"
   },
   {
@@ -5426,17 +4909,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "name",
-        "type": "any"
-      },
-      {
-        "name": "metadata",
-        "type": "any"
-      }
-    ],
-    "returnType": "void",
     "language": "javascript"
   },
   {
@@ -5451,13 +4923,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "{ events }",
-        "type": "{ events: any; }"
-      }
-    ],
-    "returnType": "any",
     "language": "javascript"
   },
   {
@@ -5472,13 +4937,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "orderId",
-        "type": "any"
-      }
-    ],
-    "returnType": "string",
     "language": "javascript"
   },
   {
@@ -5510,17 +4968,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "items",
-        "type": "any"
-      },
-      {
-        "name": "customerId",
-        "type": "any"
-      }
-    ],
-    "returnType": "{ id: string; items: any; customerId: any; total: any; }",
     "language": "javascript"
   },
   {
@@ -5537,13 +4984,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "items",
-        "type": "any"
-      }
-    ],
-    "returnType": "any",
     "language": "javascript"
   },
   {
@@ -5568,21 +5008,12 @@
     "signature": "function processPayment(amount, customerId)",
     "type": "function",
     "module": "sample-js-project",
-    "calls": [],
+    "calls": [
+      "PaymentProcessor.charge"
+    ],
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "parameters": [
-      {
-        "name": "amount",
-        "type": "any"
-      },
-      {
-        "name": "customerId",
-        "type": "any"
-      }
-    ],
-    "returnType": "boolean",
     "language": "javascript"
   },
   {
@@ -5611,21 +5042,11 @@
     "module": "sample-js-project",
     "calls": [],
     "calledBy": [
+      "processPayment",
       "OrderService.process_payment"
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "amount",
-        "type": "any"
-      },
-      {
-        "name": "customerId",
-        "type": "any"
-      }
-    ],
-    "returnType": "boolean",
     "language": "javascript"
   },
   {
@@ -5640,12 +5061,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "apiKey",
-        "type": "any"
-      }
-    ],
     "language": "javascript"
   },
   {
@@ -5662,14 +5077,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Tracks an analytics event. This is a leaf node — it makes no calls to other services.\n */",
-    "parameters": [
-      {
-        "name": "event",
-        "type": "TrackEvent"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -5686,14 +5093,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Formats a TrackEvent as a JSON string. Arrow function to test const-export extraction.\n */",
-    "parameters": [
-      {
-        "name": "event",
-        "type": "TrackEvent"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -5708,7 +5107,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * AnalyticsService - leaf node with no outgoing calls\n */",
     "language": "typescript"
   },
   {
@@ -5727,24 +5125,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Creates an order by charging the customer and tracking the event.\n * Calls charge() from PaymentService and track() from AnalyticsService.\n */",
-    "parameters": [
-      {
-        "name": "customerId",
-        "type": "string"
-      },
-      {
-        "name": "amount",
-        "type": "number"
-      },
-      {
-        "name": "currency",
-        "type": "string",
-        "optional": true,
-        "defaultValue": "\"USD\""
-      }
-    ],
-    "returnType": "Order",
     "language": "typescript"
   },
   {
@@ -5775,14 +5155,6 @@
     ],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * Charges a customer for the given amount.\n * Throws PaymentDeclined if the payment cannot be processed.\n */",
-    "parameters": [
-      {
-        "name": "request",
-        "type": "ChargeRequest"
-      }
-    ],
-    "returnType": "ChargeResult",
     "language": "typescript"
   },
   {
@@ -5797,7 +5169,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "jsdoc": "/**\n * PaymentService - handles payment processing\n */",
     "language": "typescript"
   },
   {
@@ -5812,12 +5183,6 @@
     "calledBy": [],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "reason",
-        "type": "string"
-      }
-    ],
     "language": "typescript"
   },
   {
@@ -5862,14 +5227,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "overrides",
-        "type": "Partial<DependencyGraph>",
-        "optional": true
-      }
-    ],
-    "returnType": "DependencyGraph",
     "language": "typescript"
   },
   {
@@ -5886,13 +5243,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "graph",
-        "type": "DependencyGraph"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -5909,13 +5259,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "cache",
-        "type": "Record<string, FileSummary>"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -5936,13 +5279,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "index",
-        "type": "KnowledgeIndex"
-      }
-    ],
-    "returnType": "Promise<void>",
     "language": "typescript"
   },
   {
@@ -5973,8 +5309,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Copy the fixture project to a temp directory so we can modify files\n * without affecting the original fixtures.\n */",
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -5985,8 +5319,15 @@
     "signature": "function loadSymbols(knRoot: string): SymbolEntry[]",
     "type": "function",
     "module": "test",
-    "calls": [],
+    "calls": [
+      "loadIndex",
+      "getOrLoad",
+      "safeReadFile"
+    ],
     "calledBy": [
+      "loadSymbolMap",
+      "loadFileToSymbols",
+      "searchSymbolJsdoc",
       "handler",
       "handleFileChange",
       "handleBatchFileChanges",
@@ -5995,13 +5336,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "knRoot",
-        "type": "string"
-      }
-    ],
-    "returnType": "SymbolEntry[]",
     "language": "typescript"
   },
   {
@@ -6019,7 +5353,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -6036,17 +5369,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "filePath",
-        "type": "string"
-      },
-      {
-        "name": "data",
-        "type": "unknown"
-      }
-    ],
-    "returnType": "void",
     "language": "typescript"
   },
   {
@@ -6063,8 +5385,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Creates an in-memory ts-morph project configured to handle JavaScript files.\n */",
-    "returnType": "Project",
     "language": "typescript"
   },
   {
@@ -6082,7 +5402,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -6099,14 +5418,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "parts",
-        "type": "string[]",
-        "optional": true
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -6123,18 +5434,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Generate a random integer in [min, max] inclusive.\n */",
-    "parameters": [
-      {
-        "name": "min",
-        "type": "number"
-      },
-      {
-        "name": "max",
-        "type": "number"
-      }
-    ],
-    "returnType": "number",
     "language": "typescript"
   },
   {
@@ -6152,14 +5451,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Build a valid TypeScript identifier for a file index.\n */",
-    "parameters": [
-      {
-        "name": "index",
-        "type": "number"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -6179,14 +5470,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Generate a TypeScript source file with 1-3 exported functions and optional\n * imports from previously-created files (to keep the import graph acyclic).\n */",
-    "parameters": [
-      {
-        "name": "index",
-        "type": "number"
-      }
-    ],
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -6203,8 +5486,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "jsdoc": "/**\n * Generate a minimal tsconfig.json suitable for ts-morph to process all files.\n */",
-    "returnType": "string",
     "language": "typescript"
   },
   {
@@ -6221,13 +5502,6 @@
     ],
     "throws": [],
     "isExported": false,
-    "parameters": [
-      {
-        "name": "overrides",
-        "type": "Partial<SymbolEntry> & { name: string; qualifiedName: string; file: string }"
-      }
-    ],
-    "returnType": "SymbolEntry",
     "language": "typescript"
   },
   {
@@ -6720,6 +5994,49 @@
   },
   {
     "name": "<module-init>",
+    "qualifiedName": "<module-init:mcp-server/src/build-knowledge.ts>",
+    "file": "mcp-server/src/build-knowledge.ts",
+    "line": 1,
+    "signature": "<module-init:mcp-server/src/build-knowledge.ts>",
+    "type": "module-init",
+    "module": "src",
+    "calls": [
+      "main"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:mcp-server/tools/lib/cache.ts>",
+    "file": "mcp-server/tools/lib/cache.ts",
+    "line": 1,
+    "signature": "<module-init:mcp-server/tools/lib/cache.ts>",
+    "type": "module-init",
+    "module": "lib",
+    "calls": [
+      "parseMaxEntries"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:test/fixtures/sample-js-project/payment-service.js>",
+    "file": "test/fixtures/sample-js-project/payment-service.js",
+    "line": 1,
+    "signature": "<module-init:test/fixtures/sample-js-project/payment-service.js>",
+    "type": "module-init",
+    "module": "sample-js-project",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
     "qualifiedName": "<module-init:test/fixtures/sample-project/payment-service.ts>",
     "file": "test/fixtures/sample-project/payment-service.ts",
     "line": 1,
@@ -6745,8 +6062,7 @@
     ],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Track an analytics event."
+    "language": "python"
   },
   {
     "name": "flush_events",
@@ -6762,8 +6078,7 @@
     ],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Flush pending events to the analytics backend."
+    "language": "python"
   },
   {
     "name": "EventBuffer",
@@ -6777,8 +6092,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Buffers events before sending."
+    "language": "python"
   },
   {
     "name": "__init__",
@@ -6808,8 +6122,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Add an event to the buffer."
+    "language": "python"
   },
   {
     "name": "flush",
@@ -6825,8 +6138,7 @@
     ],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Flush the buffer."
+    "language": "python"
   },
   {
     "name": "OrderService",
@@ -6840,8 +6152,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Handles order creation and management."
+    "language": "python"
   },
   {
     "name": "__init__",
@@ -6872,8 +6183,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Create a new order."
+    "language": "python"
   },
   {
     "name": "_calculate_total",
@@ -6889,8 +6199,7 @@
     ],
     "throws": [],
     "isExported": false,
-    "language": "python",
-    "jsdoc": "Internal helper to calculate order total."
+    "language": "python"
   },
   {
     "name": "process_payment",
@@ -6906,8 +6215,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Process payment for an order."
+    "language": "python"
   },
   {
     "name": "get_order_status",
@@ -6921,8 +6229,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Get the status of an order."
+    "language": "python"
   },
   {
     "name": "PaymentProcessor",
@@ -6938,8 +6245,7 @@
     ],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Processes payments via external gateway."
+    "language": "python"
   },
   {
     "name": "__init__",
@@ -6965,12 +6271,12 @@
     "module": "sample-python-project",
     "calls": [],
     "calledBy": [
+      "processPayment",
       "OrderService.process_payment"
     ],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Charge a customer."
+    "language": "python"
   },
   {
     "name": "validate_card",
@@ -6984,8 +6290,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Validate a credit card number."
+    "language": "python"
   },
   {
     "name": "is_configured",
@@ -6999,8 +6304,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Check if the processor is configured."
+    "language": "python"
   },
   {
     "name": "create_processor",
@@ -7016,8 +6320,7 @@
     "calledBy": [],
     "throws": [],
     "isExported": true,
-    "language": "python",
-    "jsdoc": "Factory function for PaymentProcessor."
+    "language": "python"
   },
   {
     "name": "<module-init>",

@@ -1,22 +1,5 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-/**
- * Loads dependencies.json from the knowledge root directory.
- * Returns null if the file does not exist.
- */
-function loadDependencies(knowledgeRoot) {
-    const depsPath = path.join(knowledgeRoot, 'dependencies.json');
-    if (!fs.existsSync(depsPath)) {
-        return null;
-    }
-    try {
-        const raw = fs.readFileSync(depsPath, 'utf-8');
-        return JSON.parse(raw);
-    }
-    catch {
-        return null;
-    }
-}
+import { loadDependencies as loadDepsFromCache } from './lib/data-loader.js';
+import { computeClosestMatches } from './lib/path-utils.js';
 /**
  * Performs BFS traversal over the dependency graph starting from the given
  * module, collecting all reachable dependencies up to `maxDepth` levels.
@@ -59,13 +42,13 @@ function bfsTraverse(startModule, edges, maxDepth) {
  */
 export function handler(args, knowledgeRoot = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge') {
     const { module: moduleName, depth = 1 } = args;
-    const graph = loadDependencies(knowledgeRoot);
+    const graph = loadDepsFromCache(knowledgeRoot);
     if (graph === null) {
         return {
             content: [
                 {
                     type: 'text',
-                    text: 'dependencies.json not found. Please run "npm run build-knowledge" to generate the knowledge artifacts.',
+                    text: 'Dependency graph not found. The knowledge index has not been built yet for this project.',
                 },
             ],
             isError: true,
@@ -74,16 +57,32 @@ export function handler(args, knowledgeRoot = process.env['KNOWLEDGE_ROOT'] ?? '
     // Check if the requested module exists in the nodes list
     if (!graph.nodes.includes(moduleName)) {
         const sorted = graph.nodes.slice().sort();
-        const availableMsg = sorted.length > 0
-            ? `Available modules:\n  ${sorted.join('\n  ')}`
-            : 'No modules are currently indexed.';
+        const suggestions = computeClosestMatches(moduleName, sorted, 3);
+        const lines = [
+            `Module "${moduleName}" not found in the dependency graph.`,
+            '',
+        ];
+        if (suggestions.length > 0) {
+            lines.push('Did you mean one of these?');
+            for (const s of suggestions) {
+                lines.push(`  - ${s}`);
+            }
+            lines.push('');
+        }
+        if (sorted.length > 0) {
+            lines.push('Available modules:');
+            for (const m of sorted) {
+                lines.push(`  - ${m}`);
+            }
+        }
+        else {
+            lines.push('No modules are currently indexed.');
+        }
+        lines.push('');
+        lines.push(`Tip: Use get_project_overview() to see all modules, or get_module_context(module="<name>") to explore a specific one.`);
+        lines.push(`Format example: get_dependencies(module="${sorted[0] ?? 'tools'}")`);
         return {
-            content: [
-                {
-                    type: 'text',
-                    text: `Module "${moduleName}" not found in the dependency graph.\n\n${availableMsg}`,
-                },
-            ],
+            content: [{ type: 'text', text: lines.join('\n') }],
         };
     }
     // Perform BFS to collect dependencies

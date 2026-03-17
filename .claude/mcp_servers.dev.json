@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ai-code-knowledge": {
+      "command": "npx",
+      "args": ["tsx", "mcp-server/server.ts"],
+      "env": {
+        "KNOWLEDGE_ROOT": ".knowledge"
+      }
+    }
+  }
+}

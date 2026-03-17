@@ -49,11 +49,27 @@
       "mcp-server/tools/validate-artifact-draft.ts",
       "mcp-server/tools/get-cumulative-context.ts"
     ],
+    "mcp-server/src/build-knowledge.ts": [
+      "mcp-server/src/indexer.ts",
+      "mcp-server/src/summarizer.ts"
+    ],
+    "mcp-server/src/indexer.ts": [],
+    "mcp-server/src/summarizer.ts": [
+      "mcp-server/src/indexer.ts"
+    ],
     "mcp-server/tools/find-callers.ts": [
-      "mcp-server/types.ts"
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/metadata-footer.ts"
     ],
     "mcp-server/tools/find-symbol.ts": [
-      "mcp-server/types.ts"
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/metadata-footer.ts"
     ],
     "mcp-server/tools/find-template-file.ts": [
       "mcp-server/types.ts",
@@ -70,20 +86,26 @@
     "mcp-server/tools/get-batch-summaries.ts": [
       "mcp-server/types.ts",
       "mcp-server/tools/lib/data-loader.ts",
-      "mcp-server/tools/lib/path-utils.ts"
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/metadata-footer.ts"
     ],
     "mcp-server/tools/get-code-patterns.ts": [
       "mcp-server/types.ts",
       "mcp-server/tools/lib/data-loader.ts",
-      "mcp-server/tools/lib/response-budget.ts"
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/path-utils.ts"
     ],
     "mcp-server/tools/get-cumulative-context.ts": [
       "mcp-server/types.ts",
       "mcp-server/tools/lib/artifact-schemas.ts",
-      "mcp-server/tools/lib/response-budget.ts"
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/path-utils.ts"
     ],
     "mcp-server/tools/get-dependencies.ts": [
-      "mcp-server/types.ts"
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/path-utils.ts"
     ],
     "mcp-server/tools/get-directory-tree.ts": [
       "mcp-server/types.ts",
@@ -99,12 +121,15 @@
       "mcp-server/types.ts",
       "mcp-server/tools/lib/data-loader.ts",
       "mcp-server/tools/lib/path-utils.ts",
-      "mcp-server/tools/lib/response-budget.ts"
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/metadata-footer.ts"
     ],
     "mcp-server/tools/get-module-context.ts": [
       "mcp-server/types.ts",
       "mcp-server/tools/lib/data-loader.ts",
-      "mcp-server/tools/lib/response-budget.ts"
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/metadata-footer.ts"
     ],
     "mcp-server/tools/get-project-overview.ts": [
       "mcp-server/types.ts",
@@ -112,7 +137,8 @@
       "mcp-server/tools/lib/file-tree.ts",
       "mcp-server/tools/lib/tech-stack.ts",
       "mcp-server/tools/lib/path-utils.ts",
-      "mcp-server/tools/lib/response-budget.ts"
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/metadata-footer.ts"
     ],
     "mcp-server/tools/get-static-data-schema.ts": [
       "mcp-server/types.ts",
@@ -124,20 +150,33 @@
       "mcp-server/tools/lib/data-loader.ts",
       "mcp-server/tools/lib/file-tree.ts",
       "mcp-server/tools/lib/tech-stack.ts",
-      "mcp-server/tools/lib/path-utils.ts"
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/metadata-footer.ts"
     ],
     "mcp-server/tools/lib/artifact-schemas.ts": [
       "mcp-server/types.ts"
     ],
+    "mcp-server/tools/lib/cache.ts": [],
     "mcp-server/tools/lib/data-loader.ts": [
-      "mcp-server/types.ts"
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/cache.ts",
+      "mcp-server/tools/lib/path-utils.ts"
     ],
     "mcp-server/tools/lib/file-tree.ts": [],
+    "mcp-server/tools/lib/metadata-footer.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/cache.ts"
+    ],
     "mcp-server/tools/lib/path-utils.ts": [],
     "mcp-server/tools/lib/response-budget.ts": [],
     "mcp-server/tools/lib/tech-stack.ts": [],
     "mcp-server/tools/search-architecture.ts": [
-      "mcp-server/types.ts"
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/path-utils.ts"
     ],
     "mcp-server/tools/validate-artifact-draft.ts": [
       "mcp-server/types.ts",

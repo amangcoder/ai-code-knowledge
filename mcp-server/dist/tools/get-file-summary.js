@@ -1,10 +1,15 @@
-import * as path from 'node:path';
 import { loadSummaryCache } from './lib/data-loader.js';
-import { normalizePath } from './lib/path-utils.js';
+import { normalizePath, computeClosestMatches } from './lib/path-utils.js';
 function formatSummary(summary) {
     const lines = [];
     lines.push(`File: ${summary.file}`);
-    lines.push(`Purpose: ${summary.purpose}`);
+    lines.push(`Purpose: ${summary.detailedPurpose ?? summary.llmDescription ?? summary.purpose}`);
+    if (summary.architecturalRole) {
+        lines.push(`Architectural Role: ${summary.architecturalRole}`);
+    }
+    if (summary.complexityScore != null) {
+        lines.push(`Complexity Score: ${summary.complexityScore}`);
+    }
     if (summary.exports && summary.exports.length > 0) {
         lines.push(`Exports: ${summary.exports.join(', ')}`);
     }
@@ -23,6 +28,23 @@ function formatSummary(summary) {
     if (summary.throws && summary.throws.length > 0) {
         lines.push(`Throws: ${summary.throws.join(', ')}`);
     }
+    if (summary.publicAPI && summary.publicAPI.length > 0) {
+        lines.push('');
+        lines.push('Public API:');
+        for (const entry of summary.publicAPI) {
+            let line = `  ${entry.type} ${entry.name}: ${entry.signature}`;
+            if (entry.jsdoc) {
+                line += `\n    ${entry.jsdoc}`;
+            }
+            lines.push(line);
+        }
+    }
+    if (summary.internalPatterns && summary.internalPatterns.length > 0) {
+        lines.push(`Internal Patterns: ${summary.internalPatterns.join(', ')}`);
+    }
+    if (summary.testFiles && summary.testFiles.length > 0) {
+        lines.push(`Test Files: ${summary.testFiles.join(', ')}`);
+    }
     if (summary.lastUpdated) {
         lines.push(`Last Updated: ${summary.lastUpdated}`);
     }
@@ -31,12 +53,11 @@ function formatSummary(summary) {
 export function handler(args, knowledgeRoot = '.knowledge') {
     const cache = loadSummaryCache(knowledgeRoot);
     if (cache === null) {
-        const cachePath = path.join(knowledgeRoot, 'summaries', 'cache.json');
         return {
             content: [
                 {
                     type: 'text',
-                    text: `Error: Summary cache not found at ${cachePath}.\nRun 'npm run build-knowledge' to generate the knowledge artifacts first.`,
+                    text: 'Knowledge base not found. The knowledge index has not been built yet for this project.',
                 },
             ],
             isError: true,
@@ -66,23 +87,28 @@ export function handler(args, knowledgeRoot = '.knowledge') {
             content: [{ type: 'text', text: formatSummary(cache[partialMatch]) }],
         };
     }
-    // No match found - list first 10 available paths
-    const available = cacheKeys.slice(0, 10);
-    const availableList = available.length > 0
-        ? available.map((p) => `  - ${p}`).join('\n')
-        : '  (no summaries available)';
+    // No match found — provide top-3 closest matches
+    const suggestions = computeClosestMatches(normalizedInput, cacheKeys, 3);
+    const lines = [
+        `No summary found for: ${args.file} (normalized: ${normalizedInput})`,
+        '',
+    ];
+    if (suggestions.length > 0) {
+        lines.push('Did you mean one of these?');
+        for (const s of suggestions) {
+            lines.push(`  - ${s}`);
+        }
+        lines.push('');
+        lines.push(`Tip: Call get_file_summary(file="${suggestions[0]}") or get_implementation_context(file="${suggestions[0]}") for richer detail.`);
+    }
+    else {
+        lines.push('Available summaries (first 10):');
+        lines.push(...cacheKeys.slice(0, 10).map(p => `  - ${p}`));
+        lines.push('');
+        lines.push('Tip: Use get_batch_summaries to see all indexed files, or get_project_overview() to explore modules.');
+    }
     return {
-        content: [
-            {
-                type: 'text',
-                text: [
-                    `No summary found for: ${args.file} (normalized: ${normalizedInput})`,
-                    '',
-                    'Available summaries (first 10):',
-                    availableList,
-                ].join('\n'),
-            },
-        ],
+        content: [{ type: 'text', text: lines.join('\n') }],
         isError: true,
     };
 }
