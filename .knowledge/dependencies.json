@@ -12,18 +12,23 @@
       "type": "direct"
     },
     {
+      "from": "scripts",
+      "to": "mcp-server",
+      "type": "direct"
+    },
+    {
       "from": "test",
       "to": "scripts",
       "type": "direct"
     },
     {
       "from": "test",
-      "to": "mcp-server",
+      "to": "src",
       "type": "direct"
     },
     {
       "from": "test",
-      "to": "src",
+      "to": "mcp-server",
       "type": "direct"
     }
   ],
@@ -47,7 +52,10 @@
       "mcp-server/tools/find-template-file.ts",
       "mcp-server/tools/get-static-data-schema.ts",
       "mcp-server/tools/validate-artifact-draft.ts",
-      "mcp-server/tools/get-cumulative-context.ts"
+      "mcp-server/tools/get-cumulative-context.ts",
+      "mcp-server/tools/semantic-search.ts",
+      "mcp-server/tools/explore-graph.ts",
+      "mcp-server/tools/get-feature-context.ts"
     ],
     "mcp-server/src/build-knowledge.ts": [
       "mcp-server/src/indexer.ts",
@@ -56,6 +64,15 @@
     "mcp-server/src/indexer.ts": [],
     "mcp-server/src/summarizer.ts": [
       "mcp-server/src/indexer.ts"
+    ],
+    "mcp-server/tools/explore-graph.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/metadata-footer.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/working-memory.ts",
+      "mcp-server/tools/lib/knowledge-graph.ts"
     ],
     "mcp-server/tools/find-callers.ts": [
       "mcp-server/types.ts",
@@ -73,7 +90,12 @@
     ],
     "mcp-server/tools/find-template-file.ts": [
       "mcp-server/types.ts",
-      "mcp-server/tools/lib/data-loader.ts"
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/embedding-provider.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/metadata-footer.ts",
+      "mcp-server/tools/lib/hybrid-retriever.ts"
     ],
     "mcp-server/tools/get-artifact-schema.ts": [
       "mcp-server/types.ts",
@@ -111,6 +133,15 @@
       "mcp-server/types.ts",
       "mcp-server/tools/lib/file-tree.ts",
       "mcp-server/tools/lib/path-utils.ts"
+    ],
+    "mcp-server/tools/get-feature-context.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/metadata-footer.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/working-memory.ts",
+      "mcp-server/tools/lib/embedding-provider.ts"
     ],
     "mcp-server/tools/get-file-summary.ts": [
       "mcp-server/types.ts",
@@ -157,26 +188,56 @@
     "mcp-server/tools/lib/artifact-schemas.ts": [
       "mcp-server/types.ts"
     ],
+    "mcp-server/tools/lib/bm25-index.ts": [
+      "mcp-server/types.ts"
+    ],
     "mcp-server/tools/lib/cache.ts": [],
     "mcp-server/tools/lib/data-loader.ts": [
       "mcp-server/types.ts",
       "mcp-server/tools/lib/cache.ts",
-      "mcp-server/tools/lib/path-utils.ts"
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/bm25-index.ts",
+      "mcp-server/tools/lib/hybrid-retriever.ts",
+      "mcp-server/tools/lib/knowledge-graph.ts"
     ],
+    "mcp-server/tools/lib/embedding-provider.ts": [],
     "mcp-server/tools/lib/file-tree.ts": [],
+    "mcp-server/tools/lib/hybrid-retriever.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/bm25-index.ts",
+      "mcp-server/tools/lib/embedding-provider.ts"
+    ],
+    "mcp-server/tools/lib/knowledge-graph.ts": [
+      "mcp-server/types.ts"
+    ],
     "mcp-server/tools/lib/metadata-footer.ts": [
       "mcp-server/types.ts",
       "mcp-server/tools/lib/response-budget.ts",
       "mcp-server/tools/lib/cache.ts"
     ],
     "mcp-server/tools/lib/path-utils.ts": [],
+    "mcp-server/tools/lib/query-router.ts": [
+      "mcp-server/types.ts"
+    ],
     "mcp-server/tools/lib/response-budget.ts": [],
     "mcp-server/tools/lib/tech-stack.ts": [],
+    "mcp-server/tools/lib/working-memory.ts": [],
     "mcp-server/tools/search-architecture.ts": [
       "mcp-server/types.ts",
       "mcp-server/tools/lib/data-loader.ts",
       "mcp-server/tools/lib/response-budget.ts",
       "mcp-server/tools/lib/path-utils.ts"
+    ],
+    "mcp-server/tools/semantic-search.ts": [
+      "mcp-server/types.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/response-budget.ts",
+      "mcp-server/tools/lib/metadata-footer.ts",
+      "mcp-server/tools/lib/path-utils.ts",
+      "mcp-server/tools/lib/working-memory.ts",
+      "mcp-server/tools/lib/query-router.ts",
+      "mcp-server/tools/lib/embedding-provider.ts",
+      "mcp-server/tools/lib/hybrid-retriever.ts"
     ],
     "mcp-server/tools/validate-artifact-draft.ts": [
       "mcp-server/types.ts",
@@ -240,6 +301,7 @@
     "scripts/lib/call-graph.ts": [
       "src/types.ts"
     ],
+    "scripts/lib/clustering.ts": [],
     "scripts/lib/complexity.ts": [
       "src/types.ts"
     ],
@@ -248,6 +310,24 @@
       "src/types.ts",
       "scripts/lib/module-grouper.ts",
       "scripts/lib/dependency-extractor.ts"
+    ],
+    "scripts/lib/embeddings/embedding-factory.ts": [
+      "scripts/lib/embeddings/embedding-provider.ts",
+      "scripts/lib/embeddings/ollama-embedding-provider.ts",
+      "scripts/lib/embeddings/openai-embedding-provider.ts"
+    ],
+    "scripts/lib/embeddings/embedding-provider.ts": [],
+    "scripts/lib/embeddings/ollama-embedding-provider.ts": [
+      "scripts/lib/embeddings/embedding-provider.ts"
+    ],
+    "scripts/lib/embeddings/openai-embedding-provider.ts": [
+      "scripts/lib/embeddings/embedding-provider.ts"
+    ],
+    "scripts/lib/feature-discovery.ts": [
+      "src/types.ts",
+      "scripts/lib/summarizer.ts",
+      "scripts/lib/clustering.ts",
+      "scripts/lib/atomic-writer.ts"
     ],
     "scripts/lib/file-collector.ts": [
       "scripts/lib/adapters/adapter-registry.ts",
@@ -274,6 +354,26 @@
       "src/types.ts"
     ],
     "scripts/lib/path-utils.ts": [],
+    "scripts/lib/phases/embedding-phase.ts": [
+      "src/types.ts",
+      "scripts/lib/embeddings/embedding-provider.ts",
+      "scripts/lib/vector-store.ts",
+      "scripts/lib/logger.ts"
+    ],
+    "scripts/lib/phases/feature-discovery-phase.ts": [
+      "src/types.ts",
+      "scripts/lib/embeddings/embedding-provider.ts",
+      "scripts/lib/summarizer.ts",
+      "scripts/lib/vector-store.ts",
+      "scripts/lib/feature-discovery.ts",
+      "scripts/lib/logger.ts"
+    ],
+    "scripts/lib/phases/graph-build-phase.ts": [
+      "src/types.ts",
+      "mcp-server/tools/lib/knowledge-graph.ts",
+      "scripts/lib/atomic-writer.ts",
+      "scripts/lib/logger.ts"
+    ],
     "scripts/lib/python/python-call-graph.ts": [
       "src/types.ts"
     ],
@@ -326,6 +426,9 @@
       "src/types.ts"
     ],
     "scripts/lib/test-mapper.ts": [],
+    "scripts/lib/vector-store.ts": [
+      "src/types.ts"
+    ],
     "scripts/watch.ts": [
       "scripts/lib/incremental-updater.ts",
       "scripts/lib/logger.ts",
@@ -336,12 +439,42 @@
       "scripts/lib/dependency-extractor.ts",
       "scripts/lib/dependency-graph.ts"
     ],
+    "test/embedding-phase.test.ts": [
+      "src/types.ts",
+      "scripts/lib/embeddings/embedding-provider.ts",
+      "scripts/lib/vector-store.ts",
+      "scripts/lib/phases/embedding-phase.ts"
+    ],
+    "test/embedding-provider.test.ts": [
+      "scripts/lib/embeddings/ollama-embedding-provider.ts",
+      "scripts/lib/embeddings/openai-embedding-provider.ts",
+      "scripts/lib/embeddings/embedding-factory.ts"
+    ],
     "test/error-conditions.test.ts": [
       "mcp-server/tools/find-symbol.ts",
       "mcp-server/tools/find-callers.ts",
       "mcp-server/tools/get-file-summary.ts",
       "mcp-server/tools/get-dependencies.ts",
       "mcp-server/tools/health-check.ts"
+    ],
+    "test/explore-graph.test.ts": [
+      "src/types.ts",
+      "mcp-server/tools/lib/knowledge-graph.ts",
+      "mcp-server/tools/explore-graph.ts",
+      "mcp-server/tools/lib/working-memory.ts"
+    ],
+    "test/feature-discovery-phase.test.ts": [
+      "src/types.ts",
+      "scripts/lib/embeddings/embedding-provider.ts",
+      "scripts/lib/vector-store.ts",
+      "scripts/lib/summarizer.ts",
+      "scripts/lib/phases/feature-discovery-phase.ts"
+    ],
+    "test/feature-discovery.test.ts": [
+      "scripts/lib/clustering.ts",
+      "scripts/lib/feature-discovery.ts",
+      "src/types.ts",
+      "scripts/lib/summarizer.ts"
     ],
     "test/find-callers.test.ts": [
       "mcp-server/tools/find-callers.ts",
@@ -350,6 +483,12 @@
     "test/find-symbol.test.ts": [
       "mcp-server/tools/find-symbol.ts",
       "src/types.ts"
+    ],
+    "test/find-template-file.test.ts": [
+      "src/types.ts",
+      "mcp-server/tools/find-template-file.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/embedding-provider.ts"
     ],
     "test/fixtures/sample-js-project/analytics-service.jsx": [],
     "test/fixtures/sample-js-project/order-service.js": [
@@ -366,9 +505,20 @@
       "mcp-server/tools/get-dependencies.ts",
       "src/types.ts"
     ],
+    "test/get-feature-context.test.ts": [
+      "src/types.ts",
+      "mcp-server/tools/get-feature-context.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/working-memory.ts",
+      "mcp-server/tools/lib/embedding-provider.ts"
+    ],
     "test/get-file-summary.test.ts": [
       "mcp-server/tools/get-file-summary.ts",
       "src/types.ts"
+    ],
+    "test/graph-build-phase.test.ts": [
+      "src/types.ts",
+      "scripts/lib/phases/graph-build-phase.ts"
     ],
     "test/health-check.test.ts": [
       "mcp-server/tools/health-check.ts",
@@ -423,6 +573,15 @@
     "test/search-architecture.test.ts": [
       "mcp-server/tools/search-architecture.ts"
     ],
+    "test/semantic-search.test.ts": [
+      "src/types.ts",
+      "mcp-server/tools/semantic-search.ts",
+      "mcp-server/tools/lib/data-loader.ts",
+      "mcp-server/tools/lib/working-memory.ts",
+      "mcp-server/tools/lib/bm25-index.ts",
+      "mcp-server/tools/lib/query-router.ts",
+      "mcp-server/tools/lib/hybrid-retriever.ts"
+    ],
     "test/summarizer-language.test.ts": [
       "scripts/lib/summarizer.ts",
       "src/types.ts"
@@ -434,6 +593,9 @@
       "scripts/lib/symbol-extractor.ts",
       "scripts/lib/call-graph.ts",
       "src/types.ts"
+    ],
+    "test/vector-store.test.ts": [
+      "scripts/lib/vector-store.ts"
     ],
     "test/fixtures/sample-python-project/__init__.py": [],
     "test/fixtures/sample-python-project/analytics_service.py": [],

@@ -1,0 +1,163 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # ─── Type-check ──────────────────────────────────────────────────────────────
+  typecheck:
+    name: TypeScript type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync types (src/types.ts → mcp-server/types.ts)
+        run: npm run sync-types
+
+      - name: Type-check (full project)
+        run: npx tsc --noEmit
+
+      - name: Type-check (MCP server)
+        run: npx tsc --project tsconfig.mcp.json --noEmit
+
+  # ─── Unit tests ──────────────────────────────────────────────────────────────
+  test:
+    name: Unit tests (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['18', '20', '22']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        env:
+          # Use static summarizer in CI (no LLM required)
+          SUMMARIZER_MODE: static
+          # Use offline/mock embedding mode in CI (no Ollama required)
+          EMBEDDING_MODEL: mock
+          # Disable any cloud API calls
+          OPENAI_API_KEY: ''
+          ANTHROPIC_API_KEY: ''
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-node${{ matrix.node-version }}
+          path: |
+            test-results/
+            coverage/
+          retention-days: 7
+
+  # ─── Build MCP server ────────────────────────────────────────────────────────
+  build:
+    name: Build MCP server
+    runs-on: ubuntu-latest
+    needs: [typecheck]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build MCP server
+        run: npm run build-mcp
+
+      - name: Verify MCP server entry point exists
+        run: test -f mcp-server/dist/server.js
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-server-dist
+          path: mcp-server/dist/
+          retention-days: 7
+
+  # ─── Build pipeline smoke test ───────────────────────────────────────────────
+  build-pipeline-smoke:
+    name: Build pipeline smoke test
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build-knowledge (skip vectors & features — no Ollama in CI)
+        run: npm run build-knowledge:skip-vectors
+        env:
+          SUMMARIZER_MODE: static
+
+      - name: Verify core knowledge artifacts
+        run: |
+          test -f .knowledge/index.json       || (echo "MISSING: index.json" && exit 1)
+          test -f .knowledge/symbols.json     || (echo "MISSING: symbols.json" && exit 1)
+          test -f .knowledge/dependencies.json || (echo "MISSING: dependencies.json" && exit 1)
+          echo "All core knowledge artifacts present."
+
+      - name: Verify new pipeline phase artifacts (graph)
+        run: |
+          test -f .knowledge/graph/nodes.json || (echo "MISSING: graph/nodes.json" && exit 1)
+          test -f .knowledge/graph/edges.json || (echo "MISSING: graph/edges.json" && exit 1)
+          echo "Graph phase artifacts present."
+
+      - name: Verify idempotency (run twice, diff output)
+        run: |
+          npm run build-knowledge:skip-vectors 2>/dev/null
+          cp .knowledge/index.json /tmp/index_run1.json
+          npm run build-knowledge:skip-vectors 2>/dev/null
+          cp .knowledge/index.json /tmp/index_run2.json
+          diff /tmp/index_run1.json /tmp/index_run2.json && echo "Idempotency check passed."
+        env:
+          SUMMARIZER_MODE: static
+
+      - name: Upload knowledge artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: knowledge-base
+          path: |
+            .knowledge/
+            !.knowledge/vectors/
+            !.knowledge/graph/
+            !.knowledge/features/
+          retention-days: 3

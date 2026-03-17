@@ -27,6 +27,9 @@ import * as findTemplateFile from './tools/find-template-file.js';
 import * as getStaticDataSchema from './tools/get-static-data-schema.js';
 import * as validateArtifactDraft from './tools/validate-artifact-draft.js';
 import * as getCumulativeContext from './tools/get-cumulative-context.js';
+import * as semanticSearch from './tools/semantic-search.js';
+import * as exploreGraph from './tools/explore-graph.js';
+import * as getFeatureContext from './tools/get-feature-context.js';
 
 const KNOWLEDGE_ROOT = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge';
 
@@ -390,6 +393,103 @@ async function main(): Promise<void> {
     );
 
     server.tool(
+        'semantic_search',
+        'Search the codebase semantically using hybrid BM25 keyword + ANN vector retrieval merged via ' +
+            'Reciprocal Rank Fusion. Returns ranked results with relevance scores, snippets, and metadata. ' +
+            'Requires the vector index to be built first (npm run build-knowledge). ' +
+            'Param query: natural-language search query (e.g., "authentication flow", "createOrder"). ' +
+            'Param scope: filter results — "files" | "symbols" | "features" | "all" (default: "all"). ' +
+            'Param topK: number of results to return (default: 10, max: 50). ' +
+            'Example: semantic_search(query="how does caching work", scope="symbols", topK=5)',
+        {
+            query: z
+                .string()
+                .max(500)
+                .describe('Natural-language search query (max 500 chars). Example: "authentication flow"'),
+            scope: z
+                .enum(['files', 'symbols', 'features', 'all'])
+                .optional()
+                .describe('Filter results by type: "files", "symbols", "features", or "all" (default: "all")'),
+            topK: z
+                .number()
+                .int()
+                .min(1)
+                .max(50)
+                .optional()
+                .describe('Number of results to return (default: 10, max: 50)'),
+        },
+        async (args: { query: string; scope?: 'files' | 'symbols' | 'features' | 'all'; topK?: number }) => {
+            return semanticSearch.handler(args, KNOWLEDGE_ROOT);
+        }
+    );
+
+    server.tool(
+        'explore_graph',
+        'Traverse the knowledge graph starting from a node, following typed edges up to a given depth. ' +
+            'Returns depth-annotated nodes and traversed edges. ' +
+            'Node types: file, symbol, module, feature, package. ' +
+            'Edge types: contains, calls, imports, depends_on, implements, similar_to. ' +
+            'Requires the graph to be built (Phase 8) or symbols/dependencies to exist for dynamic construction. ' +
+            'Param start: node ID or name to start from. ' +
+            '  Formats: "file:<path>", "symbol:<qualifiedName>", "module:<name>", or plain name/path. ' +
+            '  Examples: "file:tools/lib/cache.ts", "symbol:handler", "tools", "cache.ts". ' +
+            'Param edgeTypes: array of edge types to follow (default: all types). ' +
+            '  Values: "contains", "calls", "imports", "depends_on", "implements", "similar_to". ' +
+            'Param maxDepth: BFS depth limit 1–5 (default: 2). ' +
+            'Param direction: "outgoing" (default) | "incoming" | "both". ' +
+            'Example: explore_graph(start="symbol:handler", edgeTypes=["calls"], maxDepth=3, direction="outgoing")',
+        {
+            start: z
+                .string()
+                .max(500)
+                .describe(
+                    'Node ID or name to start traversal from. ' +
+                    'Accepts node IDs like "file:tools/lib/cache.ts" or plain names/paths. ' +
+                    'Example: "file:tools/lib/cache.ts", "symbol:handler", "module:tools"'
+                ),
+            edgeTypes: z
+                .array(
+                    z.enum([
+                        'contains',
+                        'calls',
+                        'imports',
+                        'depends_on',
+                        'implements',
+                        'similar_to',
+                    ])
+                )
+                .optional()
+                .describe(
+                    'Edge types to follow during traversal (default: all). ' +
+                    'Values: "contains", "calls", "imports", "depends_on", "implements", "similar_to"'
+                ),
+            maxDepth: z
+                .number()
+                .int()
+                .min(1)
+                .max(5)
+                .optional()
+                .describe('BFS traversal depth limit 1–5 (default: 2)'),
+            direction: z
+                .enum(['outgoing', 'incoming', 'both'])
+                .optional()
+                .describe(
+                    '"outgoing" (default): follow edges source→target. ' +
+                    '"incoming": follow edges target→source. ' +
+                    '"both": follow both directions.'
+                ),
+        },
+        async (args: {
+            start: string;
+            edgeTypes?: Array<'contains' | 'calls' | 'imports' | 'depends_on' | 'implements' | 'similar_to'>;
+            maxDepth?: number;
+            direction?: 'outgoing' | 'incoming' | 'both';
+        }) => {
+            return exploreGraph.handler(args, KNOWLEDGE_ROOT);
+        }
+    );
+
+    server.tool(
         'get_cumulative_context',
         'Returns a digest of all artifact types produced by prior pipeline phases, including content previews. ' +
             'Found artifacts show content_preview with key-value pairs. Missing artifacts show BLOCKING warning. ' +
@@ -405,6 +505,38 @@ async function main(): Promise<void> {
         },
         async (args: { phase: string }) => {
             return getCumulativeContext.handler(args, KNOWLEDGE_ROOT);
+        }
+    );
+
+    server.tool(
+        'get_feature_context',
+        'Look up cross-cutting feature groups discovered from the codebase by semantic similarity. ' +
+            'Returns full feature summaries: name, description, files, entry points, data flow, ' +
+            'key symbols, and related features. ' +
+            'Requires feature discovery to be run (Phase 9 of build-knowledge). ' +
+            'Gracefully degrades to keyword matching when the vector index is unavailable. ' +
+            'Param query: natural-language description of the feature or cross-cutting concern ' +
+            '  (e.g., "payment processing", "user authentication", "caching strategy"). ' +
+            'Param topK: number of feature groups to return (default: 3, max: 20). ' +
+            'Example: get_feature_context(query="payment processing", topK=3)',
+        {
+            query: z
+                .string()
+                .max(500)
+                .describe(
+                    'Natural-language query describing the feature or cross-cutting concern ' +
+                    '(max 500 chars). Example: "payment processing"'
+                ),
+            topK: z
+                .number()
+                .int()
+                .min(1)
+                .max(20)
+                .optional()
+                .describe('Number of feature groups to return (default: 3, max: 20)'),
+        },
+        async (args: { query: string; topK?: number }) => {
+            return getFeatureContext.handler(args, KNOWLEDGE_ROOT);
         }
     );
 

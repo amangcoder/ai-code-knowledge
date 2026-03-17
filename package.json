@@ -1,6 +1,6 @@
 {
   "name": "ai-code-knowledge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.36.3",
@@ -18,11 +18,17 @@
   "scripts": {
     "build-knowledge": "tsx scripts/build-knowledge.ts",
     "build-knowledge:incremental": "tsx scripts/build-knowledge.ts --incremental",
+    "build-knowledge:skip-vectors": "tsx scripts/build-knowledge.ts --skip-vectors",
+    "build-knowledge:skip-features": "tsx scripts/build-knowledge.ts --skip-features",
+    "build-knowledge:rebuild-features": "tsx scripts/build-knowledge.ts --rebuild-features",
+    "build-knowledge:full": "tsx scripts/build-knowledge.ts --richness rich",
+    "build-knowledge:incremental:skip-vectors": "tsx scripts/build-knowledge.ts --incremental --skip-vectors",
     "watch": "tsx scripts/watch.ts",
     "sync-types": "node -e \"import('fs').then(fs=>{const s=fs.readFileSync('src/types.ts','utf8');const h='/**\\n * AUTO-GENERATED from src/types.ts \\u2014 do not edit directly.\\n * Run \\\"npm run sync-types\\\" to regenerate.\\n *\\n * Kept separate from src/types.ts because tsconfig.mcp.json uses\\n * rootDir: \\\"mcp-server\\\", which cannot import from src/.\\n */\\n\\n';fs.writeFileSync('mcp-server/types.ts',h+s)})\"",
     "prebuild-mcp": "npm run sync-types && node -e \"import('fs').then(fs => fs.rmSync('mcp-server/dist', {recursive:true,force:true}))\"",
     "build-mcp": "tsc --project tsconfig.mcp.json",
     "start-mcp": "node mcp-server/dist/server.js",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.mcp.json --noEmit",
     "test": "vitest run",
     "install-hooks": "sh scripts/install-hooks.sh"
   }

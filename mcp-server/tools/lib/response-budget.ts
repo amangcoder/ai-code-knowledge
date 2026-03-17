@@ -21,6 +21,7 @@ export const TOOL_BUDGETS: Record<string, number> = {
     health_check: 14000,
     get_code_patterns: 14000,
     search_architecture: 14000,
+    semantic_search: 14000,
 };
 
 export interface Section {

@@ -1,8 +1,40 @@
-node_modules
-node_modules/*
-node_modules/**
-node_modules/**/*
-logs
+# Dependencies
+node_modules/
 
-workspace
-.knowledge
+# Logs
+logs/
+*.log
+
+# Build artifacts
+mcp-server/dist/
+dist/
+
+# Workspace / pipeline state (aicoder internal)
+workspace/
+
+# ── .knowledge — derived / regenerable data ──────────────────────────────────
+# Vector indexes (LanceDB tables) — regenerable from summaries + symbols
+# REQ-024: must be excluded since these are derived data
+.knowledge/vectors/
+
+# Knowledge graph JSON — regenerable from symbols + dependencies
+.knowledge/graph/
+
+# Feature discovery data — regenerable from embeddings + LLM
+.knowledge/features/
+
+# Build-in-progress lock (never commit a partial build)
+.knowledge/index.json.tmp
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── OS / editor artifacts ─────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/settings.json

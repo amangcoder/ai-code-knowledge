@@ -113,3 +113,112 @@ export interface CallToolResult {
     content: Array<{ type: 'text'; text: string }>;
     isError?: boolean;
 }
+
+// ── Vector Intelligence Types ──────────────────────────────────────────────
+
+/** Result from ANN vector similarity search. */
+export interface VectorSearchResult {
+    id: string;
+    score: number;
+    metadata: Record<string, string>;
+}
+
+/** Result from BM25 keyword search. */
+export interface BM25Result {
+    id: string;
+    score: number;
+}
+
+/** Combined result from hybrid BM25 + vector search (via RRF). */
+export interface HybridSearchResult {
+    id: string;
+    score: number;
+    source: 'bm25' | 'vector' | 'hybrid';
+    metadata: Record<string, string>;
+}
+
+/** Query routing decision from the QueryRouter. */
+export interface QueryRoute {
+    strategy: 'exact_symbol' | 'feature_search' | 'graph_traversal' | 'vector_search' | 'hybrid';
+    confidence: number;
+    suggestedScope: 'symbols' | 'features' | 'files' | 'all';
+}
+
+/** Arguments for the semantic_search MCP tool. */
+export interface SemanticSearchArgs {
+    query: string;
+    scope?: 'files' | 'symbols' | 'features' | 'all';
+    topK?: number;
+}
+
+/** A cross-cutting feature cluster discovered from file embeddings. */
+export interface FeatureGroup {
+    id: string;
+    name: string;
+    description: string;
+    files: string[];
+    entryPoints: string[];
+    dataFlow: string;
+    keySymbols: string[];
+    relatedFeatures: string[];
+}
+
+/** Result returned by the embedding pipeline phase (Phase 7). */
+export interface EmbeddingPhaseResult {
+    filesEmbedded: number;
+    symbolsEmbedded: number;
+    skipped: number;
+    durationMs: number;
+}
+
+/** Result returned by the graph build phase (Phase 8). */
+export interface GraphBuildResult {
+    nodeCount: number;
+    edgeCount: number;
+    durationMs: number;
+}
+
+/** Result returned by the feature discovery phase (Phase 9). */
+export interface FeatureDiscoveryResult {
+    featuresDiscovered: number;
+    durationMs: number;
+}
+
+// ── Knowledge Graph Types ──────────────────────────────────────────────────
+
+/** A node in the heterogeneous knowledge graph. */
+export interface GraphNode {
+    id: string;
+    /** Node type: file, symbol, module, feature, or external package */
+    type: 'file' | 'symbol' | 'module' | 'feature' | 'package';
+    metadata: Record<string, string>;
+}
+
+/** A directed edge in the knowledge graph. */
+export interface GraphEdge {
+    source: string;
+    target: string;
+    /** Edge type describing the relationship */
+    type: 'contains' | 'calls' | 'imports' | 'depends_on' | 'implements' | 'similar_to';
+    weight?: number;
+}
+
+/** In-memory knowledge graph with typed nodes and edges. */
+export interface KnowledgeGraphData {
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+}
+
+/** Result of a BFS graph traversal — nodes annotated with traversal depth. */
+export interface TraversalResult {
+    nodes: Array<GraphNode & { depth: number }>;
+    edges: GraphEdge[];
+}
+
+/** Arguments for the explore_graph MCP tool. */
+export interface ExploreGraphArgs {
+    start: string;
+    edgeTypes?: string[];
+    maxDepth?: number;
+    direction?: 'outgoing' | 'incoming' | 'both';
+}
