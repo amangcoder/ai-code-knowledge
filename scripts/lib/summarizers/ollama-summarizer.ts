@@ -1,6 +1,15 @@
 import { Summarizer, buildPrompt, parseResponse } from '../summarizer.js';
 import { SymbolEntry, FileSummary } from '../../../src/types.js';
 import { staticSummarizer } from './static-summarizer.js';
+import { withRetry } from '../retry.js';
+
+function isRetryableOllamaError(error: unknown): boolean {
+    if (error && typeof error === 'object' && 'isHttp' in error) {
+        const status = (error as any).status;
+        return status === 429 || status >= 500;
+    }
+    return false;
+}
 
 export class OllamaSummarizer implements Summarizer {
     constructor(
@@ -17,28 +26,36 @@ export class OllamaSummarizer implements Summarizer {
 
         let timeoutId: NodeJS.Timeout | undefined;
         try {
-            const controller = new AbortController();
-            timeoutId = setTimeout(() => controller.abort(), 10000);
+            const data = await withRetry(async () => {
+                const controller = new AbortController();
+                timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            const response = await fetch(`${this.baseUrl}/api/generate`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: this.model,
-                    prompt: prompt,
-                    stream: false
-                }),
-                signal: controller.signal
-            });
+                try {
+                    const response = await fetch(`${this.baseUrl}/api/generate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model: this.model,
+                            prompt: prompt,
+                            stream: false
+                        }),
+                        signal: controller.signal
+                    });
 
-            if (!response.ok) {
-                const err = new Error(`Ollama HTTP ${response.status}: ${response.statusText} at ${this.baseUrl}`);
-                (err as any).isHttp = true;
-                throw err;
-            }
+                    if (!response.ok) {
+                        const err = new Error(`Ollama HTTP ${response.status}: ${response.statusText} at ${this.baseUrl}`);
+                        (err as any).isHttp = true;
+                        (err as any).status = response.status;
+                        throw err;
+                    }
 
-            const data = await response.json() as { response: string };
-            const parsed = parseResponse(data.response);
+                    return await response.json() as { response: string };
+                } finally {
+                    clearTimeout(timeoutId);
+                }
+            }, { isRetryable: isRetryableOllamaError });
+
+            const parsed = parseResponse(data.response, filePath);
 
             // Get static fallbacks for missing fields
             const fallback = await staticSummarizer.summarizeFile(filePath, content, symbols);

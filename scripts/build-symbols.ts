@@ -29,6 +29,7 @@ async function main() {
 
     for (const sourceFile of sourceFiles) {
         const symbols = extractSymbols(sourceFile, projectRoot);
+        symbols.forEach(s => s.language = 'typescript');
         allSymbols = allSymbols.concat(symbols);
     }
 

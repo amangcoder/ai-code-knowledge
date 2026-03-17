@@ -4,12 +4,13 @@ export interface SymbolEntry {
     file: string;                 // absolute path
     line: number;
     signature: string;
-    type: 'function' | 'class' | 'interface' | 'type' | 'method';
+    type: 'function' | 'class' | 'interface' | 'type' | 'method' | 'module-init' | 'decorator' | 'enum' | 'constructor';
     module: string;               // parent directory name
     calls: string[];              // qualifiedNames of called symbols
     calledBy: string[];           // qualifiedNames of callers (inverted index)
     throws: string[];
     isExported: boolean;
+    language?: string;
 }
 
 export interface DependencyGraph {
@@ -37,13 +38,16 @@ export interface KnowledgeIndex {
     hasDependencies: boolean;
     lastBuilt: string;
     fileCount: number;
+    buildInProgress?: boolean;
+    buildGeneration?: number;
+    symbolCounts?: Record<string, number>;
 }
 
-export interface CallSite {
-    caller: string;
-    file: string;
-    line: number;
-    callChain: string[];
-}
+export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';
 
-export type SummarizerMode = 'static' | 'ollama' | 'anthropic';
+/** MCP tool handler response format. */
+export interface CallToolResult {
+    [key: string]: unknown;
+    content: Array<{ type: 'text'; text: string }>;
+    isError?: boolean;
+}

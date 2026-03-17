@@ -18,7 +18,7 @@ export interface SymbolEntry {
     calledBy: string[];           // qualifiedNames of callers (inverted index)
     throws: string[];
     isExported: boolean;
-    language?: 'typescript' | 'javascript' | 'python';
+    language?: string;
 }
 
 export interface DependencyGraph {
@@ -48,6 +48,7 @@ export interface KnowledgeIndex {
     fileCount: number;
     buildInProgress?: boolean;
     buildGeneration?: number;
+    symbolCounts?: Record<string, number>;
 }
 
 export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';

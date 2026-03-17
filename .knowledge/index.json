@@ -2,10 +2,7 @@
   "modules": [
     "src",
     "scripts",
-    "mcp-server",
-    "lib",
-    "tools",
-    "summarizers"
+    "mcp-server"
   ],
   "summaries": [
     "src/types.ts",
@@ -34,10 +31,20 @@
     "mcp-server/tools/search-architecture.ts",
     "scripts/lib/summarizers/anthropic-summarizer.ts",
     "scripts/lib/summarizers/ollama-summarizer.ts",
-    "scripts/lib/summarizers/static-summarizer.ts"
+    "scripts/lib/summarizers/static-summarizer.ts",
+    "scripts/lib/logger.ts",
+    "scripts/lib/path-utils.ts",
+    "scripts/lib/retry.ts",
+    "scripts/lib/summarizers/claude-code-summarizer.ts",
+    "scripts/lib/language-detection.ts",
+    "scripts/lib/python/python-call-graph.ts",
+    "scripts/lib/python/python-dependency-extractor.ts",
+    "scripts/lib/python/python-symbol-extractor.ts"
   ],
   "hasSymbols": true,
   "hasDependencies": true,
-  "lastBuilt": "2026-03-16T08:26:19.339Z",
-  "fileCount": 27
+  "lastBuilt": "2026-03-16T14:53:24.362Z",
+  "fileCount": 35,
+  "buildInProgress": false,
+  "buildGeneration": 1
 }

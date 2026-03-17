@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
+import type { SourceFile } from 'ts-morph';
 import { FileSummary, SymbolEntry } from '../../src/types.js';
 import { Summarizer } from './summarizer.js';
 import { atomicWrite } from './atomic-writer.js';
@@ -51,7 +52,8 @@ export async function getOrGenerateSummary(
     content: string,
     symbols: SymbolEntry[],
     summarizer: Summarizer,
-    cache: SummaryCache
+    cache: SummaryCache,
+    sourceFile?: SourceFile
 ): Promise<FileSummary> {
     const hash = crypto.createHash('sha256').update(content).digest('hex');
 
@@ -60,7 +62,7 @@ export async function getOrGenerateSummary(
         return cached;
     }
 
-    const summary = await summarizer.summarizeFile(filePath, content, symbols);
+    const summary = await summarizer.summarizeFile(filePath, content, symbols, sourceFile);
     summary.contentHash = hash;
     cache.set(filePath, summary);
     return summary;

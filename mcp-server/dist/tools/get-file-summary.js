@@ -1,36 +1,6 @@
-import * as fs from 'node:fs';
 import * as path from 'node:path';
-function normalizePath(filePath) {
-    // Normalize and convert to forward slashes
-    let normalized = path.normalize(filePath).split(path.sep).join('/');
-    // Strip leading ./
-    normalized = normalized.replace(/^\.\//, '');
-    // Strip leading slashes
-    normalized = normalized.replace(/^\/+/, '');
-    // Block path traversal — check for '..' as a path component
-    if (normalized.split('/').includes('..')) {
-        throw new Error('Path traversal not allowed');
-    }
-    // Ensure .ts extension if no extension present
-    if (!path.extname(normalized)) {
-        normalized = normalized + '.ts';
-    }
-    return normalized;
-}
-function loadCache(knowledgeRoot) {
-    const cachePath = path.join(knowledgeRoot, 'summaries', 'cache.json');
-    if (!fs.existsSync(cachePath)) {
-        return null;
-    }
-    try {
-        const data = fs.readFileSync(cachePath, 'utf8');
-        return JSON.parse(data);
-    }
-    catch (err) {
-        console.error('[GetFileSummaryTool] Failed to parse cache.json:', err);
-        return null;
-    }
-}
+import { loadSummaryCache } from './lib/data-loader.js';
+import { normalizePath } from './lib/path-utils.js';
 function formatSummary(summary) {
     const lines = [];
     lines.push(`File: ${summary.file}`);
@@ -59,7 +29,7 @@ function formatSummary(summary) {
     return lines.join('\n');
 }
 export function handler(args, knowledgeRoot = '.knowledge') {
-    const cache = loadCache(knowledgeRoot);
+    const cache = loadSummaryCache(knowledgeRoot);
     if (cache === null) {
         const cachePath = path.join(knowledgeRoot, 'summaries', 'cache.json');
         return {

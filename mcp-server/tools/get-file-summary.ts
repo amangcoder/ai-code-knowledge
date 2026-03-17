@@ -1,38 +1,7 @@
-import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { FileSummary, CallToolResult } from '../types.js';
-
-function normalizePath(filePath: string): string {
-  // Normalize and convert to forward slashes
-  let normalized = path.normalize(filePath).split(path.sep).join('/');
-  // Strip leading ./
-  normalized = normalized.replace(/^\.\//, '');
-  // Strip leading slashes
-  normalized = normalized.replace(/^\/+/, '');
-  // Block path traversal — check for '..' as a path component
-  if (normalized.split('/').includes('..')) {
-    throw new Error('Path traversal not allowed');
-  }
-  // Ensure .ts extension if no extension present
-  if (!path.extname(normalized)) {
-    normalized = normalized + '.ts';
-  }
-  return normalized;
-}
-
-function loadCache(knowledgeRoot: string): Record<string, FileSummary> | null {
-  const cachePath = path.join(knowledgeRoot, 'summaries', 'cache.json');
-  if (!fs.existsSync(cachePath)) {
-    return null;
-  }
-  try {
-    const data = fs.readFileSync(cachePath, 'utf8');
-    return JSON.parse(data) as Record<string, FileSummary>;
-  } catch (err) {
-    console.error('[GetFileSummaryTool] Failed to parse cache.json:', err);
-    return null;
-  }
-}
+import { loadSummaryCache } from './lib/data-loader.js';
+import { normalizePath, findSummary } from './lib/path-utils.js';
 
 function formatSummary(summary: FileSummary): string {
   const lines: string[] = [];
@@ -70,7 +39,7 @@ export function handler(
   args: { file: string },
   knowledgeRoot: string = '.knowledge'
 ): CallToolResult {
-  const cache = loadCache(knowledgeRoot);
+  const cache = loadSummaryCache(knowledgeRoot);
 
   if (cache === null) {
     const cachePath = path.join(knowledgeRoot, 'summaries', 'cache.json');

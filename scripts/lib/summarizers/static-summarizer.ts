@@ -1,3 +1,4 @@
+import type { SourceFile } from 'ts-morph';
 import { Summarizer } from '../summarizer.js';
 import { SymbolEntry, FileSummary } from '../../../src/types.js';
 import * as path from 'node:path';
@@ -7,7 +8,8 @@ export class StaticSummarizer implements Summarizer {
     async summarizeFile(
         filePath: string,
         content: string,
-        symbols: SymbolEntry[]
+        symbols: SymbolEntry[],
+        sourceFile?: SourceFile
     ): Promise<FileSummary> {
         // a. purpose = file-name-derived
         const ext = path.extname(filePath);
@@ -19,12 +21,33 @@ export class StaticSummarizer implements Summarizer {
             .filter(s => s.isExported)
             .map(s => s.name);
 
-        // c. dependencies = simple regex extraction
-        const dependencyRegex = /^import .+ from ['"]([^'"]+)['"]/gm;
+        // c. dependencies = use ts-morph when available, regex fallback
         const dependencies: string[] = [];
-        let match;
-        while ((match = dependencyRegex.exec(content)) !== null) {
-            dependencies.push(match[1]);
+        if (sourceFile) {
+            for (const imp of sourceFile.getImportDeclarations()) {
+                dependencies.push(imp.getModuleSpecifierValue());
+            }
+        } else {
+            if (filePath.endsWith('.py')) {
+                // Python imports
+                const pyImportRegex = /^(?:from\s+([\w.]+)\s+import|import\s+([\w.]+))/gm;
+                let match;
+                while ((match = pyImportRegex.exec(content)) !== null) {
+                    dependencies.push(match[1] || match[2]);
+                }
+            } else {
+                // ES6 imports
+                const esImportRegex = /^import .+ from ['"]([^'"]+)['"]/gm;
+                let match;
+                while ((match = esImportRegex.exec(content)) !== null) {
+                    dependencies.push(match[1]);
+                }
+                // CommonJS require
+                const requireRegex = /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/gm;
+                while ((match = requireRegex.exec(content)) !== null) {
+                    dependencies.push(match[1]);
+                }
+            }
         }
 
         // d. sideEffects = [] (static cannot determine)

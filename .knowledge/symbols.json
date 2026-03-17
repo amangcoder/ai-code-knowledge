@@ -10,72 +10,78 @@
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "DependencyGraph",
     "qualifiedName": "DependencyGraph",
     "file": "src/types.ts",
-    "line": 15,
+    "line": 16,
     "signature": "export interface DependencyGraph",
     "type": "interface",
     "module": "src",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "FileSummary",
     "qualifiedName": "FileSummary",
     "file": "src/types.ts",
-    "line": 22,
+    "line": 23,
     "signature": "export interface FileSummary",
     "type": "interface",
     "module": "src",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "KnowledgeIndex",
     "qualifiedName": "KnowledgeIndex",
     "file": "src/types.ts",
-    "line": 33,
+    "line": 34,
     "signature": "export interface KnowledgeIndex",
     "type": "interface",
     "module": "src",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
-    "name": "CallSite",
-    "qualifiedName": "CallSite",
+    "name": "CallToolResult",
+    "qualifiedName": "CallToolResult",
     "file": "src/types.ts",
-    "line": 42,
-    "signature": "export interface CallSite",
+    "line": 48,
+    "signature": "export interface CallToolResult",
     "type": "interface",
     "module": "src",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "SummarizerMode",
     "qualifiedName": "SummarizerMode",
     "file": "src/types.ts",
-    "line": 49,
-    "signature": "export type SummarizerMode = 'static' | 'ollama' | 'anthropic';",
+    "line": 45,
+    "signature": "export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';",
     "type": "type",
     "module": "src",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "main",
@@ -86,15 +92,22 @@
     "type": "function",
     "module": "scripts",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "<module-init:scripts/build-dependencies.ts>",
+      "<module-init:scripts/build-knowledge.ts>",
+      "<module-init:scripts/build-symbols.ts>",
+      "<module-init:scripts/watch.ts>",
+      "<module-init:mcp-server/server.ts>"
+    ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "parseArgs",
     "qualifiedName": "parseArgs",
     "file": "scripts/build-knowledge.ts",
-    "line": 15,
+    "line": 21,
     "signature": "function parseArgs():",
     "type": "function",
     "module": "scripts",
@@ -103,13 +116,14 @@
       "main"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "log",
     "qualifiedName": "log",
     "file": "scripts/build-knowledge.ts",
-    "line": 25,
+    "line": 31,
     "signature": "function log(msg: string): void",
     "type": "function",
     "module": "scripts",
@@ -118,20 +132,28 @@
       "main"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "main",
     "qualifiedName": "main",
     "file": "scripts/build-knowledge.ts",
-    "line": 29,
+    "line": 35,
     "signature": "async function main(): Promise<void>",
     "type": "function",
     "module": "scripts",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "<module-init:scripts/build-dependencies.ts>",
+      "<module-init:scripts/build-knowledge.ts>",
+      "<module-init:scripts/build-symbols.ts>",
+      "<module-init:scripts/watch.ts>",
+      "<module-init:mcp-server/server.ts>"
+    ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "main",
@@ -142,22 +164,36 @@
     "type": "function",
     "module": "scripts",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "<module-init:scripts/build-dependencies.ts>",
+      "<module-init:scripts/build-knowledge.ts>",
+      "<module-init:scripts/build-symbols.ts>",
+      "<module-init:scripts/watch.ts>",
+      "<module-init:mcp-server/server.ts>"
+    ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "main",
     "qualifiedName": "main",
     "file": "scripts/watch.ts",
-    "line": 13,
+    "line": 15,
     "signature": "async function main(): Promise<void>",
     "type": "function",
     "module": "scripts",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "<module-init:scripts/build-dependencies.ts>",
+      "<module-init:scripts/build-knowledge.ts>",
+      "<module-init:scripts/build-symbols.ts>",
+      "<module-init:scripts/watch.ts>",
+      "<module-init:mcp-server/server.ts>"
+    ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "main",
@@ -172,20 +208,34 @@
       "buildDependencyGraph",
       "parseArgs",
       "log",
-      "SummaryCache.load",
-      "extractSymbols",
-      "buildCallGraph",
-      "invertCallGraph",
       "atomicWrite",
+      "detectProjectLanguages",
+      "SummaryCache.load",
+      "detectLanguage",
+      "extractSymbols",
+      "extractPythonSymbols",
+      "buildCallGraph",
+      "buildPythonCallGraph",
+      "invertCallGraph",
+      "extractPythonDeps",
       "createSummarizer",
       "getOrGenerateSummary",
       "buildIndex",
       "writeIndex",
+      "logInfo",
+      "logError",
       "handler"
     ],
-    "calledBy": [],
+    "calledBy": [
+      "<module-init:scripts/build-dependencies.ts>",
+      "<module-init:scripts/build-knowledge.ts>",
+      "<module-init:scripts/build-symbols.ts>",
+      "<module-init:scripts/watch.ts>",
+      "<module-init:mcp-server/server.ts>"
+    ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "SymbolEntry",
@@ -198,46 +248,78 @@
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "DependencyGraph",
     "qualifiedName": "DependencyGraph",
     "file": "mcp-server/types.ts",
-    "line": 23,
+    "line": 24,
     "signature": "export interface DependencyGraph",
     "type": "interface",
     "module": "mcp-server",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "FileSummary",
     "qualifiedName": "FileSummary",
     "file": "mcp-server/types.ts",
-    "line": 30,
+    "line": 31,
     "signature": "export interface FileSummary",
     "type": "interface",
     "module": "mcp-server",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "KnowledgeIndex",
     "qualifiedName": "KnowledgeIndex",
     "file": "mcp-server/types.ts",
-    "line": 41,
+    "line": 42,
     "signature": "export interface KnowledgeIndex",
     "type": "interface",
     "module": "mcp-server",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "CallToolResult",
+    "qualifiedName": "CallToolResult",
+    "file": "mcp-server/types.ts",
+    "line": 56,
+    "signature": "export interface CallToolResult",
+    "type": "interface",
+    "module": "mcp-server",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "SummarizerMode",
+    "qualifiedName": "SummarizerMode",
+    "file": "mcp-server/types.ts",
+    "line": 53,
+    "signature": "export type SummarizerMode = 'static' | 'ollama' | 'anthropic' | 'claude-code';",
+    "type": "type",
+    "module": "mcp-server",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "atomicWrite",
@@ -251,44 +333,123 @@
     "calledBy": [
       "main",
       "handleFileChange",
+      "handleBatchFileChanges",
       "handleFileDeletion",
       "writeIndex",
       "SummaryCache.save"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "getOrCreateModuleInitSymbol",
+    "qualifiedName": "getOrCreateModuleInitSymbol",
+    "file": "scripts/lib/call-graph.ts",
+    "line": 8,
+    "signature": "function getOrCreateModuleInitSymbol(\n    symbolMap: Map<string, SymbolEntry>,\n    newSymbols: SymbolEntry[],\n    sourceFile: SourceFile,\n    projectRoot: string\n): SymbolEntry",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "processCallExpressionsInFile",
+      "buildPythonCallGraph"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "processCallExpressionsInFile",
+    "qualifiedName": "processCallExpressionsInFile",
+    "file": "scripts/lib/call-graph.ts",
+    "line": 46,
+    "signature": "function processCallExpressionsInFile(\n    sourceFile: SourceFile,\n    symbolMap: Map<string, SymbolEntry>,\n    newSymbols: SymbolEntry[],\n    projectRoot: string,\n    callsSets: Map<string, Set<string>>\n): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "getOrCreateModuleInitSymbol"
+    ],
+    "calledBy": [
+      "buildCallGraph",
+      "rebuildCallGraphForFile",
+      "rebuildCallGraphForFiles"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "buildCallGraph",
     "qualifiedName": "buildCallGraph",
     "file": "scripts/lib/call-graph.ts",
-    "line": 8,
-    "signature": "export function buildCallGraph(project: Project, symbols: SymbolEntry[]): SymbolEntry[]",
+    "line": 162,
+    "signature": "export function buildCallGraph(project: Project, symbols: SymbolEntry[], projectRoot?: string): SymbolEntry[]",
     "type": "function",
     "module": "lib",
-    "calls": [],
+    "calls": [
+      "processCallExpressionsInFile"
+    ],
     "calledBy": [
-      "main",
+      "main"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "rebuildCallGraphForFile",
+    "qualifiedName": "rebuildCallGraphForFile",
+    "file": "scripts/lib/call-graph.ts",
+    "line": 195,
+    "signature": "export function rebuildCallGraphForFile(\n    project: Project,\n    symbols: SymbolEntry[],\n    absoluteFilePath: string,\n    projectRoot: string\n): SymbolEntry[]",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "processCallExpressionsInFile"
+    ],
+    "calledBy": [
       "handleFileChange"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "rebuildCallGraphForFiles",
+    "qualifiedName": "rebuildCallGraphForFiles",
+    "file": "scripts/lib/call-graph.ts",
+    "line": 252,
+    "signature": "export function rebuildCallGraphForFiles(\n    project: Project,\n    symbols: SymbolEntry[],\n    absoluteFilePaths: string[],\n    projectRoot: string\n): SymbolEntry[]",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "processCallExpressionsInFile"
+    ],
+    "calledBy": [
+      "handleBatchFileChanges"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "invertCallGraph",
     "qualifiedName": "invertCallGraph",
     "file": "scripts/lib/call-graph.ts",
-    "line": 101,
+    "line": 291,
     "signature": "export function invertCallGraph(symbols: SymbolEntry[]): SymbolEntry[]",
     "type": "function",
     "module": "lib",
     "calls": [],
     "calledBy": [
       "main",
-      "handleFileChange"
+      "handleFileChange",
+      "handleBatchFileChanges"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "extractFileDeps",
@@ -303,7 +464,8 @@
       "main"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "ImportInfo",
@@ -316,14 +478,15 @@
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "buildDependencyGraph",
     "qualifiedName": "buildDependencyGraph",
     "file": "scripts/lib/dependency-graph.ts",
     "line": 11,
-    "signature": "export function buildDependencyGraph(fileDeps: Record<string, ImportInfo[]>, projectRoot: string): DependencyGraph",
+    "signature": "export function buildDependencyGraph(fileDeps: Record<string, ImportInfo[]>, projectRoot: string, moduleConfig?: ModuleConfig): DependencyGraph",
     "type": "function",
     "module": "lib",
     "calls": [
@@ -333,58 +496,51 @@
       "main"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "loadSymbols",
     "qualifiedName": "loadSymbols",
     "file": "scripts/lib/incremental-updater.ts",
-    "line": 14,
+    "line": 19,
     "signature": "function loadSymbols(knowledgeRoot: string): SymbolEntry[]",
     "type": "function",
     "module": "lib",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "handleFileChange",
+      "handleBatchFileChanges",
+      "handleFileDeletion",
+      "handler"
+    ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "loadSummaryCache",
     "qualifiedName": "loadSummaryCache",
     "file": "scripts/lib/incremental-updater.ts",
-    "line": 24,
+    "line": 29,
     "signature": "function loadSummaryCache(knowledgeRoot: string): Record<string, FileSummary>",
     "type": "function",
     "module": "lib",
     "calls": [],
     "calledBy": [
       "handleFileChange",
+      "handleBatchFileChanges",
       "handleFileDeletion"
     ],
     "throws": [],
-    "isExported": false
-  },
-  {
-    "name": "normalizeFilePath",
-    "qualifiedName": "normalizeFilePath",
-    "file": "scripts/lib/incremental-updater.ts",
-    "line": 37,
-    "signature": "function normalizeFilePath(filePath: string, projectRoot: string): string",
-    "type": "function",
-    "module": "lib",
-    "calls": [],
-    "calledBy": [
-      "handleFileChange",
-      "handleFileDeletion"
-    ],
-    "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "handleFileChange",
     "qualifiedName": "handleFileChange",
     "file": "scripts/lib/incremental-updater.ts",
-    "line": 47,
+    "line": 44,
     "signature": "export async function handleFileChange(\n    filePath: string,\n    knowledgeRoot: string,\n    projectRoot: string\n): Promise<void>",
     "type": "function",
     "module": "lib",
@@ -392,22 +548,56 @@
       "normalizeFilePath",
       "loadSymbols",
       "loadSummaryCache",
+      "detectLanguage",
       "handleFileDeletion",
+      "extractPythonSymbols",
+      "buildPythonCallGraph",
+      "invertCallGraph",
       "extractSymbols",
-      "buildCallGraph",
+      "rebuildCallGraphForFile",
+      "createSummarizer",
+      "atomicWrite"
+    ],
+    "calledBy": [
+      "handleBatchFileChanges"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "handleBatchFileChanges",
+    "qualifiedName": "handleBatchFileChanges",
+    "file": "scripts/lib/incremental-updater.ts",
+    "line": 141,
+    "signature": "export async function handleBatchFileChanges(\n    files: Array<{ path: string; type: 'change' | 'delete' }>,\n    knowledgeRoot: string,\n    projectRoot: string\n): Promise<void>",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "handleFileDeletion",
+      "handleFileChange",
+      "loadSymbols",
+      "loadSummaryCache",
+      "normalizeFilePath",
+      "detectLanguage",
+      "extractSymbols",
+      "extractPythonSymbols",
+      "rebuildCallGraphForFiles",
+      "buildPythonCallGraph",
       "invertCallGraph",
       "createSummarizer",
       "atomicWrite"
     ],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "handleFileDeletion",
     "qualifiedName": "handleFileDeletion",
     "file": "scripts/lib/incremental-updater.ts",
-    "line": 119,
+    "line": 285,
     "signature": "export async function handleFileDeletion(\n    filePath: string,\n    knowledgeRoot: string\n): Promise<void>",
     "type": "function",
     "module": "lib",
@@ -418,10 +608,12 @@
       "atomicWrite"
     ],
     "calledBy": [
-      "handleFileChange"
+      "handleFileChange",
+      "handleBatchFileChanges"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "buildIndex",
@@ -436,7 +628,8 @@
       "main"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "writeIndex",
@@ -453,90 +646,363 @@
       "main"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "detectLanguage",
+    "qualifiedName": "detectLanguage",
+    "file": "scripts/lib/language-detection.ts",
+    "line": 29,
+    "signature": "export function detectLanguage(filePath: string): SupportedLanguage | null",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "main",
+      "handleFileChange",
+      "handleBatchFileChanges",
+      "scanForLanguages"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "detectProjectLanguages",
+    "qualifiedName": "detectProjectLanguages",
+    "file": "scripts/lib/language-detection.ts",
+    "line": 38,
+    "signature": "export function detectProjectLanguages(projectRoot: string): SupportedLanguage[]",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "scanForLanguages"
+    ],
+    "calledBy": [
+      "main"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "scanForLanguages",
+    "qualifiedName": "scanForLanguages",
+    "file": "scripts/lib/language-detection.ts",
+    "line": 68,
+    "signature": "function scanForLanguages(dir: string, found: Set<SupportedLanguage>, depth: number, maxDepth: number): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "scanForLanguages",
+      "detectLanguage"
+    ],
+    "calledBy": [
+      "detectProjectLanguages",
+      "scanForLanguages"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "getSourceGlobs",
+    "qualifiedName": "getSourceGlobs",
+    "file": "scripts/lib/language-detection.ts",
+    "line": 94,
+    "signature": "export function getSourceGlobs(languages: SupportedLanguage[]): string[]",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "getIgnorePatterns",
+    "qualifiedName": "getIgnorePatterns",
+    "file": "scripts/lib/language-detection.ts",
+    "line": 101,
+    "signature": "export function getIgnorePatterns(): string[]",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "SupportedLanguage",
+    "qualifiedName": "SupportedLanguage",
+    "file": "scripts/lib/language-detection.ts",
+    "line": 4,
+    "signature": "export type SupportedLanguage = 'typescript' | 'javascript' | 'python';",
+    "type": "type",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "logInfo",
+    "qualifiedName": "logInfo",
+    "file": "scripts/lib/logger.ts",
+    "line": 6,
+    "signature": "export function logInfo(phase: string, message: string, filePath?: string): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "main"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "logError",
+    "qualifiedName": "logError",
+    "file": "scripts/lib/logger.ts",
+    "line": 11,
+    "signature": "export function logError(phase: string, error: unknown, filePath?: string): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "main",
+      "<module-init:scripts/watch.ts>"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "logWarn",
+    "qualifiedName": "logWarn",
+    "file": "scripts/lib/logger.ts",
+    "line": 17,
+    "signature": "export function logWarn(phase: string, message: string, filePath?: string): void",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "resolveModuleName",
+    "qualifiedName": "resolveModuleName",
+    "file": "scripts/lib/module-grouper.ts",
+    "line": 14,
+    "signature": "function resolveModuleName(relativePath: string, projectRoot: string, config?: ModuleConfig): string",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "groupFilesByModule"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "groupFilesByModule",
     "qualifiedName": "groupFilesByModule",
     "file": "scripts/lib/module-grouper.ts",
-    "line": 9,
-    "signature": "export function groupFilesByModule(filePaths: string[], projectRoot: string): Record<string, string[]>",
+    "line": 53,
+    "signature": "export function groupFilesByModule(filePaths: string[], projectRoot: string, config?: ModuleConfig): Record<string, string[]>",
     "type": "function",
     "module": "lib",
-    "calls": [],
+    "calls": [
+      "resolveModuleName"
+    ],
     "calledBy": [
       "buildDependencyGraph"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "ModuleConfig",
+    "qualifiedName": "ModuleConfig",
+    "file": "scripts/lib/module-grouper.ts",
+    "line": 3,
+    "signature": "export interface ModuleConfig",
+    "type": "interface",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "normalizeFilePath",
+    "qualifiedName": "normalizeFilePath",
+    "file": "scripts/lib/path-utils.ts",
+    "line": 7,
+    "signature": "export function normalizeFilePath(filePath: string, projectRoot: string): string",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "handleFileChange",
+      "handleBatchFileChanges",
+      "handleFileDeletion"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "sleep",
+    "qualifiedName": "sleep",
+    "file": "scripts/lib/retry.ts",
+    "line": 13,
+    "signature": "function sleep(ms: number): Promise<void>",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "withRetry"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "withRetry",
+    "qualifiedName": "withRetry",
+    "file": "scripts/lib/retry.ts",
+    "line": 21,
+    "signature": "export async function withRetry<T>(\n    fn: () => Promise<T>,\n    opts?: RetryOptions\n): Promise<T>",
+    "type": "function",
+    "module": "lib",
+    "calls": [
+      "sleep"
+    ],
+    "calledBy": [
+      "AnthropicSummarizer.summarizeFile",
+      "ClaudeCodeSummarizer.summarizeFile",
+      "OllamaSummarizer.summarizeFile"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "RetryOptions",
+    "qualifiedName": "RetryOptions",
+    "file": "scripts/lib/retry.ts",
+    "line": 1,
+    "signature": "export interface RetryOptions",
+    "type": "interface",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "createSummarizer",
     "qualifiedName": "createSummarizer",
     "file": "scripts/lib/summarizer-factory.ts",
-    "line": 10,
+    "line": 11,
     "signature": "export function createSummarizer(): Summarizer",
     "type": "function",
     "module": "lib",
     "calls": [],
     "calledBy": [
       "main",
-      "handleFileChange"
+      "handleFileChange",
+      "handleBatchFileChanges"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "getLanguageInfo",
+    "qualifiedName": "getLanguageInfo",
+    "file": "scripts/lib/summarizer.ts",
+    "line": 29,
+    "signature": "function getLanguageInfo(filePath: string):",
+    "type": "function",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [
+      "buildPrompt"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "buildPrompt",
     "qualifiedName": "buildPrompt",
     "file": "scripts/lib/summarizer.ts",
-    "line": 17,
+    "line": 41,
     "signature": "export function buildPrompt(filePath: string, content: string, symbols: SymbolEntry[]): string",
     "type": "function",
     "module": "lib",
-    "calls": [],
+    "calls": [
+      "getLanguageInfo"
+    ],
     "calledBy": [
       "AnthropicSummarizer.summarizeFile",
+      "ClaudeCodeSummarizer.summarizeFile",
       "OllamaSummarizer.summarizeFile"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "parseResponse",
     "qualifiedName": "parseResponse",
     "file": "scripts/lib/summarizer.ts",
-    "line": 48,
-    "signature": "export function parseResponse(raw: string): Partial<FileSummary>",
+    "line": 73,
+    "signature": "export function parseResponse(raw: string, filePath?: string): Partial<FileSummary>",
     "type": "function",
     "module": "lib",
     "calls": [],
     "calledBy": [
       "AnthropicSummarizer.summarizeFile",
+      "ClaudeCodeSummarizer.summarizeFile",
       "OllamaSummarizer.summarizeFile"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "Summarizer",
     "qualifiedName": "Summarizer",
     "file": "scripts/lib/summarizer.ts",
-    "line": 6,
+    "line": 9,
     "signature": "export interface Summarizer",
     "type": "interface",
     "module": "lib",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "getOrGenerateSummary",
     "qualifiedName": "getOrGenerateSummary",
     "file": "scripts/lib/summary-cache.ts",
-    "line": 49,
-    "signature": "export async function getOrGenerateSummary(\n    filePath: string,\n    content: string,\n    symbols: SymbolEntry[],\n    summarizer: Summarizer,\n    cache: SummaryCache\n): Promise<FileSummary>",
+    "line": 50,
+    "signature": "export async function getOrGenerateSummary(\n    filePath: string,\n    content: string,\n    symbols: SymbolEntry[],\n    summarizer: Summarizer,\n    cache: SummaryCache,\n    sourceFile?: SourceFile\n): Promise<FileSummary>",
     "type": "function",
     "module": "lib",
     "calls": [
@@ -547,26 +1013,28 @@
       "main"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "SummaryCache",
     "qualifiedName": "SummaryCache",
     "file": "scripts/lib/summary-cache.ts",
-    "line": 8,
+    "line": 9,
     "signature": "class SummaryCache",
     "type": "class",
     "module": "lib",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "load",
     "qualifiedName": "SummaryCache.load",
     "file": "scripts/lib/summary-cache.ts",
-    "line": 16,
+    "line": 17,
     "signature": "load(): Record<string, FileSummary>",
     "type": "method",
     "module": "lib",
@@ -575,13 +1043,14 @@
       "main"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "get",
     "qualifiedName": "SummaryCache.get",
     "file": "scripts/lib/summary-cache.ts",
-    "line": 29,
+    "line": 30,
     "signature": "get(filePath: string, contentHash: string): FileSummary | undefined",
     "type": "method",
     "module": "lib",
@@ -590,13 +1059,14 @@
       "getOrGenerateSummary"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "set",
     "qualifiedName": "SummaryCache.set",
     "file": "scripts/lib/summary-cache.ts",
-    "line": 37,
+    "line": 38,
     "signature": "set(filePath: string, summary: FileSummary): void",
     "type": "method",
     "module": "lib",
@@ -605,13 +1075,14 @@
       "getOrGenerateSummary"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "save",
     "qualifiedName": "SummaryCache.save",
     "file": "scripts/lib/summary-cache.ts",
-    "line": 41,
+    "line": 42,
     "signature": "async save(): Promise<void>",
     "type": "method",
     "module": "lib",
@@ -620,7 +1091,22 @@
     ],
     "calledBy": [],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "constructor",
+    "qualifiedName": "SummaryCache.constructor",
+    "file": "scripts/lib/summary-cache.ts",
+    "line": 13,
+    "signature": "constructor(projectRoot: string)",
+    "type": "constructor",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "extractSignature",
@@ -635,13 +1121,14 @@
       "extractSymbols"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "extractSymbols",
     "qualifiedName": "extractSymbols",
     "file": "scripts/lib/symbol-extractor.ts",
-    "line": 22,
+    "line": 25,
     "signature": "export function extractSymbols(sourceFile: SourceFile, projectRoot: string): SymbolEntry[]",
     "type": "function",
     "module": "lib",
@@ -650,33 +1137,37 @@
     ],
     "calledBy": [
       "main",
-      "handleFileChange"
+      "handleFileChange",
+      "handleBatchFileChanges"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "loadSymbols",
     "qualifiedName": "loadSymbols",
     "file": "mcp-server/tools/find-callers.ts",
-    "line": 26,
+    "line": 21,
     "signature": "function loadSymbols(knowledgeRoot: string): SymbolEntry[] | null",
     "type": "function",
     "module": "tools",
     "calls": [],
     "calledBy": [
       "handleFileChange",
+      "handleBatchFileChanges",
       "handleFileDeletion",
       "handler"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "bfsCallers",
     "qualifiedName": "bfsCallers",
     "file": "mcp-server/tools/find-callers.ts",
-    "line": 44,
+    "line": 39,
     "signature": "function bfsCallers(\n  targetQualifiedName: string,\n  symbolMap: Map<string, SymbolEntry>,\n  maxDepth: number\n): CallerInfo[]",
     "type": "function",
     "module": "tools",
@@ -685,20 +1176,24 @@
       "handler"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/find-callers.ts",
-    "line": 91,
+    "line": 86,
     "signature": "export function handler(\n  args: FindCallersArgs,\n  knowledgeRoot: string\n): CallToolResult",
     "type": "function",
     "module": "tools",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "main"
+    ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "FindCallersArgs",
@@ -711,46 +1206,38 @@
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
-  },
-  {
-    "name": "CallToolResult",
-    "qualifiedName": "CallToolResult",
-    "file": "mcp-server/tools/find-callers.ts",
-    "line": 10,
-    "signature": "export interface CallToolResult",
-    "type": "interface",
-    "module": "tools",
-    "calls": [],
-    "calledBy": [],
-    "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "CallerInfo",
     "qualifiedName": "CallerInfo",
     "file": "mcp-server/tools/find-callers.ts",
-    "line": 15,
+    "line": 10,
     "signature": "interface CallerInfo",
     "type": "interface",
     "module": "tools",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/find-symbol.ts",
-    "line": 21,
+    "line": 16,
     "signature": "export async function handler(\n    args: FindSymbolArgs,\n    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): Promise<CallToolResult>",
     "type": "function",
     "module": "tools",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "main"
+    ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "FindSymbolArgs",
@@ -763,26 +1250,14 @@
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
-  },
-  {
-    "name": "CallToolResult",
-    "qualifiedName": "CallToolResult",
-    "file": "mcp-server/tools/find-symbol.ts",
-    "line": 10,
-    "signature": "export interface CallToolResult",
-    "type": "interface",
-    "module": "tools",
-    "calls": [],
-    "calledBy": [],
-    "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "loadDependencies",
     "qualifiedName": "loadDependencies",
     "file": "mcp-server/tools/get-dependencies.ts",
-    "line": 26,
+    "line": 21,
     "signature": "function loadDependencies(knowledgeRoot: string): DependencyGraph | null",
     "type": "function",
     "module": "tools",
@@ -791,13 +1266,14 @@
       "handler"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "bfsTraverse",
     "qualifiedName": "bfsTraverse",
     "file": "mcp-server/tools/get-dependencies.ts",
-    "line": 44,
+    "line": 39,
     "signature": "function bfsTraverse(\n  startModule: string,\n  edges: DependencyGraph['edges'],\n  maxDepth: number\n): DependencyResult[]",
     "type": "function",
     "module": "tools",
@@ -806,20 +1282,24 @@
       "handler"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-dependencies.ts",
-    "line": 90,
+    "line": 85,
     "signature": "export function handler(\n  args: GetDependenciesArgs,\n  knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): CallToolResult",
     "type": "function",
     "module": "tools",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "main"
+    ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "GetDependenciesArgs",
@@ -832,39 +1312,28 @@
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
-  },
-  {
-    "name": "CallToolResult",
-    "qualifiedName": "CallToolResult",
-    "file": "mcp-server/tools/get-dependencies.ts",
-    "line": 10,
-    "signature": "export interface CallToolResult",
-    "type": "interface",
-    "module": "tools",
-    "calls": [],
-    "calledBy": [],
-    "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "DependencyResult",
     "qualifiedName": "DependencyResult",
     "file": "mcp-server/tools/get-dependencies.ts",
-    "line": 15,
+    "line": 10,
     "signature": "interface DependencyResult",
     "type": "interface",
     "module": "tools",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "normalizePath",
     "qualifiedName": "normalizePath",
     "file": "mcp-server/tools/get-file-summary.ts",
-    "line": 10,
+    "line": 5,
     "signature": "function normalizePath(filePath: string): string",
     "type": "function",
     "module": "tools",
@@ -873,13 +1342,14 @@
       "handler"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "loadCache",
     "qualifiedName": "loadCache",
     "file": "mcp-server/tools/get-file-summary.ts",
-    "line": 24,
+    "line": 23,
     "signature": "function loadCache(knowledgeRoot: string): Record<string, FileSummary> | null",
     "type": "function",
     "module": "tools",
@@ -888,13 +1358,14 @@
       "handler"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "formatSummary",
     "qualifiedName": "formatSummary",
     "file": "mcp-server/tools/get-file-summary.ts",
-    "line": 38,
+    "line": 37,
     "signature": "function formatSummary(summary: FileSummary): string",
     "type": "function",
     "module": "tools",
@@ -903,65 +1374,46 @@
       "handler"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/get-file-summary.ts",
-    "line": 70,
+    "line": 69,
     "signature": "export function handler(\n  args: { file: string },\n  knowledgeRoot: string = '.knowledge'\n): CallToolResult",
     "type": "function",
     "module": "tools",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "main"
+    ],
     "throws": [],
-    "isExported": true
-  },
-  {
-    "name": "CallToolResult",
-    "qualifiedName": "CallToolResult",
-    "file": "mcp-server/tools/get-file-summary.ts",
-    "line": 5,
-    "signature": "interface CallToolResult",
-    "type": "interface",
-    "module": "tools",
-    "calls": [],
-    "calledBy": [],
-    "throws": [],
-    "isExported": false
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/health-check.ts",
-    "line": 16,
+    "line": 11,
     "signature": "export async function handler(\n    _args: Record<string, unknown>,\n    knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'\n): Promise<CallToolResult>",
     "type": "function",
     "module": "tools",
     "calls": [],
-    "calledBy": [],
+    "calledBy": [
+      "main"
+    ],
     "throws": [],
-    "isExported": true
-  },
-  {
-    "name": "CallToolResult",
-    "qualifiedName": "CallToolResult",
-    "file": "mcp-server/tools/health-check.ts",
-    "line": 5,
-    "signature": "export interface CallToolResult",
-    "type": "interface",
-    "module": "tools",
-    "calls": [],
-    "calledBy": [],
-    "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "mergeRanges",
     "qualifiedName": "mergeRanges",
     "file": "mcp-server/tools/search-architecture.ts",
-    "line": 19,
+    "line": 15,
     "signature": "function mergeRanges(ranges: Array<[number, number]>): Array<[number, number]>",
     "type": "function",
     "module": "tools",
@@ -970,13 +1422,14 @@
       "handler"
     ],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "handler",
     "qualifiedName": "handler",
     "file": "mcp-server/tools/search-architecture.ts",
-    "line": 39,
+    "line": 35,
     "signature": "export async function handler(\n  args: SearchArchitectureArgs,\n  knowledgeRoot: string\n): Promise<CallToolResult>",
     "type": "function",
     "module": "tools",
@@ -994,120 +1447,583 @@
       "main"
     ],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "SearchArchitectureArgs",
     "qualifiedName": "SearchArchitectureArgs",
     "file": "mcp-server/tools/search-architecture.ts",
-    "line": 6,
+    "line": 7,
     "signature": "export interface SearchArchitectureArgs",
     "type": "interface",
     "module": "tools",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
-    "name": "CallToolResult",
-    "qualifiedName": "CallToolResult",
-    "file": "mcp-server/tools/search-architecture.ts",
-    "line": 10,
-    "signature": "export interface CallToolResult",
-    "type": "interface",
-    "module": "tools",
+    "name": "getOrCreateModuleInitSymbol",
+    "qualifiedName": "getOrCreateModuleInitSymbol",
+    "file": "scripts/lib/python/python-call-graph.ts",
+    "line": 23,
+    "signature": "function getOrCreateModuleInitSymbol(\n    symbolMap: Map<string, SymbolEntry>,\n    newSymbols: SymbolEntry[],\n    relativePath: string\n): SymbolEntry",
+    "type": "function",
+    "module": "python",
+    "calls": [],
+    "calledBy": [
+      "processCallExpressionsInFile",
+      "buildPythonCallGraph"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "resolveEnclosingDef",
+    "qualifiedName": "resolveEnclosingDef",
+    "file": "scripts/lib/python/python-call-graph.ts",
+    "line": 61,
+    "signature": "function resolveEnclosingDef(\n    line: string,\n    defStack: Array<{ indent: number; qualifiedName: string }>\n): string | null",
+    "type": "function",
+    "module": "python",
+    "calls": [],
+    "calledBy": [
+      "buildPythonCallGraph"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "addCall",
+    "qualifiedName": "addCall",
+    "file": "scripts/lib/python/python-call-graph.ts",
+    "line": 91,
+    "signature": "function addCall(caller: SymbolEntry, calleeQualifiedName: string): void",
+    "type": "function",
+    "module": "python",
+    "calls": [],
+    "calledBy": [
+      "buildPythonCallGraph"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "buildPythonCallGraph",
+    "qualifiedName": "buildPythonCallGraph",
+    "file": "scripts/lib/python/python-call-graph.ts",
+    "line": 116,
+    "signature": "export function buildPythonCallGraph(\n    symbols: SymbolEntry[],\n    fileContents: Map<string, string>,\n    projectRoot: string\n): SymbolEntry[]",
+    "type": "function",
+    "module": "python",
+    "calls": [
+      "resolveEnclosingDef",
+      "getOrCreateModuleInitSymbol",
+      "addCall",
+      "isPythonKeyword"
+    ],
+    "calledBy": [
+      "main",
+      "handleFileChange",
+      "handleBatchFileChanges"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "isPythonKeyword",
+    "qualifiedName": "isPythonKeyword",
+    "file": "scripts/lib/python/python-call-graph.ts",
+    "line": 304,
+    "signature": "function isPythonKeyword(name: string): boolean",
+    "type": "function",
+    "module": "python",
+    "calls": [],
+    "calledBy": [
+      "buildPythonCallGraph"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "tryResolve",
+    "qualifiedName": "tryResolve",
+    "file": "scripts/lib/python/python-dependency-extractor.ts",
+    "line": 9,
+    "signature": "function tryResolve(base: string): string | null",
+    "type": "function",
+    "module": "python",
+    "calls": [],
+    "calledBy": [
+      "resolveRelativeImport",
+      "resolveAbsoluteImport"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "resolveRelativeImport",
+    "qualifiedName": "resolveRelativeImport",
+    "file": "scripts/lib/python/python-dependency-extractor.ts",
+    "line": 21,
+    "signature": "function resolveRelativeImport(filePath: string, modulePath: string): string | null",
+    "type": "function",
+    "module": "python",
+    "calls": [
+      "tryResolve"
+    ],
+    "calledBy": [
+      "extractPythonDeps"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "resolveAbsoluteImport",
+    "qualifiedName": "resolveAbsoluteImport",
+    "file": "scripts/lib/python/python-dependency-extractor.ts",
+    "line": 47,
+    "signature": "function resolveAbsoluteImport(modulePath: string, projectRoot: string): string | null",
+    "type": "function",
+    "module": "python",
+    "calls": [
+      "tryResolve"
+    ],
+    "calledBy": [
+      "extractPythonDeps"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "extractPythonDeps",
+    "qualifiedName": "extractPythonDeps",
+    "file": "scripts/lib/python/python-dependency-extractor.ts",
+    "line": 53,
+    "signature": "export function extractPythonDeps(filePath: string, content: string, projectRoot: string): ImportInfo[]",
+    "type": "function",
+    "module": "python",
+    "calls": [
+      "resolveRelativeImport",
+      "resolveAbsoluteImport"
+    ],
+    "calledBy": [
+      "main"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "isSymbolExported",
+    "qualifiedName": "isSymbolExported",
+    "file": "scripts/lib/python/python-symbol-extractor.ts",
+    "line": 14,
+    "signature": "function isSymbolExported(name: string, isMethod: boolean): boolean",
+    "type": "function",
+    "module": "python",
+    "calls": [],
+    "calledBy": [
+      "extractPythonSymbols"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "stripSelfCls",
+    "qualifiedName": "stripSelfCls",
+    "file": "scripts/lib/python/python-symbol-extractor.ts",
+    "line": 24,
+    "signature": "function stripSelfCls(params: string): string",
+    "type": "function",
+    "module": "python",
+    "calls": [],
+    "calledBy": [
+      "extractPythonSymbols"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "joinMultilineDef",
+    "qualifiedName": "joinMultilineDef",
+    "file": "scripts/lib/python/python-symbol-extractor.ts",
+    "line": 37,
+    "signature": "function joinMultilineDef(\n    lines: string[],\n    startIndex: number\n):",
+    "type": "function",
+    "module": "python",
+    "calls": [],
+    "calledBy": [
+      "extractPythonSymbols"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "extractPythonSymbols",
+    "qualifiedName": "extractPythonSymbols",
+    "file": "scripts/lib/python/python-symbol-extractor.ts",
+    "line": 66,
+    "signature": "export function extractPythonSymbols(\n    filePath: string,\n    content: string,\n    projectRoot: string\n): SymbolEntry[]",
+    "type": "function",
+    "module": "python",
+    "calls": [
+      "isSymbolExported",
+      "joinMultilineDef",
+      "stripSelfCls"
+    ],
+    "calledBy": [
+      "main",
+      "handleFileChange",
+      "handleBatchFileChanges"
+    ],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "isRetryableAnthropicError",
+    "qualifiedName": "isRetryableAnthropicError",
+    "file": "scripts/lib/summarizers/anthropic-summarizer.ts",
+    "line": 7,
+    "signature": "function isRetryableAnthropicError(error: unknown): boolean",
+    "type": "function",
+    "module": "summarizers",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "AnthropicSummarizer",
     "qualifiedName": "AnthropicSummarizer",
     "file": "scripts/lib/summarizers/anthropic-summarizer.ts",
-    "line": 6,
+    "line": 15,
     "signature": "class AnthropicSummarizer",
     "type": "class",
     "module": "summarizers",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "summarizeFile",
     "qualifiedName": "AnthropicSummarizer.summarizeFile",
     "file": "scripts/lib/summarizers/anthropic-summarizer.ts",
-    "line": 17,
+    "line": 26,
     "signature": "async summarizeFile(\n        filePath: string,\n        content: string,\n        symbols: SymbolEntry[]\n    ): Promise<FileSummary>",
     "type": "method",
     "module": "summarizers",
     "calls": [
       "buildPrompt",
+      "withRetry",
       "parseResponse",
       "StaticSummarizer.summarizeFile"
     ],
     "calledBy": [],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "constructor",
+    "qualifiedName": "AnthropicSummarizer.constructor",
+    "file": "scripts/lib/summarizers/anthropic-summarizer.ts",
+    "line": 18,
+    "signature": "constructor(private model = process.env.ANTHROPIC_MODEL ?? 'claude-haiku-4-5-20251001')",
+    "type": "constructor",
+    "module": "summarizers",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "ClaudeCodeSummarizer",
+    "qualifiedName": "ClaudeCodeSummarizer",
+    "file": "scripts/lib/summarizers/claude-code-summarizer.ts",
+    "line": 7,
+    "signature": "class ClaudeCodeSummarizer",
+    "type": "class",
+    "module": "summarizers",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": true,
+    "language": "typescript"
+  },
+  {
+    "name": "summarizeFile",
+    "qualifiedName": "ClaudeCodeSummarizer.summarizeFile",
+    "file": "scripts/lib/summarizers/claude-code-summarizer.ts",
+    "line": 12,
+    "signature": "async summarizeFile(\n        filePath: string,\n        content: string,\n        symbols: SymbolEntry[]\n    ): Promise<FileSummary>",
+    "type": "method",
+    "module": "summarizers",
+    "calls": [
+      "buildPrompt",
+      "withRetry",
+      "ClaudeCodeSummarizer.runClaude",
+      "parseResponse",
+      "StaticSummarizer.summarizeFile"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "runClaude",
+    "qualifiedName": "ClaudeCodeSummarizer.runClaude",
+    "file": "scripts/lib/summarizers/claude-code-summarizer.ts",
+    "line": 48,
+    "signature": "private runClaude(prompt: string): Promise<string>",
+    "type": "method",
+    "module": "summarizers",
+    "calls": [],
+    "calledBy": [
+      "ClaudeCodeSummarizer.summarizeFile"
+    ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "constructor",
+    "qualifiedName": "ClaudeCodeSummarizer.constructor",
+    "file": "scripts/lib/summarizers/claude-code-summarizer.ts",
+    "line": 8,
+    "signature": "constructor(\n        private model = process.env.CLAUDE_CODE_MODEL ?? 'sonnet'\n    )",
+    "type": "constructor",
+    "module": "summarizers",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "isRetryableOllamaError",
+    "qualifiedName": "isRetryableOllamaError",
+    "file": "scripts/lib/summarizers/ollama-summarizer.ts",
+    "line": 6,
+    "signature": "function isRetryableOllamaError(error: unknown): boolean",
+    "type": "function",
+    "module": "summarizers",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "OllamaSummarizer",
     "qualifiedName": "OllamaSummarizer",
     "file": "scripts/lib/summarizers/ollama-summarizer.ts",
-    "line": 5,
+    "line": 14,
     "signature": "class OllamaSummarizer",
     "type": "class",
     "module": "summarizers",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "summarizeFile",
     "qualifiedName": "OllamaSummarizer.summarizeFile",
     "file": "scripts/lib/summarizers/ollama-summarizer.ts",
-    "line": 11,
+    "line": 20,
     "signature": "async summarizeFile(\n        filePath: string,\n        content: string,\n        symbols: SymbolEntry[]\n    ): Promise<FileSummary>",
     "type": "method",
     "module": "summarizers",
     "calls": [
       "buildPrompt",
+      "withRetry",
       "parseResponse",
       "StaticSummarizer.summarizeFile"
     ],
     "calledBy": [],
     "throws": [],
-    "isExported": false
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "constructor",
+    "qualifiedName": "OllamaSummarizer.constructor",
+    "file": "scripts/lib/summarizers/ollama-summarizer.ts",
+    "line": 15,
+    "signature": "constructor(\n        private baseUrl = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434',\n        private model = process.env.OLLAMA_MODEL ?? 'qwen2.5-coder:7b'\n    )",
+    "type": "constructor",
+    "module": "summarizers",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
   },
   {
     "name": "StaticSummarizer",
     "qualifiedName": "StaticSummarizer",
     "file": "scripts/lib/summarizers/static-summarizer.ts",
-    "line": 6,
+    "line": 7,
     "signature": "class StaticSummarizer",
     "type": "class",
     "module": "summarizers",
     "calls": [],
     "calledBy": [],
     "throws": [],
-    "isExported": true
+    "isExported": true,
+    "language": "typescript"
   },
   {
     "name": "summarizeFile",
     "qualifiedName": "StaticSummarizer.summarizeFile",
     "file": "scripts/lib/summarizers/static-summarizer.ts",
-    "line": 7,
-    "signature": "async summarizeFile(\n        filePath: string,\n        content: string,\n        symbols: SymbolEntry[]\n    ): Promise<FileSummary>",
+    "line": 8,
+    "signature": "async summarizeFile(\n        filePath: string,\n        content: string,\n        symbols: SymbolEntry[],\n        sourceFile?: SourceFile\n    ): Promise<FileSummary>",
     "type": "method",
     "module": "summarizers",
     "calls": [],
     "calledBy": [
       "AnthropicSummarizer.summarizeFile",
+      "ClaudeCodeSummarizer.summarizeFile",
       "OllamaSummarizer.summarizeFile"
     ],
+    "throws": [],
+    "isExported": false,
+    "language": "typescript"
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:scripts/build-dependencies.ts>",
+    "file": "scripts/build-dependencies.ts",
+    "line": 1,
+    "signature": "<module-init:scripts/build-dependencies.ts>",
+    "type": "module-init",
+    "module": "scripts",
+    "calls": [
+      "main"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:scripts/build-knowledge.ts>",
+    "file": "scripts/build-knowledge.ts",
+    "line": 1,
+    "signature": "<module-init:scripts/build-knowledge.ts>",
+    "type": "module-init",
+    "module": "scripts",
+    "calls": [
+      "main"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:scripts/build-symbols.ts>",
+    "file": "scripts/build-symbols.ts",
+    "line": 1,
+    "signature": "<module-init:scripts/build-symbols.ts>",
+    "type": "module-init",
+    "module": "scripts",
+    "calls": [
+      "main"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:scripts/watch.ts>",
+    "file": "scripts/watch.ts",
+    "line": 1,
+    "signature": "<module-init:scripts/watch.ts>",
+    "type": "module-init",
+    "module": "scripts",
+    "calls": [
+      "main",
+      "logError"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:mcp-server/server.ts>",
+    "file": "mcp-server/server.ts",
+    "line": 1,
+    "signature": "<module-init:mcp-server/server.ts>",
+    "type": "module-init",
+    "module": "mcp-server",
+    "calls": [
+      "main"
+    ],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:scripts/lib/incremental-updater.ts>",
+    "file": "scripts/lib/incremental-updater.ts",
+    "line": 1,
+    "signature": "<module-init:scripts/lib/incremental-updater.ts>",
+    "type": "module-init",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:scripts/lib/summarizer.ts>",
+    "file": "scripts/lib/summarizer.ts",
+    "line": 1,
+    "signature": "<module-init:scripts/lib/summarizer.ts>",
+    "type": "module-init",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
+    "throws": [],
+    "isExported": false
+  },
+  {
+    "name": "<module-init>",
+    "qualifiedName": "<module-init:scripts/lib/summary-cache.ts>",
+    "file": "scripts/lib/summary-cache.ts",
+    "line": 1,
+    "signature": "<module-init:scripts/lib/summary-cache.ts>",
+    "type": "module-init",
+    "module": "lib",
+    "calls": [],
+    "calledBy": [],
     "throws": [],
     "isExported": false
   }

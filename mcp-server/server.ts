@@ -1,7 +1,7 @@
 /**
  * MCP Server entry point for the AI Code Knowledge System.
  *
- * Registers all 6 knowledge tools and communicates exclusively via stdio.
+ * Registers all knowledge tools and communicates exclusively via stdio.
  * All errors and logs go to stderr — stdout is reserved for MCP protocol messages.
  */
 
@@ -15,16 +15,87 @@ import * as getDependencies from './tools/get-dependencies.js';
 import * as getFileSummary from './tools/get-file-summary.js';
 import * as searchArchitecture from './tools/search-architecture.js';
 import * as healthCheck from './tools/health-check.js';
+import * as getProjectOverview from './tools/get-project-overview.js';
+import * as getBatchSummaries from './tools/get-batch-summaries.js';
+import * as getModuleContext from './tools/get-module-context.js';
+import * as getImplementationContext from './tools/get-implementation-context.js';
 
 const KNOWLEDGE_ROOT = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge';
 
 async function main(): Promise<void> {
     const server = new McpServer({
         name: 'ai-code-knowledge',
-        version: '0.1.0',
+        version: '0.2.0',
     });
 
-    // ── find_symbol ──────────────────────────────────────────────────────────
+    // ── Composite tools (use these first) ─────────────────────────────────
+
+    server.tool(
+        'get_project_overview',
+        'Get a complete project overview in a single call: file tree, tech stack, modules, ' +
+            'symbol counts, and key entry points. Use this as your FIRST call on any project.',
+        {
+            depth: z
+                .number()
+                .int()
+                .min(1)
+                .max(4)
+                .optional()
+                .describe('File tree depth (default: 2, max: 4)'),
+        },
+        async (args: { depth?: number }) => {
+            return getProjectOverview.handler(args, KNOWLEDGE_ROOT);
+        }
+    );
+
+    server.tool(
+        'get_module_context',
+        'Get everything about a module in one call: file summaries, exported symbols, ' +
+            'internal dependencies, shared patterns, and the module\'s role in the architecture.',
+        {
+            module: z.string().describe('Module name (e.g., "src", "scripts", "mcp-server")'),
+        },
+        async (args: { module: string }) => {
+            return getModuleContext.handler(args, KNOWLEDGE_ROOT);
+        }
+    );
+
+    server.tool(
+        'get_implementation_context',
+        'Get rich context for a file: summary, all symbols with signatures, related files, ' +
+            'import/export relationships, and code pattern fingerprint. Use before modifying a file.',
+        {
+            file: z
+                .string()
+                .describe('Relative file path (e.g., "src/lib/foo.ts")'),
+            includePatterns: z
+                .boolean()
+                .optional()
+                .describe('Include code patterns and related files (default: true)'),
+        },
+        async (args: { file: string; includePatterns?: boolean }) => {
+            return getImplementationContext.handler(args, KNOWLEDGE_ROOT);
+        }
+    );
+
+    server.tool(
+        'get_batch_summaries',
+        'Get summaries for multiple files in a single call. Returns compact one-line summaries. ' +
+            'Use when you know which files you need context for.',
+        {
+            files: z
+                .array(z.string())
+                .min(1)
+                .max(20)
+                .describe('Array of relative file paths (max 20)'),
+        },
+        async (args: { files: string[] }) => {
+            return getBatchSummaries.handler(args, KNOWLEDGE_ROOT);
+        }
+    );
+
+    // ── Targeted query tools ──────────────────────────────────────────────
+
     server.tool(
         'find_symbol',
         'Search the knowledge base for symbols (functions, classes, interfaces) by name. ' +
@@ -43,7 +114,6 @@ async function main(): Promise<void> {
         }
     );
 
-    // ── find_callers ─────────────────────────────────────────────────────────
     server.tool(
         'find_callers',
         'Find all callers of a given symbol using BFS traversal of the call graph. ' +
@@ -64,7 +134,6 @@ async function main(): Promise<void> {
         }
     );
 
-    // ── get_dependencies ─────────────────────────────────────────────────────
     server.tool(
         'get_dependencies',
         'Return direct and transitive module dependencies from the dependency graph. ' +
@@ -83,11 +152,10 @@ async function main(): Promise<void> {
         }
     );
 
-    // ── get_file_summary ─────────────────────────────────────────────────────
     server.tool(
         'get_file_summary',
-        'Retrieve the AI-generated summary for a source file. ' +
-            'Normalizes paths automatically and supports partial suffix matching.',
+        'Retrieve the AI-generated summary for a single source file. ' +
+            'Prefer get_batch_summaries for multiple files or get_implementation_context for richer detail.',
         {
             file: z
                 .string()
@@ -100,7 +168,6 @@ async function main(): Promise<void> {
         }
     );
 
-    // ── search_architecture ──────────────────────────────────────────────────
     server.tool(
         'search_architecture',
         'Search the architecture documentation for relevant content. ' +
@@ -115,13 +182,18 @@ async function main(): Promise<void> {
         }
     );
 
-    // ── health_check ─────────────────────────────────────────────────────────
     server.tool(
         'health_check',
         'Check the status of the knowledge base. ' +
-            'Returns lastBuilt timestamp, file count, available modules, and artifact flags.',
-        {},
-        async (args: Record<string, never>) => {
+            'Returns lastBuilt timestamp, file count, available modules. ' +
+            'Use verbose=true for tech stack and file tree.',
+        {
+            verbose: z
+                .boolean()
+                .optional()
+                .describe('Include tech stack, project type, and file tree (default: false)'),
+        },
+        async (args: { verbose?: boolean }) => {
             return await healthCheck.handler(args, KNOWLEDGE_ROOT);
         }
     );

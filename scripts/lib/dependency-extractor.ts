@@ -26,7 +26,10 @@ export function extractFileDeps(sourceFile: SourceFile): ImportInfo[] {
         let absolutePath = path.resolve(fileDir, specifier);
 
         // Try to handle missing extensions (.ts, .tsx, or index.ts/index.tsx)
-        const extensions = ['.ts', '.tsx', '/index.ts', '/index.tsx'];
+        const extensions = [
+            '.ts', '.tsx', '/index.ts', '/index.tsx',
+            '.js', '.jsx', '.mjs', '/index.js', '/index.jsx',
+        ];
 
         const addDep = (resolvedPath: string) => {
             const existing = dependencies.get(resolvedPath);
@@ -68,9 +71,11 @@ export function extractFileDeps(sourceFile: SourceFile): ImportInfo[] {
         resolveDependency(specifier, false);
     });
 
-    // 2. Dynamic imports: import(...)
+    // 2. Dynamic imports and CommonJS require()
     sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression).forEach(callExpr => {
         const expr = callExpr.getExpression();
+
+        // Dynamic import: import(...)
         if (expr.getKind() === SyntaxKind.ImportKeyword) {
             const arg = callExpr.getArguments()[0];
             if (arg) {
@@ -79,6 +84,15 @@ export function extractFileDeps(sourceFile: SourceFile): ImportInfo[] {
                     const specifier = (arg as StringLiteral).getLiteralValue();
                     resolveDependency(specifier, true);
                 }
+            }
+        }
+
+        // CommonJS require()
+        if (expr.getText() === 'require') {
+            const arg = callExpr.getArguments()[0];
+            if (arg && arg.getKind() === SyntaxKind.StringLiteral) {
+                const specifier = (arg as StringLiteral).getLiteralValue();
+                resolveDependency(specifier, false);
             }
         }
     });

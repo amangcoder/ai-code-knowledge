@@ -1,9 +1,15 @@
 import chokidar from 'chokidar';
 import * as path from 'node:path';
-import { handleFileChange, handleFileDeletion } from './lib/incremental-updater.js';
+import { handleBatchFileChanges } from './lib/incremental-updater.js';
+import { logInfo, logError } from './lib/logger.js';
+import { createDefaultRegistry } from './lib/adapters/index.js';
 
 const DEBOUNCE_MS = 500;
-const WATCH_GLOB = 'src/**/*.{ts,tsx,js,py,go,rs}';
+const MAX_PENDING = 1000;
+
+// Derive watch glob from all registered language adapters
+const registry = createDefaultRegistry();
+const WATCH_GLOB = registry.getSourceGlobs()[0] ?? '**/*.{ts,tsx,js,jsx,mjs,py}';
 
 /**
  * File Watcher - watches source files for changes and triggers incremental knowledge updates.
@@ -20,41 +26,45 @@ async function main(): Promise<void> {
     const knowledgeRoot = path.join(projectRoot, '.knowledge');
     const watchPattern = path.join(projectRoot, WATCH_GLOB);
 
-    process.stderr.write(`[watch] Starting file watcher for: ${projectRoot}\n`);
-    process.stderr.write(`[watch] Watching: ${watchPattern}\n`);
-    process.stderr.write(`[watch] Knowledge root: ${knowledgeRoot}\n`);
+    logInfo('watch', `Starting file watcher for: ${projectRoot}`);
+    logInfo('watch', `Watching: ${watchPattern}`);
+    logInfo('watch', `Knowledge root: ${knowledgeRoot}`);
 
     // Pending changed files and deletion flags, keyed by file path
     const pendingChanges = new Map<string, 'change' | 'delete'>();
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    let isProcessing = false;
 
     /**
      * Flush all pending changes after the debounce interval.
      */
     async function flushPending(): Promise<void> {
-        if (pendingChanges.size === 0) return;
+        if (pendingChanges.size === 0 || isProcessing) return;
 
+        isProcessing = true;
         const toProcess = new Map(pendingChanges);
         pendingChanges.clear();
 
-        for (const [filePath, eventType] of toProcess) {
-            if (eventType === 'delete') {
-                process.stderr.write(`[watch] Processing deletion: ${filePath}\n`);
-                try {
-                    await handleFileDeletion(filePath, knowledgeRoot);
-                    process.stderr.write(`[watch] Deletion processed: ${filePath}\n`);
-                } catch (err) {
-                    process.stderr.write(`[watch] Error processing deletion for ${filePath}: ${err}\n`);
-                }
-            } else {
-                process.stderr.write(`[watch] Processing change: ${filePath}\n`);
-                try {
-                    await handleFileChange(filePath, knowledgeRoot, projectRoot);
-                    process.stderr.write(`[watch] Change processed: ${filePath}\n`);
-                } catch (err) {
-                    process.stderr.write(`[watch] Error processing change for ${filePath}: ${err}\n`);
-                }
-            }
+        try {
+            const batchFiles = Array.from(toProcess.entries()).map(([filePath, eventType]) => ({
+                path: filePath,
+                type: eventType,
+            }));
+
+            logInfo('watch', `Processing batch of ${batchFiles.length} file(s): ${batchFiles.map(f => `${f.type}:${path.basename(f.path)}`).join(', ')}`);
+
+            await handleBatchFileChanges(batchFiles, knowledgeRoot, projectRoot);
+
+            logInfo('watch', `Batch of ${batchFiles.length} file(s) processed successfully`);
+        } catch (err) {
+            logError('watch', err);
+        } finally {
+            isProcessing = false;
+        }
+
+        // Re-schedule if more changes accumulated during processing
+        if (pendingChanges.size > 0) {
+            scheduleFlushed();
         }
     }
 
@@ -62,13 +72,24 @@ async function main(): Promise<void> {
      * Schedule a debounced flush of all pending changes.
      */
     function scheduleFlushed(): void {
+        if (pendingChanges.size >= MAX_PENDING) {
+            logInfo('watch', `Pending changes reached ${MAX_PENDING}, flushing immediately`);
+            if (debounceTimer !== null) {
+                clearTimeout(debounceTimer);
+                debounceTimer = null;
+            }
+            flushPending().catch(err => {
+                logError('watch', err);
+            });
+            return;
+        }
         if (debounceTimer !== null) {
             clearTimeout(debounceTimer);
         }
         debounceTimer = setTimeout(() => {
             debounceTimer = null;
             flushPending().catch(err => {
-                process.stderr.write(`[watch] Unexpected error during flush: ${err}\n`);
+                logError('watch', err);
             });
         }, DEBOUNCE_MS);
     }
@@ -76,6 +97,7 @@ async function main(): Promise<void> {
     const watcher = chokidar.watch(watchPattern, {
         ignoreInitial: true,
         persistent: true,
+        ignored: [...registry.getIgnoreGlobs(), '**/.git/**'],
         awaitWriteFinish: {
             stabilityThreshold: 100,
             pollInterval: 50,
@@ -83,63 +105,69 @@ async function main(): Promise<void> {
     });
 
     watcher.on('add', (filePath: string) => {
-        process.stderr.write(`[watch] File added: ${filePath}\n`);
+        logInfo('watch', `File added: ${filePath}`);
         pendingChanges.set(filePath, 'change');
         scheduleFlushed();
     });
 
     watcher.on('change', (filePath: string) => {
-        process.stderr.write(`[watch] File changed: ${filePath}\n`);
+        logInfo('watch', `File changed: ${filePath}`);
         pendingChanges.set(filePath, 'change');
         scheduleFlushed();
     });
 
     watcher.on('unlink', (filePath: string) => {
-        process.stderr.write(`[watch] File deleted: ${filePath}\n`);
+        logInfo('watch', `File deleted: ${filePath}`);
         pendingChanges.set(filePath, 'delete');
         scheduleFlushed();
     });
 
     watcher.on('error', (error: Error) => {
-        process.stderr.write(`[watch] Watcher error: ${error}\n`);
+        logError('watch', error);
     });
 
     watcher.on('ready', () => {
-        process.stderr.write(`[watch] Ready — watching for file changes (debounce: ${DEBOUNCE_MS}ms)\n`);
+        logInfo('watch', `Ready — watching for file changes (debounce: ${DEBOUNCE_MS}ms)`);
     });
 
     /**
      * Graceful shutdown: close the watcher and flush any remaining pending changes.
      */
     async function shutdown(signal: string): Promise<void> {
-        process.stderr.write(`\n[watch] Received ${signal}, shutting down gracefully...\n`);
+        logInfo('watch', `Received ${signal}, shutting down gracefully...`);
 
         if (debounceTimer !== null) {
             clearTimeout(debounceTimer);
             debounceTimer = null;
         }
 
+        // Flush any remaining pending changes before shutdown
+        if (pendingChanges.size > 0) {
+            logInfo('watch', `Flushing ${pendingChanges.size} pending changes before shutdown...`);
+            await flushPending();
+        }
+
         await watcher.close();
-        process.stderr.write(`[watch] Watcher closed.\n`);
+        logInfo('watch', 'Watcher closed.');
         process.exit(0);
     }
 
     process.on('SIGINT', () => {
         shutdown('SIGINT').catch(err => {
-            process.stderr.write(`[watch] Error during shutdown: ${err}\n`);
+            logError('watch', err);
             process.exit(1);
         });
     });
 
     process.on('SIGTERM', () => {
         shutdown('SIGTERM').catch(err => {
-            process.stderr.write(`[watch] Error during shutdown: ${err}\n`);
+            logError('watch', err);
             process.exit(1);
         });
     });
 }
 
 main().catch(err => {
-    process.stderr.write(`[watch] Fatal error: ${err}\n`);
+    logError('watch', err);
     process.exit(1);
 });

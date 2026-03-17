@@ -1,24 +1,16 @@
-import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
 import type { KnowledgeIndex, CallToolResult } from '../types.js';
+import { loadIndex } from './lib/data-loader.js';
+import { buildFileTree } from './lib/file-tree.js';
+import { detectTechStack, classifyProjectType } from './lib/tech-stack.js';
+import { resolveProjectRoot } from './lib/path-utils.js';
 
-/**
- * Handles the health_check MCP tool call.
- * Reads .knowledge/index.json and returns a formatted status string showing:
- * lastBuilt, fileCount, hasSymbols, hasDependencies, and module list.
- * Returns a build instruction message if index.json is missing.
- */
 export async function handler(
-    _args: Record<string, unknown>,
+    args: { verbose?: boolean },
     knowledgeRoot: string = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge'
 ): Promise<CallToolResult> {
-    const indexPath = path.join(knowledgeRoot, 'index.json');
+    const index = loadIndex(knowledgeRoot);
 
-    let index: KnowledgeIndex;
-    try {
-        const raw = await fs.readFile(indexPath, 'utf8');
-        index = JSON.parse(raw) as KnowledgeIndex;
-    } catch {
+    if (!index) {
         return {
             content: [
                 {
@@ -44,7 +36,7 @@ export async function handler(
             ? index.modules.map((m) => `  - ${m}`).join('\n')
             : '  (none)';
 
-    const statusText = [
+    const lines = [
         '=== Knowledge Base Status ===',
         '',
         `Last Built:       ${index.lastBuilt}`,
@@ -54,14 +46,29 @@ export async function handler(
         '',
         'Modules:',
         moduleList,
-    ].join('\n');
+    ];
+
+    if (args.verbose) {
+        const projectRoot = resolveProjectRoot(knowledgeRoot);
+        const techStack = detectTechStack(projectRoot);
+        const projectType = classifyProjectType(projectRoot);
+
+        lines.push('');
+        lines.push(`Project Type: ${projectType}`);
+        lines.push(`Languages: ${techStack.languages.join(', ') || '(unknown)'}`);
+        lines.push(`Frameworks: ${techStack.frameworks.join(', ') || '(none)'}`);
+        lines.push(`Build Tools: ${techStack.buildTools.join(', ') || '(none)'}`);
+        lines.push(`Package Manager: ${techStack.packageManager ?? '(unknown)'}`);
+
+        const tree = buildFileTree(projectRoot, 2);
+        if (tree) {
+            lines.push('');
+            lines.push('File Tree (depth 2):');
+            lines.push(tree);
+        }
+    }
 
     return {
-        content: [
-            {
-                type: 'text',
-                text: statusText,
-            },
-        ],
+        content: [{ type: 'text', text: lines.join('\n') }],
     };
 }

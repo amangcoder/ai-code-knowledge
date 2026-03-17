@@ -3,17 +3,20 @@ import { SymbolEntry } from '../../src/types.js';
 import * as path from 'path';
 
 function extractSignature(text: string): string {
-    let depth = 0;
+    const stack: string[] = [];
+    const openers: Record<string, string> = { '(': ')', '<': '>', '[': ']' };
+    const closers = new Set([')', '>', ']']);
     for (let i = 0; i < text.length; i++) {
-        if (text[i] === '(' || text[i] === '<' || text[i] === '[') {
-            depth++;
-        } else if (text[i] === ')' || text[i] === '>' || text[i] === ']') {
-            depth--;
-        } else if (text[i] === '{') {
-            if (depth === 0) return text.slice(0, i).trim();
-            depth++;
-        } else if (text[i] === '}') {
-            depth--;
+        const ch = text[i];
+        if (ch in openers) {
+            stack.push(openers[ch]);
+        } else if (closers.has(ch)) {
+            if (stack.length > 0 && stack[stack.length - 1] === ch) stack.pop();
+        } else if (ch === '{') {
+            if (stack.length === 0) return text.slice(0, i).trim();
+            stack.push('}');
+        } else if (ch === '}') {
+            if (stack.length > 0 && stack[stack.length - 1] === '}') stack.pop();
         }
     }
     return text.trim();
@@ -71,6 +74,23 @@ export function extractSymbols(sourceFile: SourceFile, projectRoot: string): Sym
             const qualifiedName = `${className}.${methodName}`;
             symbols.push(createBaseEntry(method, methodName, 'method', qualifiedName));
         });
+
+        cls.getGetAccessors().forEach(getter => {
+            const getterName = getter.getName();
+            const qualifiedName = `${className}.get:${getterName}`;
+            symbols.push(createBaseEntry(getter, `get:${getterName}`, 'method', qualifiedName));
+        });
+
+        cls.getSetAccessors().forEach(setter => {
+            const setterName = setter.getName();
+            const qualifiedName = `${className}.set:${setterName}`;
+            symbols.push(createBaseEntry(setter, `set:${setterName}`, 'method', qualifiedName));
+        });
+
+        cls.getConstructors().forEach(ctor => {
+            const qualifiedName = `${className}.constructor`;
+            symbols.push(createBaseEntry(ctor, 'constructor', 'constructor', qualifiedName));
+        });
     });
 
     // Interfaces
@@ -83,6 +103,12 @@ export function extractSymbols(sourceFile: SourceFile, projectRoot: string): Sym
     sourceFile.getTypeAliases().forEach(typeAlias => {
         const name = typeAlias.getName();
         symbols.push(createBaseEntry(typeAlias, name, 'type'));
+    });
+
+    // Enums
+    sourceFile.getEnums().forEach(enumDecl => {
+        const name = enumDecl.getName();
+        symbols.push(createBaseEntry(enumDecl, name, 'enum'));
     });
 
     return symbols;

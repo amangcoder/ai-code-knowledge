@@ -31,6 +31,12 @@ export async function buildIndex(knowledgeRoot: string): Promise<KnowledgeIndex>
     const uniqueFiles = new Set<string>(symbols.map(s => s.file));
     const fileCount = uniqueFiles.size;
 
+    // Count symbols by type
+    const symbolCounts: Record<string, number> = {};
+    for (const s of symbols) {
+        symbolCounts[s.type] = (symbolCounts[s.type] ?? 0) + 1;
+    }
+
     // --- dependencies.json ---
     let modules: string[] = [];
     let hasDependencies = false;
@@ -66,6 +72,7 @@ export async function buildIndex(knowledgeRoot: string): Promise<KnowledgeIndex>
         hasDependencies,
         lastBuilt: new Date().toISOString(),
         fileCount,
+        symbolCounts: hasSymbols ? symbolCounts : undefined,
     };
 }
 

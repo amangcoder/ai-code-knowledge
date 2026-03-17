@@ -7,14 +7,14 @@
       "DependencyGraph",
       "FileSummary",
       "KnowledgeIndex",
-      "CallSite",
+      "CallToolResult",
       "SummarizerMode"
     ],
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.337Z",
-    "contentHash": "33a95e04bcf790dfadf03bd02bdf7e2f39a9deeb7cfd0ae0c4818cea4ff918d3"
+    "lastUpdated": "2026-03-16T14:53:24.360Z",
+    "contentHash": "85d918eef57901a0fc97d66da115cd5047bb706a5dbb6d1879ba88164685764b"
   },
   "scripts/build-dependencies.ts": {
     "file": "scripts/build-dependencies.ts",
@@ -46,15 +46,21 @@
       "./lib/summarizer-factory.js",
       "./lib/atomic-writer.js",
       "./lib/index-builder.js",
+      "./lib/language-detection.js",
+      "./lib/python/python-symbol-extractor.js",
+      "./lib/python/python-dependency-extractor.js",
+      "./lib/python/python-call-graph.js",
+      "node:fs",
       "node:fs",
       "node:path",
       "node:crypto",
-      "../src/types.js"
+      "../src/types.js",
+      "./lib/module-grouper.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "cdb0d05dcad08bd0cfed123544069cb93394e78e01f3db28580f0de3641e1814"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "f020133aa44cf4948923d4a4d80e3fd888894bf4c0050567dc4098de615ebd04"
   },
   "scripts/build-symbols.ts": {
     "file": "scripts/build-symbols.ts",
@@ -70,8 +76,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "69a46c8e7a230fade1977c0c046e05abe70172c70c0cb7cbd200fe7e503b50fa"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "187b1a40f659645c101ebe4978e17d52834e9571d6098239486b3dc2a6775363"
   },
   "scripts/watch.ts": {
     "file": "scripts/watch.ts",
@@ -80,20 +86,21 @@
     "dependencies": [
       "chokidar",
       "node:path",
-      "./lib/incremental-updater.js"
+      "./lib/incremental-updater.js",
+      "./lib/logger.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "b9e24b29eb80b0d03ee137f21161e574837a563b68e92b1750b754327ba3d754"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "f26a9d31f0a7183b2304995ea8855c97cbb3cd2efefa21265f5881f433c8d726"
   },
   "mcp-server/server.ts": {
     "file": "mcp-server/server.ts",
     "purpose": "server module",
     "exports": [],
     "dependencies": [
-      "@modelcontextprotocol/sdk/server/mcp",
-      "@modelcontextprotocol/sdk/server/stdio",
+      "@modelcontextprotocol/sdk/server/mcp.js",
+      "@modelcontextprotocol/sdk/server/stdio.js",
       "zod",
       "./tools/find-symbol.js",
       "./tools/find-callers.js",
@@ -104,8 +111,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "3ee4b0ffe96d4a110c1268fc40e4ec30379a48db6b34c8c0ca66c5d5ab3f424b"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "6a21be75548d87b2f5c8765025700a95b285b4dee1467f52b3b060bd8dd7f10d"
   },
   "mcp-server/types.ts": {
     "file": "mcp-server/types.ts",
@@ -114,13 +121,15 @@
       "SymbolEntry",
       "DependencyGraph",
       "FileSummary",
-      "KnowledgeIndex"
+      "KnowledgeIndex",
+      "CallToolResult",
+      "SummarizerMode"
     ],
     "dependencies": [],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "edd58d437386a01956b84836ea4d39c9c9353e14e60e43998b0b76759ce7fb5e"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "85d918eef57901a0fc97d66da115cd5047bb706a5dbb6d1879ba88164685764b"
   },
   "scripts/lib/atomic-writer.ts": {
     "file": "scripts/lib/atomic-writer.ts",
@@ -143,16 +152,19 @@
     "purpose": "call-graph module",
     "exports": [
       "buildCallGraph",
+      "rebuildCallGraphForFile",
+      "rebuildCallGraphForFiles",
       "invertCallGraph"
     ],
     "dependencies": [
+      "node:path",
       "ts-morph",
       "../../src/types.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "f61372ab1f547febe5bf9eaaca0196025aa362027fba5891349d52184c1193c6"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "a8588764311ed59f66a8a931bfefcf88973872e5a2ee89884908c665da2e6406"
   },
   "scripts/lib/dependency-extractor.ts": {
     "file": "scripts/lib/dependency-extractor.ts",
@@ -168,8 +180,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "6e144b2fe24ed3c63a9d1c79d8cfbef5632f5f7beb4b54dbec423491098d1c4c"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "63a41e54e5e58c71cbb0662c991f0a041204d053a9b5f974c2e99c77c285fd33"
   },
   "scripts/lib/dependency-graph.ts": {
     "file": "scripts/lib/dependency-graph.ts",
@@ -185,14 +197,15 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "34cdd4ccea97beec62462f510e8bc0d10656e051bb9fb232732b4b6e0d32d937"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "447fc3f787961bbcc0c5ee6885280f9f2b92d8cc0bdf9fbcff0e5d0d2ae0d994"
   },
   "scripts/lib/incremental-updater.ts": {
     "file": "scripts/lib/incremental-updater.ts",
     "purpose": "incremental-updater module",
     "exports": [
       "handleFileChange",
+      "handleBatchFileChanges",
       "handleFileDeletion"
     ],
     "dependencies": [
@@ -204,12 +217,17 @@
       "./atomic-writer.js",
       "./symbol-extractor.js",
       "./call-graph.js",
-      "./summarizer-factory.js"
+      "./summarizer-factory.js",
+      "./language-detection.js",
+      "./python/python-symbol-extractor.js",
+      "./python/python-call-graph.js",
+      "./logger.js",
+      "./path-utils.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "8b6490c3a6b5cd5be100e02a8e411377c0149c0c490378872d2464e6c6de7aec"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "f5307adfa1812f8cf5ba6a94fef3ee0876bd7a3809c39f48f9e1840c1acd8136"
   },
   "scripts/lib/index-builder.ts": {
     "file": "scripts/lib/index-builder.ts",
@@ -233,15 +251,16 @@
     "file": "scripts/lib/module-grouper.ts",
     "purpose": "module-grouper module",
     "exports": [
-      "groupFilesByModule"
+      "groupFilesByModule",
+      "ModuleConfig"
     ],
     "dependencies": [
       "node:path"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "5f406d72b615c92f6189473982e8b19d0ce0eaf3fc752d8c7cd5b84a8fe4336f"
+    "lastUpdated": "2026-03-16T10:45:47.694Z",
+    "contentHash": "94c70cba488779ff061007546e5bd00fb53d5632f16844f3c557342533d95de4"
   },
   "scripts/lib/summarizer-factory.ts": {
     "file": "scripts/lib/summarizer-factory.ts",
@@ -253,12 +272,13 @@
       "./summarizer.js",
       "./summarizers/static-summarizer.js",
       "./summarizers/ollama-summarizer.js",
-      "./summarizers/anthropic-summarizer.js"
+      "./summarizers/anthropic-summarizer.js",
+      "./summarizers/claude-code-summarizer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "c5d29ed34df51c0ecf350fba71577b9513167d317d7479bc53afa58dc5cce28d"
+    "lastUpdated": "2026-03-16T10:45:47.694Z",
+    "contentHash": "1a303b5db47d7a5eb5beaed61a4ce28b5b3fb800a147bd81ede8975bf1dbd295"
   },
   "scripts/lib/summarizer.ts": {
     "file": "scripts/lib/summarizer.ts",
@@ -269,12 +289,15 @@
       "Summarizer"
     ],
     "dependencies": [
-      "../../src/types.js"
+      "zod",
+      "ts-morph",
+      "../../src/types.js",
+      "node:path"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "b54de94616018eee6c4c1bca2ab72954d2bfb890035c19d720e8fa291d74bc98"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "fb362795732f94f18a37359a5bcf12fbc7c06809fa7982cf1233a7647fef901d"
   },
   "scripts/lib/summary-cache.ts": {
     "file": "scripts/lib/summary-cache.ts",
@@ -287,14 +310,15 @@
       "node:fs",
       "node:path",
       "node:crypto",
+      "ts-morph",
       "../../src/types.js",
       "./summarizer.js",
       "./atomic-writer.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "e1af8d628ae2667d3bf23fa74607279ce3f0d31fbb91b9c2673b314af2e737f6"
+    "lastUpdated": "2026-03-16T10:45:47.694Z",
+    "contentHash": "2cdb615377fe6fe569e32132e79ab4bac0017816213798bfdc4c12eaaea93494"
   },
   "scripts/lib/symbol-extractor.ts": {
     "file": "scripts/lib/symbol-extractor.ts",
@@ -309,16 +333,15 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "b99aad00f6f45dba097015dc96194d67312a22f5db43b7e0f7e0c3dd0136b18d"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "68bc4a0f254443c0aa0611cf987bc529d639212e7b58ccf0e5ccb92839df486a"
   },
   "mcp-server/tools/find-callers.ts": {
     "file": "mcp-server/tools/find-callers.ts",
     "purpose": "find-callers module",
     "exports": [
       "handler",
-      "FindCallersArgs",
-      "CallToolResult"
+      "FindCallersArgs"
     ],
     "dependencies": [
       "node:fs",
@@ -327,16 +350,15 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "af98e731d0a6345fb4ad7eff979cf1c2a731bef7be689dd7c6f817b00858c19f"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "12c7adaa04ff815b4fcee3bae24a02fa1f44028c72570a597e307d44d89dc484"
   },
   "mcp-server/tools/find-symbol.ts": {
     "file": "mcp-server/tools/find-symbol.ts",
     "purpose": "find-symbol module",
     "exports": [
       "handler",
-      "FindSymbolArgs",
-      "CallToolResult"
+      "FindSymbolArgs"
     ],
     "dependencies": [
       "node:fs/promises",
@@ -345,16 +367,15 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "eeb251fafb6c564f73ed8c8ad5cbe3ac7420a0fe1f1cb7f0cef379be7f087980"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "9181ceb34390204a2ad7c05453ed3c2a2ef95e2558ce8a669871de5da82a8dc2"
   },
   "mcp-server/tools/get-dependencies.ts": {
     "file": "mcp-server/tools/get-dependencies.ts",
     "purpose": "get-dependencies module",
     "exports": [
       "handler",
-      "GetDependenciesArgs",
-      "CallToolResult"
+      "GetDependenciesArgs"
     ],
     "dependencies": [
       "node:fs",
@@ -363,8 +384,8 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "c486ed20cc3ff4c8592c31f90097cd480ac207eeed030164f098c2b4fa621d5f"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "bc553e04a27439383bb04083a97f72a4198ca463c799b0cb26d1deff55c0d5d9"
   },
   "mcp-server/tools/get-file-summary.ts": {
     "file": "mcp-server/tools/get-file-summary.ts",
@@ -379,15 +400,14 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "5a37dfe28b5506919f58916d5ccd9fa756122dbeb78da6619b31095a1f473607"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "5681a24aa93b8519f164053b23eddaf3fb84b997991eca682278ecce17f44cd6"
   },
   "mcp-server/tools/health-check.ts": {
     "file": "mcp-server/tools/health-check.ts",
     "purpose": "health-check module",
     "exports": [
-      "handler",
-      "CallToolResult"
+      "handler"
     ],
     "dependencies": [
       "node:fs/promises",
@@ -396,25 +416,25 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "1db0ffe04f6979bc75e1b10643b82870f86b4ae3d7ffa5c21f2b2b1e69329a17"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "6fb3368634c1e3db8636ded7920df118b94b863c7976abed469904965b81c9fb"
   },
   "mcp-server/tools/search-architecture.ts": {
     "file": "mcp-server/tools/search-architecture.ts",
     "purpose": "search-architecture module",
     "exports": [
       "handler",
-      "SearchArchitectureArgs",
-      "CallToolResult"
+      "SearchArchitectureArgs"
     ],
     "dependencies": [
       "node:fs",
-      "node:path"
+      "node:path",
+      "../types.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "fa40594cad92693976afd2503dfbd39f5c3492c8349c1239f1a36e2d544c9b94"
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "702e13e5017ce25aa77b38e6854a6289d266c45ef94ba0aec44790892c97608b"
   },
   "scripts/lib/summarizers/anthropic-summarizer.ts": {
     "file": "scripts/lib/summarizers/anthropic-summarizer.ts",
@@ -426,12 +446,13 @@
       "../summarizer.js",
       "../../../src/types.js",
       "./static-summarizer.js",
+      "../retry.js",
       "@anthropic-ai/sdk"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "dbd263642ab3b77a021aee80eb22959f6da1d949a8bb5795b7d83b2423d5a3af"
+    "lastUpdated": "2026-03-16T14:53:24.362Z",
+    "contentHash": "9f6400b1a7158f06eb15f6ebd6cd7d4d78119f0922c22adf16011d1a773fb8fa"
   },
   "scripts/lib/summarizers/ollama-summarizer.ts": {
     "file": "scripts/lib/summarizers/ollama-summarizer.ts",
@@ -442,12 +463,13 @@
     "dependencies": [
       "../summarizer.js",
       "../../../src/types.js",
-      "./static-summarizer.js"
+      "./static-summarizer.js",
+      "../retry.js"
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "a06a4d94e433e6601ab57e038697a0b74e00336a24f4be8e1c3f74498b210851"
+    "lastUpdated": "2026-03-16T10:45:47.695Z",
+    "contentHash": "916fb321ac64cd1d560e21ef50d3344aa8c6cf7b9d582256edf9c0a5c16e3631"
   },
   "scripts/lib/summarizers/static-summarizer.ts": {
     "file": "scripts/lib/summarizers/static-summarizer.ts",
@@ -456,6 +478,7 @@
       "StaticSummarizer"
     ],
     "dependencies": [
+      "ts-morph",
       "../summarizer.js",
       "../../../src/types.js",
       "node:path",
@@ -463,7 +486,131 @@
     ],
     "sideEffects": [],
     "throws": [],
-    "lastUpdated": "2026-03-16T08:26:19.338Z",
-    "contentHash": "2039699fea57e1d9abfd101b9827f25070ddb7ca0167e4c71969d6c378b95c7d"
+    "lastUpdated": "2026-03-16T14:53:24.362Z",
+    "contentHash": "95cb593f0dcd0aef1916c0ce5db0c1a8a8a3d8d3bf76956445622eb779e63eb9"
+  },
+  "scripts/lib/logger.ts": {
+    "file": "scripts/lib/logger.ts",
+    "purpose": "logger module",
+    "exports": [
+      "logInfo",
+      "logError",
+      "logWarn"
+    ],
+    "dependencies": [],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T10:45:47.694Z",
+    "contentHash": "596aa22e267fb61b2c8ed04977ac4643b98e6351abf58ad3328125fd3921d158"
+  },
+  "scripts/lib/path-utils.ts": {
+    "file": "scripts/lib/path-utils.ts",
+    "purpose": "path-utils module",
+    "exports": [
+      "normalizeFilePath"
+    ],
+    "dependencies": [
+      "node:path"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T10:45:47.694Z",
+    "contentHash": "77deb462b6510518beed1bb53e9e458787559ec58d7dce6a291107e76bae222d"
+  },
+  "scripts/lib/retry.ts": {
+    "file": "scripts/lib/retry.ts",
+    "purpose": "retry module",
+    "exports": [
+      "withRetry",
+      "RetryOptions"
+    ],
+    "dependencies": [],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T10:45:47.694Z",
+    "contentHash": "dd61c5ba705400d2976cd14274f148749179c32ed6ae32ccdb24173b806d12b9"
+  },
+  "scripts/lib/summarizers/claude-code-summarizer.ts": {
+    "file": "scripts/lib/summarizers/claude-code-summarizer.ts",
+    "purpose": "claude-code-summarizer module",
+    "exports": [
+      "ClaudeCodeSummarizer"
+    ],
+    "dependencies": [
+      "../summarizer.js",
+      "../../../src/types.js",
+      "./static-summarizer.js",
+      "../retry.js",
+      "node:child_process"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T14:53:24.362Z",
+    "contentHash": "c67f0d70a91ed2932c7a1abe51c0f7cb9e2d25ab2736273f2209282efffe58bb"
+  },
+  "scripts/lib/language-detection.ts": {
+    "file": "scripts/lib/language-detection.ts",
+    "purpose": "language-detection module",
+    "exports": [
+      "detectLanguage",
+      "detectProjectLanguages",
+      "getSourceGlobs",
+      "getIgnorePatterns",
+      "SupportedLanguage"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "5564aa8a6e8a9abc3d48c0441b790c207c97bf2512e40c1376211c8fdc5b8861"
+  },
+  "scripts/lib/python/python-call-graph.ts": {
+    "file": "scripts/lib/python/python-call-graph.ts",
+    "purpose": "python-call-graph module",
+    "exports": [
+      "buildPythonCallGraph"
+    ],
+    "dependencies": [
+      "node:path",
+      "../../../src/types.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "acae4971f7e28b63269e84fb28748bac0581ee2023d514cc34b6ca710942e28c"
+  },
+  "scripts/lib/python/python-dependency-extractor.ts": {
+    "file": "scripts/lib/python/python-dependency-extractor.ts",
+    "purpose": "python-dependency-extractor module",
+    "exports": [
+      "extractPythonDeps"
+    ],
+    "dependencies": [
+      "node:path",
+      "node:fs",
+      "../dependency-extractor.js"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T14:53:24.361Z",
+    "contentHash": "d1e0bfff4704aaecaa34d6da6a2dccf1f4709031796f5d8be6c882274386931e"
+  },
+  "scripts/lib/python/python-symbol-extractor.ts": {
+    "file": "scripts/lib/python/python-symbol-extractor.ts",
+    "purpose": "python-symbol-extractor module",
+    "exports": [
+      "extractPythonSymbols"
+    ],
+    "dependencies": [
+      "../../../src/types.js",
+      "path"
+    ],
+    "sideEffects": [],
+    "throws": [],
+    "lastUpdated": "2026-03-16T14:53:24.362Z",
+    "contentHash": "9822e3c8fb820f2f47d4f23132c9ee4562cec37b27a16ae96320981179ab4aeb"
   }
 }
