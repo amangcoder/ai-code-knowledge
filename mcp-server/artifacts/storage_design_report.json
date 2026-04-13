@@ -1,0 +1,401 @@
+{
+  "report_metadata": {
+    "generated": "2026-03-17",
+    "subject": "Storage Layer Design for MCP Code Knowledge Server",
+    "codebase_analyzed": "mcp-server @ /Users/amangupta/Projects/ai-code-knowledge/mcp-server",
+    "current_storage": "flat JSON files under .knowledge/ (index.json, symbols.json, dependencies.json, summaries/cache.json)",
+    "current_data_shape": {
+      "KnowledgeIndex": "single JSON object with module list, lastBuilt, fileCount, symbolCounts",
+      "SymbolEntry": "array of ~72 objects (26-file codebase); each has qualifiedName, file, line, signature, type, calls[], calledBy[], isExported",
+      "DependencyGraph": "{ nodes[], edges[{from,to,type}], cycles[][], fileDeps: Record<file, file[]> }",
+      "FileSummary_cache": "Record<relativeFilePath, FileSummary> stored as summaries/cache.json"
+    }
+  },
+
+  "storage_recommendation": {
+    "choice": "SQLite (via better-sqlite3)",
+    "rationale": [
+      "The codebase is a single-process Node.js MCP server communicating over stdio — no network layer, no concurrency from multiple writers.",
+      "SQLite's embedded model means zero external infrastructure, matching the existing zero-dependency deployment model.",
+      "better-sqlite3 uses synchronous APIs, which eliminates async overhead on every tool call and keeps handler code simple (current handlers are already sync in find-callers.ts, get-dependencies.ts).",
+      "SQLite supports indexed JOINs, recursive CTEs for graph traversal (WITH RECURSIVE), and FTS5 for full-text search on summaries — capabilities the current flat-JSON approach lacks entirely.",
+      "For 26–500 files the entire database fits comfortably in the OS page cache; query latency is sub-millisecond for indexed lookups.",
+      "Migration is non-breaking: the existing JSON files can be generated as a compatibility export alongside the SQLite DB, or the tool handlers can be updated to hit SQLite transparently.",
+      "Rebuild frequency (on code change) is low; SQLite handles atomic batch writes via transactions far better than rewriting multi-MB JSON files."
+    ],
+    "rejected_alternatives": {
+      "in_memory_json": {
+        "verdict": "Reject for long-term use",
+        "reason": "Current approach: entire symbols.json is read and filtered on every find_symbol call (O(n) scan). At 72 symbols/26 files it is fast enough, but at 500 files with 1000+ symbols the linear scan degrades and the 30–200 KB files incur repeated parse overhead. No persistent index, no FTS, no graph queries."
+      },
+      "redis": {
+        "verdict": "Reject",
+        "reason": "Requires a running Redis server. Adds infrastructure complexity incompatible with the single-binary MCP deployment. No benefit over SQLite for a single-process reader."
+      },
+      "leveldb": {
+        "verdict": "Acceptable but inferior to SQLite for this use case",
+        "reason": "LevelDB is a key-value store; graph traversal and relational joins require application-level secondary indexes. No SQL, no FTS5, more code complexity. Better suited for append-heavy time-series workloads."
+      },
+      "postgres": {
+        "verdict": "Over-engineered",
+        "reason": "Network-connected RDBMS for a local MCP process serving 26–500 files. Adds server management, connection pool overhead, and deployment complexity with no benefit."
+      }
+    }
+  },
+
+  "schema_design": {
+    "engine": "SQLite 3 with WAL mode, FTS5 extension",
+    "tables": {
+      "files": {
+        "description": "One row per indexed source file. Stores computed summary fields and LLM-generated descriptions.",
+        "ddl": "CREATE TABLE files (\n  id              INTEGER PRIMARY KEY,\n  path            TEXT    NOT NULL UNIQUE,   -- relative path, e.g. 'src/lib/foo.ts'\n  module          TEXT    NOT NULL,           -- parent module name, e.g. 'src'\n  purpose         TEXT,                       -- static one-line purpose\n  detailed_purpose TEXT,                      -- richer static description\n  llm_description TEXT,                       -- LLM-generated (expensive, cached)\n  architectural_role TEXT,\n  complexity_score REAL,\n  content_hash    TEXT    NOT NULL,           -- SHA-256 of file content at index time\n  last_modified   INTEGER NOT NULL,           -- Unix ms timestamp\n  last_indexed    INTEGER NOT NULL,           -- Unix ms timestamp\n  exports         TEXT    NOT NULL DEFAULT '[]',  -- JSON array of export names\n  dependencies    TEXT    NOT NULL DEFAULT '[]',  -- JSON array of raw import strings\n  side_effects    TEXT    NOT NULL DEFAULT '[]',\n  throws          TEXT    NOT NULL DEFAULT '[]',\n  internal_patterns TEXT  NOT NULL DEFAULT '[]',\n  test_files      TEXT    NOT NULL DEFAULT '[]',\n  richness_level  TEXT    NOT NULL DEFAULT 'minimal'  -- 'minimal'|'standard'|'rich'\n);",
+        "notes": [
+          "path is the lookup key matching current cache keys in summaries/cache.json",
+          "Storing JSON arrays as TEXT columns (exports, dependencies) avoids a separate junction table for small arrays; parse cost is negligible for <50 entries",
+          "content_hash enables incremental rebuild: skip re-indexing if hash unchanged"
+        ]
+      },
+      "symbols": {
+        "description": "One row per extracted symbol. Replaces symbols.json array.",
+        "ddl": "CREATE TABLE symbols (\n  id              INTEGER PRIMARY KEY,\n  qualified_name  TEXT    NOT NULL UNIQUE,  -- 'OrderService.createOrder'\n  name            TEXT    NOT NULL,          -- 'createOrder'\n  file_id         INTEGER NOT NULL REFERENCES files(id) ON DELETE CASCADE,\n  file_path       TEXT    NOT NULL,          -- denormalized for fast lookup without JOIN\n  line            INTEGER NOT NULL,\n  signature       TEXT    NOT NULL,\n  type            TEXT    NOT NULL,          -- 'function'|'class'|'interface'|'type'|'method'|'module-init'|'decorator'|'enum'|'constructor'\n  module          TEXT    NOT NULL,\n  is_exported     INTEGER NOT NULL DEFAULT 0,  -- 0|1 (SQLite has no boolean)\n  language        TEXT,\n  jsdoc           TEXT,\n  return_type     TEXT,\n  parameters      TEXT    NOT NULL DEFAULT '[]',  -- JSON: ParameterDoc[]\n  decorators      TEXT    NOT NULL DEFAULT '[]',\n  throws          TEXT    NOT NULL DEFAULT '[]',\n  complexity      REAL,\n  calls           TEXT    NOT NULL DEFAULT '[]',    -- JSON: qualifiedName[]\n  called_by       TEXT    NOT NULL DEFAULT '[]'     -- JSON: qualifiedName[] (inverted index)\n);",
+        "notes": [
+          "calls and called_by are stored as JSON arrays to mirror existing SymbolEntry shape; the call_edges table (below) provides the normalized graph for traversal queries",
+          "file_path is denormalized to avoid a JOIN on every find_symbol result formatting step"
+        ]
+      },
+      "call_edges": {
+        "description": "Normalized call graph. Enables recursive CTE traversal without deserializing JSON arrays.",
+        "ddl": "CREATE TABLE call_edges (\n  id          INTEGER PRIMARY KEY,\n  caller_id   INTEGER NOT NULL REFERENCES symbols(id) ON DELETE CASCADE,\n  callee_id   INTEGER NOT NULL REFERENCES symbols(id) ON DELETE CASCADE,\n  caller_qname TEXT   NOT NULL,  -- denormalized for fast text lookup\n  callee_qname TEXT   NOT NULL,\n  UNIQUE(caller_id, callee_id)\n);",
+        "notes": [
+          "Replaces the O(n) BFS in find-callers.ts that currently builds a Map<string, SymbolEntry> on every call",
+          "WITH RECURSIVE CTE over this table gives transitive closure in a single SQL query"
+        ]
+      },
+      "dep_edges": {
+        "description": "File-level import dependency graph. Replaces DependencyGraph.edges and DependencyGraph.fileDeps.",
+        "ddl": "CREATE TABLE dep_edges (\n  id          INTEGER PRIMARY KEY,\n  from_file   TEXT    NOT NULL REFERENCES files(path) ON DELETE CASCADE,\n  to_file     TEXT    NOT NULL,  -- may reference external packages (not in files table)\n  edge_type   TEXT    NOT NULL DEFAULT 'direct',  -- 'direct'|'dynamic'\n  UNIQUE(from_file, to_file)\n);",
+        "notes": [
+          "Enables WITH RECURSIVE for transitive dependency queries replacing bfsTraverse() in get-dependencies.ts",
+          "to_file may not exist in files table (external npm packages); no foreign key enforced on to_file"
+        ]
+      },
+      "modules": {
+        "description": "One row per logical module (directory group). Replaces KnowledgeIndex.modules list.",
+        "ddl": "CREATE TABLE modules (\n  id           INTEGER PRIMARY KEY,\n  name         TEXT    NOT NULL UNIQUE,  -- 'src', 'scripts', 'mcp-server'\n  entry_points TEXT    NOT NULL DEFAULT '[]',  -- JSON: file paths\n  exports      TEXT    NOT NULL DEFAULT '[]',  -- JSON: exported symbol qualified names\n  description  TEXT\n);",
+        "notes": [
+          "Lightweight table; module membership is derived from files.module column at query time"
+        ]
+      },
+      "knowledge_meta": {
+        "description": "Single-row metadata table replacing index.json.",
+        "ddl": "CREATE TABLE knowledge_meta (\n  id               INTEGER PRIMARY KEY CHECK (id = 1),\n  last_built       INTEGER NOT NULL,   -- Unix ms\n  file_count       INTEGER NOT NULL,\n  has_symbols      INTEGER NOT NULL DEFAULT 0,\n  has_dependencies INTEGER NOT NULL DEFAULT 0,\n  build_generation INTEGER NOT NULL DEFAULT 0,\n  build_in_progress INTEGER NOT NULL DEFAULT 0,\n  richness_level   TEXT    NOT NULL DEFAULT 'minimal',\n  schema_version   INTEGER NOT NULL DEFAULT 1\n);",
+        "notes": [
+          "CHECK (id = 1) enforces singleton row",
+          "schema_version enables forward migration detection"
+        ]
+      },
+      "summary_fts": {
+        "description": "FTS5 virtual table for full-text search across file summaries and LLM descriptions.",
+        "ddl": "CREATE VIRTUAL TABLE summary_fts USING fts5(\n  path,\n  purpose,\n  detailed_purpose,\n  llm_description,\n  architectural_role,\n  jsdoc_text,      -- concatenated jsdoc from all symbols in the file\n  content='files',\n  content_rowid='id',\n  tokenize='porter unicode61'\n);",
+        "notes": [
+          "Porter stemmer handles plural/verb forms (e.g. 'authenticate' matches 'authentication')",
+          "Kept as a shadow of the files table; trigger-maintained or rebuilt on each index run",
+          "Replaces current search-architecture.ts which does line-by-line regex over architecture.md"
+        ]
+      }
+    }
+  },
+
+  "indexing_strategy": {
+    "primary_indexes": [
+      {
+        "table": "files",
+        "column": "path",
+        "type": "UNIQUE (implicit B-tree)",
+        "query": "SELECT * FROM files WHERE path = ?",
+        "complexity": "O(log n)",
+        "replaces": "Object.keys(cache).find(key => key.endsWith(...)) — currently O(n)"
+      },
+      {
+        "table": "files",
+        "column": "module",
+        "type": "CREATE INDEX idx_files_module ON files(module)",
+        "query": "SELECT * FROM files WHERE module = ?",
+        "complexity": "O(log n + k) where k = files in module",
+        "replaces": "Object.entries(cache).filter(fileInModule) — O(n) scan in get-module-context.ts"
+      },
+      {
+        "table": "symbols",
+        "column": "qualified_name",
+        "type": "UNIQUE (implicit B-tree)",
+        "query": "SELECT * FROM symbols WHERE qualified_name = ?",
+        "complexity": "O(log n)",
+        "replaces": "symbolMap.get(qualifiedName) — currently built as a Map<string, SymbolEntry> on every find-callers invocation"
+      },
+      {
+        "table": "symbols",
+        "column": "name",
+        "type": "CREATE INDEX idx_symbols_name ON symbols(name COLLATE NOCASE)",
+        "query": "SELECT * FROM symbols WHERE name LIKE ? COLLATE NOCASE",
+        "complexity": "O(log n) for exact, O(log n + k) for prefix; LIKE '%foo%' still O(n) — see full-text note",
+        "notes": "Case-insensitive B-tree index accelerates exact and prefix lookups; substring match (current behavior) still requires FTS or scan"
+      },
+      {
+        "table": "symbols",
+        "column": "(name, type)",
+        "type": "CREATE INDEX idx_symbols_name_type ON symbols(name COLLATE NOCASE, type)",
+        "query": "SELECT * FROM symbols WHERE name LIKE ? AND type = ?",
+        "complexity": "O(log n + k)",
+        "replaces": "symbols.filter(e => e.name.includes(nameLower) && e.type === typeLower) — O(n)"
+      },
+      {
+        "table": "symbols",
+        "column": "file_id",
+        "type": "CREATE INDEX idx_symbols_file ON symbols(file_id)",
+        "query": "SELECT * FROM symbols WHERE file_id = (SELECT id FROM files WHERE path = ?)",
+        "complexity": "O(log n)",
+        "replaces": "symbols.filter(s => s.file.endsWith('/' + key)) — O(n) in get-implementation-context.ts"
+      },
+      {
+        "table": "symbols",
+        "column": "module",
+        "type": "CREATE INDEX idx_symbols_module ON symbols(module)",
+        "query": "SELECT * FROM symbols WHERE module = ? AND is_exported = 1",
+        "complexity": "O(log n + k)",
+        "replaces": "symbols.filter(s => fileInModule(s.file, moduleName)) — O(n)"
+      },
+      {
+        "table": "call_edges",
+        "columns": ["callee_id", "caller_id"],
+        "type": "CREATE INDEX idx_call_edges_callee ON call_edges(callee_id); CREATE INDEX idx_call_edges_caller ON call_edges(caller_id)",
+        "query": "WITH RECURSIVE callers(id, depth) AS (SELECT caller_id, 1 FROM call_edges WHERE callee_id = ? UNION ALL SELECT ce.caller_id, c.depth+1 FROM call_edges ce JOIN callers c ON ce.callee_id = c.id WHERE c.depth < ?) SELECT s.qualified_name, s.file_path, s.line, c.depth FROM callers c JOIN symbols s ON s.id = c.id",
+        "complexity": "O(E log V) for recursive CTE with index; E = edges, V = symbols",
+        "replaces": "bfsCallers() in find-callers.ts — JS loop loading entire symbols.json"
+      },
+      {
+        "table": "dep_edges",
+        "columns": ["from_file", "to_file"],
+        "type": "CREATE INDEX idx_dep_from ON dep_edges(from_file); CREATE INDEX idx_dep_to ON dep_edges(to_file)",
+        "query": "WITH RECURSIVE deps(file, depth) AS (SELECT to_file, 1 FROM dep_edges WHERE from_file = ? UNION ALL SELECT de.to_file, d.depth+1 FROM dep_edges de JOIN deps d ON de.from_file = d.file WHERE d.depth < ?) SELECT * FROM deps",
+        "complexity": "O(E log V)",
+        "replaces": "bfsTraverse() in get-dependencies.ts"
+      }
+    ],
+    "symbol_name_collision_strategy": {
+      "composite_key": "qualified_name = 'Module.symbolName' (already present in SymbolEntry.qualifiedName)",
+      "uniqueness_enforcement": "UNIQUE constraint on symbols.qualified_name",
+      "example": "If two files both export 'handler', they become 'find-symbol.handler' and 'find-callers.handler' — distinct qualified names",
+      "substring_search": "find_symbol uses name LIKE '%query%' which returns all matches across files; results ranked by name length (shorter = more exact) as in current implementation",
+      "index_note": "LIKE '%foo%' with leading wildcard cannot use B-tree index; for substring match, use FTS5: SELECT path FROM symbol_fts WHERE symbol_fts MATCH 'foo*' OR add a trigram index (SQLite 3.38+ supports trigram FTS5 tokenizer)"
+    },
+    "graph_traversal": {
+      "method": "WITH RECURSIVE CTE on call_edges / dep_edges tables",
+      "cycle_safety": "Add WHERE c.depth < maxDepth bound (already the design); alternatively detect cycles via NOT IN visited subquery",
+      "max_depth_default": 1,
+      "performance_note": "For 500-file codebases with ~2000 symbols and ~5000 edges, recursive CTE completes in <5ms with indexes"
+    },
+    "full_text_search": {
+      "method": "FTS5 virtual table summary_fts with porter tokenizer",
+      "query_example": "SELECT path, rank FROM summary_fts WHERE summary_fts MATCH 'authentication service' ORDER BY rank LIMIT 20",
+      "replaces": "search-architecture.ts line-by-line regex over architecture.md",
+      "notes": [
+        "FTS5 rank() function provides BM25 relevance scoring out of the box",
+        "Index is rebuilt atomically at the end of each knowledge build run",
+        "jsdoc_text column concatenates all symbol JSDoc strings for the file to enable symbol-description search without a separate symbols FTS table"
+      ]
+    }
+  },
+
+  "migration_plan": {
+    "strategy": "Additive parallel store — JSON files remain the source of truth during migration; SQLite is introduced as an accelerated read layer",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Introduce SQLite alongside JSON",
+        "description": "Add a write step at the end of the build-knowledge script that: (a) opens/creates .knowledge/knowledge.db, (b) runs the schema DDL idempotently, (c) bulk-INSERTs all data from the freshly-written JSON files inside a single transaction.",
+        "tool_changes": "None — all MCP tool handlers continue reading JSON files.",
+        "risk": "Zero. Additive only.",
+        "files_to_touch": ["scripts/lib/index-builder.ts", "scripts/build-knowledge.ts"]
+      },
+      {
+        "phase": 2,
+        "name": "Migrate data-loader.ts to SQLite reads",
+        "description": "Replace loadSymbols(), loadDependencies(), loadSummaryCache(), loadIndex() in tools/lib/data-loader.ts with SQLite equivalents using better-sqlite3. The function signatures remain identical — callers are untouched.",
+        "tool_changes": "Internal to data-loader.ts only. All 18 tool handlers call these four functions; zero changes needed in tool files.",
+        "interface_compatibility": "loadSymbols() returns SymbolEntry[] — the SELECT query reconstructs the same shape. loadSummaryCache() returns Record<string, FileSummary> — a simple SELECT * FROM files converts to the same record shape.",
+        "risk": "Low. All existing tool handler tests/assertions remain valid.",
+        "files_to_touch": ["mcp-server/tools/lib/data-loader.ts"]
+      },
+      {
+        "phase": 3,
+        "name": "Replace JS BFS with SQL recursive CTEs",
+        "description": "Update find-callers.ts and get-dependencies.ts to run WITH RECURSIVE queries instead of building in-memory Maps and BFS queues.",
+        "tool_changes": "Internal logic only. Input/output contracts (FindCallersArgs -> CallToolResult) remain unchanged.",
+        "risk": "Low-medium. Requires integration testing of recursive CTE correctness against existing BFS output.",
+        "files_to_touch": ["mcp-server/tools/find-callers.ts", "mcp-server/tools/get-dependencies.ts"]
+      },
+      {
+        "phase": 4,
+        "name": "Replace search-architecture.ts with FTS5",
+        "description": "Replace regex line search over architecture.md with a SELECT query against summary_fts. The architecture.md content is ingested into the FTS table at build time.",
+        "tool_changes": "Internal to search-architecture.ts handler.",
+        "risk": "Low.",
+        "files_to_touch": ["mcp-server/tools/search-architecture.ts"]
+      },
+      {
+        "phase": 5,
+        "name": "Deprecate JSON artifacts (optional)",
+        "description": "Once Phase 2-4 are stable, remove JSON file writes from the build script. Keep content_hash and last_modified in files table for incremental rebuild logic that previously relied on summaries/cache.json content hashes.",
+        "risk": "Medium — any external tooling that reads .knowledge/*.json directly breaks. Recommend keeping JSON as a compatibility export.",
+        "files_to_touch": ["scripts/build-knowledge.ts"]
+      }
+    ],
+    "dependency_addition": "npm install better-sqlite3 && npm install --save-dev @types/better-sqlite3",
+    "backward_compatibility_note": "Phases 1-2 are fully backward compatible. The existing KNOWLEDGE_ROOT env var convention is preserved — knowledge.db lives at path.join(KNOWLEDGE_ROOT, 'knowledge.db')."
+  },
+
+  "cache_design": {
+    "overview": "Three distinct TTL tiers reflect the cost and stability of each data category",
+    "tiers": {
+      "llm_summaries": {
+        "field": "files.llm_description (and files.detailed_purpose when LLM-generated)",
+        "ttl_seconds": 604800,
+        "ttl_human": "7 days",
+        "invalidation_trigger": "files.content_hash change detected during incremental rebuild",
+        "rationale": "LLM calls (Anthropic/Ollama) are expensive (API cost + latency). A file rarely changes meaning without changing content. Hash-based invalidation ensures correctness; wall-clock TTL is a safety backstop for stale hashes.",
+        "storage_note": "content_hash and last_indexed are stored in the files table; incremental-updater.ts should compare hashes before triggering LLM re-summary"
+      },
+      "symbol_records": {
+        "fields": "symbols table, call_edges table",
+        "ttl_seconds": 0,
+        "ttl_human": "No TTL — always rebuilt on any source file change",
+        "invalidation_trigger": "Any file in files table has content_hash mismatch with current disk content",
+        "rationale": "Symbol extraction is purely static analysis (no API cost). Recomputing is fast (<1s for 500 files with the TypeScript adapter). Stale symbols cause incorrect call graphs which break find-callers reliability — freshness is critical.",
+        "rebuild_strategy": "Incremental: only re-extract symbols for files whose content_hash changed. DELETE FROM symbols WHERE file_id = ? then re-insert."
+      },
+      "dependency_edges": {
+        "fields": "dep_edges table, modules table",
+        "ttl_seconds": 0,
+        "ttl_human": "No TTL — rebuilt on any import/export change",
+        "invalidation_trigger": "content_hash change in any file that has dep_edges rows",
+        "rationale": "Import graph extraction is cheap (regex/AST parse of import statements). Stale edges cause wrong transitive dependency answers. Medium cost because a single file change can affect many downstream edges.",
+        "rebuild_strategy": "Incremental: DELETE FROM dep_edges WHERE from_file = ? for changed files, then re-insert."
+      },
+      "file_index_metadata": {
+        "fields": "knowledge_meta table, files.purpose, files.exports, files.dependencies (static fields)",
+        "ttl_seconds": 0,
+        "ttl_human": "No TTL — rebuilt on any file change",
+        "invalidation_trigger": "content_hash mismatch",
+        "rationale": "Static analysis fields (exports list, dependency list, throws) are cheap to recompute. The knowledge_meta.last_built timestamp is always updated at end of build run."
+      },
+      "in_process_read_cache": {
+        "description": "Optional: a Node.js Map<string, {data, ts}> in the MCP server process holding the last loaded SymbolEntry[] and DependencyGraph",
+        "ttl_seconds": 30,
+        "ttl_human": "30 seconds",
+        "rationale": "With better-sqlite3's synchronous API, SQLite reads are already fast (<1ms). A 30s in-process cache only makes sense if health_check shows the same symbols.json being loaded 5+ times per minute during an active agent session. The TTL is short enough that a knowledge rebuild (triggered by code change) becomes visible within one tool-call cycle.",
+        "invalidation": "Check knowledge_meta.build_generation integer; if changed, invalidate in-process cache immediately"
+      }
+    }
+  },
+
+  "query_patterns": [
+    {
+      "rank": 1,
+      "name": "Symbol lookup by name (substring)",
+      "tool": "find_symbol",
+      "current_implementation": "JSON.parse(symbols.json) then Array.filter() — O(n) every call",
+      "sql": "SELECT s.*, f.path FROM symbols s JOIN files f ON s.file_id = f.id WHERE s.name LIKE ? COLLATE NOCASE ORDER BY length(s.name) ASC LIMIT 20",
+      "expected_performance": "<2ms with idx_symbols_name; O(log n + k) for prefix, O(n) for mid-string wildcard",
+      "optimization_note": "For mid-string substring search, add a trigram FTS5 tokenizer or accept O(n) on 500-row table (still <1ms)"
+    },
+    {
+      "rank": 2,
+      "name": "Symbol lookup by name + type filter",
+      "tool": "find_symbol with type filter",
+      "current_implementation": "Same O(n) filter with added type check",
+      "sql": "SELECT * FROM symbols WHERE name LIKE ? COLLATE NOCASE AND type = ? ORDER BY length(name) LIMIT 20",
+      "expected_performance": "<2ms with idx_symbols_name_type composite index"
+    },
+    {
+      "rank": 3,
+      "name": "File summary by path (exact)",
+      "tool": "get_file_summary, get_implementation_context",
+      "current_implementation": "Object key lookup on cache Record — O(1) hash; but requires full JSON parse of cache.json first (O(file_count))",
+      "sql": "SELECT * FROM files WHERE path = ?",
+      "expected_performance": "<0.5ms with UNIQUE index on files.path"
+    },
+    {
+      "rank": 4,
+      "name": "File summary by path (suffix match)",
+      "tool": "get_file_summary with partial path",
+      "current_implementation": "Object.keys(cache).find(key => key.endsWith('/' + input)) — O(n) scan in path-utils.ts:findSummary()",
+      "sql": "SELECT * FROM files WHERE path = ? OR path LIKE ('%/' || ?)",
+      "expected_performance": "<2ms; LIKE with leading wildcard is O(n) but n<=500 is fast; can add trigram index if needed"
+    },
+    {
+      "rank": 5,
+      "name": "All symbols in a file",
+      "tool": "get_implementation_context (symbols section)",
+      "current_implementation": "symbols.filter(s => s.file.endsWith('/' + key)) — O(n) scan every call",
+      "sql": "SELECT * FROM symbols WHERE file_id = (SELECT id FROM files WHERE path = ?) AND type != 'module-init' LIMIT 15",
+      "expected_performance": "<0.5ms with idx_symbols_file"
+    },
+    {
+      "rank": 6,
+      "name": "Direct callers of a symbol (depth=1)",
+      "tool": "find_callers with maxDepth=1",
+      "current_implementation": "Build Map<qualifiedName, SymbolEntry> (O(n)), then iterate calledBy[] array",
+      "sql": "SELECT s.qualified_name, s.file_path, s.line FROM call_edges ce JOIN symbols s ON s.id = ce.caller_id WHERE ce.callee_id = (SELECT id FROM symbols WHERE qualified_name = ? COLLATE NOCASE)",
+      "expected_performance": "<1ms with idx_call_edges_callee"
+    },
+    {
+      "rank": 7,
+      "name": "Transitive callers of a symbol (depth>1)",
+      "tool": "find_callers with maxDepth>1",
+      "current_implementation": "BFS loop over calledBy JSON arrays — O(V + E) but requires full symbols.json parse",
+      "sql": "WITH RECURSIVE callers(sym_id, depth) AS (SELECT caller_id, 1 FROM call_edges WHERE callee_id = (SELECT id FROM symbols WHERE qualified_name = ? COLLATE NOCASE) UNION ALL SELECT ce.caller_id, c.depth + 1 FROM call_edges ce JOIN callers c ON ce.callee_id = c.sym_id WHERE c.depth < ?) SELECT s.qualified_name, s.file_path, s.line, c.depth FROM callers c JOIN symbols s ON s.id = c.sym_id ORDER BY c.depth",
+      "expected_performance": "<5ms for depth<=5 on a 2000-symbol graph with idx_call_edges_callee"
+    },
+    {
+      "rank": 8,
+      "name": "All files in a module",
+      "tool": "get_module_context",
+      "current_implementation": "Object.entries(cache).filter(fileInModule) — O(n) scan",
+      "sql": "SELECT * FROM files WHERE module = ?",
+      "expected_performance": "<0.5ms with idx_files_module"
+    },
+    {
+      "rank": 9,
+      "name": "Transitive dependencies of a module/file",
+      "tool": "get_dependencies with depth>1",
+      "current_implementation": "Build adj Map + BFS loop over JSON edges array — O(V + E) with full dependencies.json parse",
+      "sql": "WITH RECURSIVE deps(file, depth) AS (SELECT to_file, 1 FROM dep_edges WHERE from_file = ? UNION ALL SELECT de.to_file, d.depth + 1 FROM dep_edges de JOIN deps d ON de.from_file = d.file WHERE d.depth < ?) SELECT file, MIN(depth) as depth FROM deps GROUP BY file ORDER BY depth",
+      "expected_performance": "<5ms for depth<=3 on 500-file graph with idx_dep_from"
+    },
+    {
+      "rank": 10,
+      "name": "Full-text search on file summaries",
+      "tool": "search_architecture (current), general purpose in future",
+      "current_implementation": "Regex line scan over architecture.md — limited to a single static file",
+      "sql": "SELECT path, snippet(summary_fts, 1, '<b>', '</b>', '...', 15) as excerpt, rank FROM summary_fts WHERE summary_fts MATCH ? ORDER BY rank LIMIT 10",
+      "expected_performance": "<5ms for BM25 FTS5 query over 500 documents with porter tokenizer",
+      "bonus": "Enables semantic search across all file summaries and LLM descriptions, not just architecture.md"
+    }
+  ],
+
+  "implementation_notes": {
+    "database_path": "path.join(KNOWLEDGE_ROOT, 'knowledge.db')  // e.g. .knowledge/knowledge.db",
+    "open_flags": "OPEN_READWRITE | OPEN_CREATE with WAL journal mode for concurrent reads during build",
+    "pragma_setup": [
+      "PRAGMA journal_mode = WAL",
+      "PRAGMA synchronous = NORMAL",
+      "PRAGMA foreign_keys = ON",
+      "PRAGMA temp_store = MEMORY",
+      "PRAGMA mmap_size = 67108864"
+    ],
+    "build_transaction": "All INSERTs during a knowledge rebuild should be wrapped in a single BEGIN IMMEDIATE ... COMMIT transaction. At 500 files this completes in <100ms vs. 500 individual transactions.",
+    "schema_migration": "Check knowledge_meta.schema_version on open; if < current version, run ALTER TABLE / CREATE TABLE migrations in a transaction. Bump schema_version at the end.",
+    "file_to_add": "scripts/lib/db.ts — centralized SQLite open/init/migration module used by both build scripts and MCP tools",
+    "approximate_db_size": "For 500 files with ~2000 symbols, ~5000 dep edges, ~3000 call edges: estimated 2-8 MB SQLite file, well within single-file embedded database sweet spot"
+  }
+}

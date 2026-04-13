@@ -1,0 +1,58 @@
+{
+  "name": "ai-code-knowledge",
+  "version": "0.5.1",
+  "description": "Extract structured knowledge from codebases and expose it to AI agents via MCP",
+  "type": "module",
+  "license": "MIT",
+  "author": "Aman Gupta",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amangcoder/ai-code-knowledge.git"
+  },
+  "homepage": "https://github.com/amangcoder/ai-code-knowledge#readme",
+  "bugs": {
+    "url": "https://github.com/amangcoder/ai-code-knowledge/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "code-analysis",
+    "knowledge-graph",
+    "ai",
+    "typescript",
+    "symbol-extraction",
+    "call-graph",
+    "dependency-graph"
+  ],
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.3",
+    "@lancedb/lancedb": "^0.27.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "chokidar": "^3.6.0",
+    "ts-morph": "^23.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.0.0"
+  },
+  "scripts": {
+    "build-knowledge": "tsx scripts/build-knowledge.ts",
+    "build-knowledge:incremental": "tsx scripts/build-knowledge.ts --incremental",
+    "build-knowledge:skip-vectors": "tsx scripts/build-knowledge.ts --skip-vectors",
+    "build-knowledge:skip-features": "tsx scripts/build-knowledge.ts --skip-features",
+    "build-knowledge:rebuild-features": "tsx scripts/build-knowledge.ts --rebuild-features",
+    "build-knowledge:full": "tsx scripts/build-knowledge.ts --richness rich",
+    "build-knowledge:incremental:skip-vectors": "tsx scripts/build-knowledge.ts --incremental --skip-vectors",
+    "watch": "tsx scripts/watch.ts",
+    "sync-types": "node -e \"import('fs').then(fs=>{const s=fs.readFileSync('src/types.ts','utf8');const h='/**\\n * AUTO-GENERATED from src/types.ts \\u2014 do not edit directly.\\n * Run \\\"npm run sync-types\\\" to regenerate.\\n *\\n * Kept separate from src/types.ts because tsconfig.mcp.json uses\\n * rootDir: \\\"mcp-server\\\", which cannot import from src/.\\n */\\n\\n';fs.writeFileSync('mcp-server/types.ts',h+s)})\"",
+    "prebuild-mcp": "npm run sync-types && node -e \"import('fs').then(fs => fs.rmSync('mcp-server/dist', {recursive:true,force:true}))\"",
+    "build-mcp": "tsc --project tsconfig.mcp.json",
+    "start-mcp": "node mcp-server/dist/server.js",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.mcp.json --noEmit",
+    "test": "vitest run",
+    "install-hooks": "sh scripts/install-hooks.sh"
+  }
+}

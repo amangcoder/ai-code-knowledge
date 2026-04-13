@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "rootDir": "mcp-server",
+        "outDir": "mcp-server/dist"
+    },
+    "include": [
+        "mcp-server/**/*"
+    ]
+}
