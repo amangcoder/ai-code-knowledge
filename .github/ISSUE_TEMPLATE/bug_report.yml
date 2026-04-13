@@ -1,0 +1,46 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps to reproduce the issue.
+      placeholder: |
+        1. Run `npm run build-knowledge`
+        2. Start MCP server with `npm run start-mcp`
+        3. Call `find_symbol` with ...
+        4. See error ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Node version, OS, and relevant config.
+      placeholder: |
+        - Node.js: 20.x
+        - OS: macOS 15 / Ubuntu 24.04 / Windows 11
+        - SUMMARIZER_MODE: static
+        - EMBEDDING_MODEL: huggingface
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / error output
+      description: Paste any relevant error messages or logs.
+      render: shell
+    validations:
+      required: false

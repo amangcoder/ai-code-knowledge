@@ -53,6 +53,8 @@
     "start-mcp": "node mcp-server/dist/server.js",
     "typecheck": "tsc --noEmit && tsc --project tsconfig.mcp.json --noEmit",
     "test": "vitest run",
-    "install-hooks": "sh scripts/install-hooks.sh"
+    "install-hooks": "sh scripts/install-hooks.sh",
+    "setup": "bash scripts/setup.sh",
+    "setup:full": "bash scripts/setup.sh --with-embeddings"
   }
 }
