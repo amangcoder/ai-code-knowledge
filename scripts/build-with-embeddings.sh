@@ -84,4 +84,34 @@ fi
 info "Building knowledge base..."
 EMBEDDING_MODEL=local LOCAL_EMBED_URL="http://localhost:${PORT}" $BUILD_CMD
 
-info "Done. Vectors and knowledge index are up to date."
+# ── Write .mcp.json to target project ────────────────────────────────────────
+AICODER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+TARGET_DIR="${PROJECT_ROOT:-$(pwd)}"
+MCP_FILE="$TARGET_DIR/.mcp.json"
+
+info "Writing $MCP_FILE..."
+cat > "$MCP_FILE" <<EOF
+{
+  "mcpServers": {
+    "ai-code-knowledge": {
+      "command": "node",
+      "args": ["$AICODER_DIR/mcp-server/dist/server.js"],
+      "env": {
+        "KNOWLEDGE_ROOT": "$TARGET_DIR/.knowledge",
+        "PROJECT_ROOT": "$TARGET_DIR"
+      }
+    }
+  }
+}
+EOF
+
+# ── Write CLAUDE.md to target project ────────────────────────────────────────
+CLAUDE_FILE="$TARGET_DIR/CLAUDE.md"
+if [ -f "$CLAUDE_FILE" ]; then
+  warn "CLAUDE.md already exists at $CLAUDE_FILE — skipping (delete it first to regenerate)."
+else
+  info "Writing $CLAUDE_FILE..."
+  cp "$AICODER_DIR/CLAUDE.md" "$CLAUDE_FILE"
+fi
+
+info "Done. Vectors, knowledge index, .mcp.json, and CLAUDE.md are up to date."
