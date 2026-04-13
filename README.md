@@ -2,7 +2,7 @@
 
 Extract structured knowledge from codebases and expose it to AI agents via the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/).
 
-AI coding agents typically scan entire repositories to understand code — burning tokens and time. This tool builds a persistent knowledge base (symbols, call graphs, dependency maps, file summaries) that agents can query through MCP tools instead.
+AI coding agents typically scan entire repositories to understand code — burning tokens and time. This tool builds a persistent knowledge base (symbols, call graphs, dependency maps, file summaries, vector indexes) that agents can query through MCP tools instead.
 
 **Result:** 70-90% reduction in token usage and repo scanning for AI agents.
 
@@ -14,10 +14,12 @@ AI coding agents typically scan entire repositories to understand code — burni
   Source    ──────────►   symbols.json  ◄──────────   AI Agent
   Files       watch       dependencies     query      (Claude, etc.)
               (live)      summaries/
+                          graph/
+                          vectors/
                           index.json
 ```
 
-1. **Build** — Parse your codebase with `ts-morph` to extract symbols, call graphs, dependency maps, and generate file summaries (static, Ollama, or Anthropic-powered)
+1. **Build** — Parse your codebase to extract symbols, call graphs, dependency maps, file summaries, vector indexes, and a knowledge graph
 2. **Store** — Persist everything as JSON in `.knowledge/`
 3. **Serve** — AI agents query the MCP server instead of scanning files
 
@@ -29,12 +31,12 @@ cd ai-code-knowledge
 pnpm run setup        # install deps, build knowledge base, build MCP server
 ```
 
-That's it. The setup script auto-detects pnpm/npm, builds the knowledge base using the static summarizer (no API keys needed), and compiles the MCP server.
+The setup script auto-detects pnpm/npm, builds the knowledge base using the static summarizer (no API keys needed), and compiles the MCP server.
 
-For vector search support (optional):
+For full vector search and semantic feature discovery (recommended):
 
 ```bash
-pnpm run setup:full   # also installs Python deps and builds vector indexes
+pnpm run setup:full   # also installs Python deps, starts embedding server, builds vectors
 ```
 
 ### Prerequisites
@@ -58,27 +60,35 @@ pnpm run build-mcp
 pnpm run start-mcp
 ```
 
-This gives you all MCP tools except `semantic_search`.
+This gives you all MCP tools except `semantic_search` and `get_feature_context`.
 
-### 2. Local embeddings with CodeSage
+### 2. Local embeddings with CodeSage (recommended)
 
-Adds vector search using a local Python embedding server. Fully offline after initial model download.
+Adds vector search and feature discovery using a local Python embedding server. Fully offline after initial model download.
+
+**Option A — one command (auto-manages the embedding server):**
 
 ```bash
-# Install Python dependencies
 pip3 install -r scripts/requirements.txt
-
-# Start the embedding server (runs on port 8484)
-python3 scripts/embedding-server.py
-
-# In another terminal — build with local embeddings
-EMBEDDING_MODEL=local pnpm run build-knowledge
-
-pnpm run build-mcp
-pnpm run start-mcp
+pnpm run embed:build -- --root /path/to/your/project
 ```
 
-The embedding server supports GPU acceleration:
+This starts the embedding server, waits for it to be ready, runs a full rich build, then shuts it down. It also writes `.mcp.json` and `CLAUDE.md` directly into your project.
+
+**Option B — two terminals (keep the server running for repeated builds):**
+
+Terminal 1:
+```bash
+pnpm run embed:start          # CPU
+pnpm run embed:start:gpu      # Apple Silicon (MPS)
+```
+
+Terminal 2 (once server is ready):
+```bash
+pnpm run embed:build -- --root /path/to/your/project
+```
+
+The embedding server supports GPU acceleration via `--device`:
 
 ```bash
 python3 scripts/embedding-server.py --device mps    # Apple Silicon
@@ -122,20 +132,44 @@ pnpm run start-mcp
 
 ### Step 1: Build the knowledge base for your project
 
-```bash
-# From the ai-code-knowledge directory, point at your project
-pnpm run build-knowledge -- --root /path/to/your/project
+**With embeddings (recommended) — auto-creates `.mcp.json` and `CLAUDE.md` in your project:**
 
-# For large repos, use incremental mode (only reprocesses changed files)
+```bash
+pnpm run embed:build -- --root /path/to/your/project
+```
+
+**Without embeddings:**
+
+```bash
+pnpm run build-knowledge -- --root /path/to/your/project
+```
+
+Additional flags:
+
+```bash
+# Only reprocess changed files
 pnpm run build-knowledge -- --root /path/to/your/project --incremental
 
 # Exclude directories (e.g., vendor code, generated files)
 pnpm run build-knowledge -- --root /path/to/your/project --exclude vendor,generated
+
+# Skip vector index generation
+pnpm run build-knowledge -- --root /path/to/your/project --skip-vectors
 ```
 
 This creates a `.knowledge/` directory inside your project with the extracted artifacts.
 
+> **Excluding directories:** For persistent exclusions, create `.knowledge/config.json` in your project:
+> ```json
+> { "exclude": ["frontend/.next", "src/generated"] }
+> ```
+> Common build artifact directories (`.next`, `dist`, `build`, `coverage`, etc.) are excluded automatically.
+
 ### Step 2: Connect an AI agent
+
+If you used `embed:build`, `.mcp.json` is already written to your project — skip to Step 3.
+
+Otherwise, add the config manually:
 
 #### Claude Code (CLI and IDE extensions)
 
@@ -148,8 +182,8 @@ Add to your project's `.claude/mcp_servers.json`:
       "command": "node",
       "args": ["/absolute/path/to/ai-code-knowledge/mcp-server/dist/server.js"],
       "env": {
-        "KNOWLEDGE_ROOT": ".knowledge",
-        "PROJECT_ROOT": "."
+        "KNOWLEDGE_ROOT": "/absolute/path/to/your/project/.knowledge",
+        "PROJECT_ROOT": "/absolute/path/to/your/project"
       }
     }
   }
@@ -165,15 +199,15 @@ Or for development (runs TypeScript directly, no build step):
       "command": "npx",
       "args": ["tsx", "/absolute/path/to/ai-code-knowledge/mcp-server/server.ts"],
       "env": {
-        "KNOWLEDGE_ROOT": ".knowledge",
-        "PROJECT_ROOT": "."
+        "KNOWLEDGE_ROOT": "/absolute/path/to/your/project/.knowledge",
+        "PROJECT_ROOT": "/absolute/path/to/your/project"
       }
     }
   }
 }
 ```
 
-> **Tip:** When using this MCP server with a different project than the one it's installed in, use absolute paths for both `KNOWLEDGE_ROOT` and `PROJECT_ROOT` to avoid path resolution issues.
+> **Always use absolute paths** for `KNOWLEDGE_ROOT` and `PROJECT_ROOT` when the MCP server is installed in a different directory than the project being indexed. Relative paths resolve against the server's working directory, not your project root.
 
 #### Cursor
 
@@ -186,8 +220,8 @@ Add to `.cursor/mcp.json` in your project root:
       "command": "node",
       "args": ["/absolute/path/to/ai-code-knowledge/mcp-server/dist/server.js"],
       "env": {
-        "KNOWLEDGE_ROOT": ".knowledge",
-        "PROJECT_ROOT": "."
+        "KNOWLEDGE_ROOT": "/absolute/path/to/your/project/.knowledge",
+        "PROJECT_ROOT": "/absolute/path/to/your/project"
       }
     }
   }
@@ -215,8 +249,6 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 
 #### Any MCP-compatible client
 
-The server communicates via stdio. Run it as:
-
 ```bash
 PROJECT_ROOT=/path/to/project KNOWLEDGE_ROOT=/path/to/project/.knowledge node /path/to/ai-code-knowledge/mcp-server/dist/server.js
 ```
@@ -226,8 +258,11 @@ Pass the process's stdin/stdout to your MCP client. All logs go to stderr.
 ### Step 3: Keep knowledge up to date
 
 ```bash
-# Watch mode — rebuilds incrementally on file changes
+# Watch mode — rebuilds incrementally on file changes (no embeddings)
 pnpm run watch -- --root /path/to/your/project
+
+# Full rebuild with embeddings
+pnpm run embed:build -- --root /path/to/your/project
 
 # Or install a git hook in your project
 cd /path/to/your/project
@@ -237,9 +272,11 @@ git add .knowledge/' > .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
 ```
 
-### Step 4: Add agent instructions (optional)
+### Step 4: Add agent instructions
 
-Copy the `CLAUDE.md` from this repo into your project and customize it. This tells AI agents to use the MCP tools instead of scanning your codebase directly.
+If you used `embed:build`, `CLAUDE.md` is already written to your project.
+
+Otherwise, copy `CLAUDE.md` from this repo into your project root. This tells AI agents to use the MCP tools instead of scanning your codebase directly.
 
 ### MCP tools
 
@@ -303,22 +340,54 @@ Vector search is powered by configurable embedding backends via `EMBEDDING_MODEL
 | OpenAI | `openai` | `OPENAI_API_KEY` |
 | Mock (CI) | `mock` | None — returns zero vectors |
 
-See [.env.example](.env.example) for all environment variables.
+### Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `KNOWLEDGE_ROOT` | `.knowledge` | Path to the `.knowledge` directory |
+| `PROJECT_ROOT` | Derived from `KNOWLEDGE_ROOT` | Explicit project root — always set this when running the MCP server for a different project |
+| `SUMMARIZER_MODE` | `static` | Summary backend: `static`, `ollama`, `anthropic` |
+| `EMBEDDING_MODEL` | `huggingface` | Embedding provider |
+| `ANTHROPIC_API_KEY` | — | Required for `anthropic` summarizer |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama endpoint |
+| `HF_API_TOKEN` | — | HuggingFace token (optional, increases rate limits) |
+
+See [.env.example](.env.example) for the full list.
+
+### Excluding directories
+
+Build artifact directories (`.next`, `dist`, `build`, `coverage`, `node_modules`, etc.) are excluded automatically.
+
+For custom exclusions, create `.knowledge/config.json` in your project root:
+
+```json
+{
+  "exclude": ["src/generated", "vendor/legacy"]
+}
+```
 
 ## Project structure
 
 ```
 scripts/                  # Knowledge build pipeline
-  build-knowledge.ts      # Full build orchestrator
+  build-knowledge.ts      # Full build orchestrator (9 phases)
+  build-with-embeddings.sh  # One-command build: starts/stops embedding server automatically
   watch.ts                # Incremental file watcher
-  lib/                    # Extractors, summarizers, embeddings
+  embedding-server.py     # Local Python embedding server (CodeSage)
+  lib/                    # Extractors, summarizers, embeddings, phases
 src/
   types.ts                # Shared type definitions
 mcp-server/
   server.ts               # MCP server entry point
-  tools/                  # Tool implementations
+  tools/                  # Tool implementations (21 tools)
 test/                     # Unit, integration, and perf tests
 .knowledge/               # Generated knowledge artifacts (gitignored)
+  symbols.json            # All extracted symbols with call graph
+  dependencies.json       # Module and file dependency graph
+  summaries/cache.json    # Per-file summaries
+  graph/                  # Pre-built knowledge graph (nodes + edges)
+  vectors/                # Vector indexes for semantic search
+  index.json              # Build metadata and health info
 ```
 
 ## Scripts
@@ -326,8 +395,12 @@ test/                     # Unit, integration, and perf tests
 | Command | Description |
 |---------|-------------|
 | `pnpm run setup` | One-command setup (install, build knowledge, build MCP) |
-| `pnpm run setup:full` | Setup + Python embedding server and vector indexes |
-| `pnpm run build-knowledge` | Full knowledge base build |
+| `pnpm run setup:full` | Setup + Python deps, embedding server, vector indexes |
+| `pnpm run embed:start` | Start the local embedding server (CPU) |
+| `pnpm run embed:start:gpu` | Start the local embedding server (Apple Silicon MPS) |
+| `pnpm run embed:build` | Build with embeddings: auto-starts server, full rich build, writes `.mcp.json` + `CLAUDE.md`, stops server |
+| `pnpm run embed:build:gpu` | Same as above using GPU acceleration |
+| `pnpm run build-knowledge` | Full knowledge base build (no embeddings) |
 | `pnpm run build-knowledge:incremental` | Only reprocess changed files |
 | `pnpm run build-knowledge:skip-vectors` | Skip vector index generation |
 | `pnpm run build-mcp` | Compile the MCP server |
