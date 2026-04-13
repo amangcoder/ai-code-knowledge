@@ -48,16 +48,50 @@ if [ "$WITH_EMBEDDINGS" = true ]; then
 
   if ! command -v python3 &>/dev/null; then
     warn "Python 3 not found — skipping embedding server setup."
-    warn "Install Python 3 and run: pip install -r scripts/requirements.txt"
+    warn "Install Python 3 and run: pip3 install -r scripts/requirements.txt"
   else
     info "Installing Python dependencies..."
     pip3 install -r scripts/requirements.txt
 
-    info "Rebuilding knowledge base with vectors..."
-    EMBEDDING_MODEL=local $PKG run build-knowledge
+    # Start embedding server in background, wait for it, rebuild, then shut it down
+    info "Starting embedding server..."
+    python3 scripts/embedding-server.py &
+    EMBED_PID=$!
+
+    cleanup() {
+      if kill -0 "$EMBED_PID" 2>/dev/null; then
+        info "Stopping embedding server..."
+        kill "$EMBED_PID" 2>/dev/null || true
+      fi
+    }
+    trap cleanup EXIT
+
+    info "Waiting for embedding server to be ready..."
+    MAX_WAIT=60
+    WAITED=0
+    until curl -sf "http://localhost:8484/health" > /dev/null 2>&1; do
+      if ! kill -0 "$EMBED_PID" 2>/dev/null; then
+        warn "Embedding server crashed — skipping vector build."
+        trap - EXIT
+        break
+      fi
+      if [ "$WAITED" -ge "$MAX_WAIT" ]; then
+        warn "Embedding server did not start in time — skipping vector build."
+        kill "$EMBED_PID" 2>/dev/null || true
+        trap - EXIT
+        break
+      fi
+      sleep 1
+      WAITED=$((WAITED + 1))
+    done
+
+    if curl -sf "http://localhost:8484/health" > /dev/null 2>&1; then
+      info "Rebuilding knowledge base with vectors..."
+      EMBEDDING_MODEL=local $PKG run build-knowledge
+    fi
 
     info "To start the embedding server later, run:"
-    echo "  python3 scripts/embedding-server.py"
+    echo "  $PKG run start-embedding-server"
   fi
 fi
 
