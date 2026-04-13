@@ -9,7 +9,12 @@ import { buildResponse, type Section } from './lib/response-budget.js';
 import { buildFooterSection } from './lib/metadata-footer.js';
 
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
-const EXCLUDED_DIRS = new Set(['node_modules', 'dist', '.knowledge', '.git']);
+// Keep in sync with IGNORE_DIRS in scripts/lib/language-detection.ts
+const EXCLUDED_DIRS = new Set([
+    'node_modules', 'dist', 'build', '.knowledge', '.git',
+    '.next', '.nuxt', 'coverage', '.tox', 'egg-info',
+    'venv', '.venv', '__pycache__',
+]);
 const MAX_WALK_FILES = 10000;
 
 /**
@@ -212,7 +217,10 @@ export async function handler(
         if (gaps.length >= 20) gapLines.push('  (showing first 20)');
         sections.push({
             label: `Coverage Gaps (${gaps.length})`,
-            content: gapLines.join('\n'),
+            content: gapLines.join('\n') +
+                '\n\nTo exclude paths from indexing, add them to .knowledge/config.json:\n' +
+                '  { "exclude": ["path/to/skip", "another/path"] }\n' +
+                'Then re-run build-knowledge to rebuild the index.',
             priority: 2,
         });
     }
