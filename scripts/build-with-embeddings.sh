@@ -43,37 +43,42 @@ if ! command -v python3 &>/dev/null; then
   exit 1
 fi
 
-# ── Start embedding server in background ──────────────────────────────────────
-info "Starting embedding server on port $PORT (device: $DEVICE)..."
-python3 scripts/embedding-server.py --port "$PORT" --device "$DEVICE" &
-EMBED_PID=$!
+# ── Start embedding server (skip if already running) ──────────────────────────
+EMBED_PID=""
+if curl -sf "http://localhost:${PORT}/health" > /dev/null 2>&1; then
+  info "Embedding server already running on port $PORT — reusing it."
+else
+  info "Starting embedding server on port $PORT (device: $DEVICE)..."
+  python3 scripts/embedding-server.py --port "$PORT" --device "$DEVICE" &
+  EMBED_PID=$!
 
-# Ensure server is killed when this script exits (success or failure)
-cleanup() {
-  if kill -0 "$EMBED_PID" 2>/dev/null; then
-    info "Stopping embedding server (pid $EMBED_PID)..."
-    kill "$EMBED_PID" 2>/dev/null || true
-  fi
-}
-trap cleanup EXIT
+  # Only kill the server we started, not one we reused
+  cleanup() {
+    if [ -n "$EMBED_PID" ] && kill -0 "$EMBED_PID" 2>/dev/null; then
+      info "Stopping embedding server (pid $EMBED_PID)..."
+      kill "$EMBED_PID" 2>/dev/null || true
+    fi
+  }
+  trap cleanup EXIT
 
-# ── Wait for server to be ready ───────────────────────────────────────────────
-info "Waiting for embedding server to be ready..."
-MAX_WAIT=60
-WAITED=0
-until curl -sf "http://localhost:${PORT}/health" > /dev/null 2>&1; do
-  if ! kill -0 "$EMBED_PID" 2>/dev/null; then
-    error "Embedding server crashed on startup. Check Python deps: pip3 install -r scripts/requirements.txt"
-    exit 1
-  fi
-  if [ "$WAITED" -ge "$MAX_WAIT" ]; then
-    error "Embedding server did not start within ${MAX_WAIT}s"
-    exit 1
-  fi
-  sleep 1
-  WAITED=$((WAITED + 1))
-done
-info "Embedding server ready."
+  # ── Wait for server to be ready ─────────────────────────────────────────────
+  info "Waiting for embedding server to be ready..."
+  MAX_WAIT=60
+  WAITED=0
+  until curl -sf "http://localhost:${PORT}/health" > /dev/null 2>&1; do
+    if ! kill -0 "$EMBED_PID" 2>/dev/null; then
+      error "Embedding server crashed on startup. Check Python deps: pip3 install -r scripts/requirements.txt"
+      exit 1
+    fi
+    if [ "$WAITED" -ge "$MAX_WAIT" ]; then
+      error "Embedding server did not start within ${MAX_WAIT}s"
+      exit 1
+    fi
+    sleep 1
+    WAITED=$((WAITED + 1))
+  done
+  info "Embedding server ready."
+fi
 
 # ── Build knowledge ───────────────────────────────────────────────────────────
 BUILD_CMD="tsx scripts/build-knowledge.ts $EXTRA_FLAGS"
