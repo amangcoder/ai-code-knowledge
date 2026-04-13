@@ -29,7 +29,7 @@ export interface SymbolEntry {
     file: string;                 // absolute path
     line: number;
     signature: string;
-    type: 'function' | 'class' | 'interface' | 'type' | 'method' | 'module-init' | 'decorator' | 'enum' | 'constructor';
+    type: 'function' | 'class' | 'interface' | 'type' | 'method' | 'module-init' | 'decorator' | 'enum' | 'constructor' | 'property';
     module: string;               // parent directory name
     calls: string[];              // qualifiedNames of called symbols
     calledBy: string[];           // qualifiedNames of callers (inverted index)
@@ -179,6 +179,14 @@ export interface EmbeddingPhaseResult {
 export interface GraphBuildResult {
     nodeCount: number;
     edgeCount: number;
+    durationMs: number;
+}
+
+/** Result returned by the Graphify enrichment phase (Phase 8.5). */
+export interface GraphifyPhaseResult {
+    nodesAdded: number;
+    edgesAdded: number;
+    architectureEnriched: boolean;
     durationMs: number;
 }
 

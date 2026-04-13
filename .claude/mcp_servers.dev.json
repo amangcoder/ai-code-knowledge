@@ -4,7 +4,8 @@
       "command": "npx",
       "args": ["tsx", "mcp-server/server.ts"],
       "env": {
-        "KNOWLEDGE_ROOT": ".knowledge"
+        "KNOWLEDGE_ROOT": ".knowledge",
+        "PROJECT_ROOT": "."
       }
     }
   }

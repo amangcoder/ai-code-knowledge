@@ -23,7 +23,9 @@ let knowledgeRoot: string;
 function copyFixture(): string {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'incremental-updater-test-'));
     for (const file of fs.readdirSync(FIXTURE_DIR)) {
-        fs.copyFileSync(path.join(FIXTURE_DIR, file), path.join(tmpDir, file));
+        const src = path.join(FIXTURE_DIR, file);
+        if (!fs.statSync(src).isFile()) continue;
+        fs.copyFileSync(src, path.join(tmpDir, file));
     }
     return tmpDir;
 }

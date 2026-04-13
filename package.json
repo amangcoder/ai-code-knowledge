@@ -1,6 +1,6 @@
 {
   "name": "ai-code-knowledge",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Extract structured knowledge from codebases and expose it to AI agents via MCP",
   "type": "module",
   "license": "MIT",

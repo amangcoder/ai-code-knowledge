@@ -73,7 +73,7 @@ describe('HuggingFaceEmbeddingProvider', () => {
 
         const url = fetchSpy.mock.calls[0][0] as string;
         expect(url).toBe(
-            'https://api-inference.huggingface.co/pipeline/feature-extraction/Salesforce/codesage-large'
+            'https://router.huggingface.co/pipeline/feature-extraction/Salesforce/codesage-large'
         );
     });
 
@@ -166,9 +166,9 @@ describe('HuggingFaceEmbeddingProvider', () => {
         expect(fetchSpy).toHaveBeenCalledTimes(3); // 32 + 32 + 6
     });
 
-    it('dimensions() returns 1024 by default', () => {
+    it('dimensions() returns 768 by default', () => {
         const provider = new HuggingFaceEmbeddingProvider();
-        expect(provider.dimensions()).toBe(1024);
+        expect(provider.dimensions()).toBe(768);
     });
 
     it('dimensions() returns custom value when configured', () => {
@@ -183,7 +183,7 @@ describe('HuggingFaceEmbeddingProvider', () => {
 
     it('modelName() returns default model', () => {
         const provider = new HuggingFaceEmbeddingProvider();
-        expect(provider.modelName()).toBe('Salesforce/codesage-large');
+        expect(provider.modelName()).toBe('Salesforce/codesage-base');
     });
 
     it('healthCheck() calls embed() with a short ping string', async () => {
@@ -501,15 +501,15 @@ describe('createEmbeddingProvider (factory)', () => {
     it('returns HuggingFaceEmbeddingProvider by default (no EMBEDDING_MODEL set)', () => {
         delete process.env['EMBEDDING_MODEL'];
         const provider = createEmbeddingProvider();
-        expect(provider.modelName()).toBe('local-codesage-large');
-        expect(provider.dimensions()).toBe(1024);
+        expect(provider.modelName()).toBe('Salesforce/codesage-base');
+        expect(provider.dimensions()).toBe(768);
     });
 
     it('returns HuggingFaceEmbeddingProvider when EMBEDDING_MODEL=huggingface', () => {
         process.env['EMBEDDING_MODEL'] = 'huggingface';
         const provider = createEmbeddingProvider();
-        expect(provider.modelName()).toBe('Salesforce/codesage-large');
-        expect(provider.dimensions()).toBe(1024);
+        expect(provider.modelName()).toBe('Salesforce/codesage-base');
+        expect(provider.dimensions()).toBe(768);
     });
 
     it('uses HF_MODEL env var when set', () => {

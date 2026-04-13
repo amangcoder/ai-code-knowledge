@@ -146,7 +146,7 @@ export class HuggingFaceEmbeddingProvider implements EmbeddingProvider {
         this.model = model;
         this.apiToken = apiToken;
         this._dimensions = dims;
-        this.endpoint = `https://api-inference.huggingface.co/pipeline/feature-extraction/${model}`;
+        this.endpoint = `https://router.huggingface.co/pipeline/feature-extraction/${model}`;
     }
 
     async embed(texts: string[]): Promise<number[][]> {

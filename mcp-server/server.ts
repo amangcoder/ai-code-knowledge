@@ -5,6 +5,7 @@
  * All errors and logs go to stderr — stdout is reserved for MCP protocol messages.
  */
 
+import * as path from 'node:path';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
@@ -33,6 +34,15 @@ import * as exploreGraph from './tools/explore-graph.js';
 import * as getFeatureContext from './tools/get-feature-context.js';
 
 const KNOWLEDGE_ROOT = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge';
+
+// Resolve PROJECT_ROOT once at startup so all tools get a consistent value.
+// Without this, resolveProjectRoot() infers the project root from
+// path.resolve(KNOWLEDGE_ROOT), which breaks when the server's CWD
+// differs from the indexed project (e.g., running from a different repo).
+if (!process.env['PROJECT_ROOT']) {
+    const resolved = path.resolve(KNOWLEDGE_ROOT);
+    process.env['PROJECT_ROOT'] = path.dirname(resolved);
+}
 
 async function main(): Promise<void> {
     const server = new McpServer({

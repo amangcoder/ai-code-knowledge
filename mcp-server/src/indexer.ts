@@ -2,7 +2,8 @@
  * Incremental code indexer for the AI Code Knowledge System.
  *
  * Builds .knowledge/symbols.json, .knowledge/dependencies.json,
- * .knowledge/summaries/cache.json, and .knowledge/index.json.
+ * .knowledge/summaries/cache.json, .knowledge/graph/{nodes,edges}.json,
+ * and .knowledge/index.json.
  *
  * Supports incremental mode (re-index changed files + dependents only)
  * and --full mode for complete rebuilds.
@@ -621,10 +622,24 @@ async function runIndexerInternal(
         coverageErrors: Object.keys(coverageErrors).length > 0 ? coverageErrors : undefined,
     };
 
+    // ── Phase 8.5: Graphify — build knowledge graph ─────────────────────
+    const graphStart = Date.now();
+    const { buildKnowledgeGraph } = await import('../tools/lib/knowledge-graph.js');
+    const graph = buildKnowledgeGraph(
+        mergedSymbols,
+        dependencyGraph,
+        newSummaries,
+        projectRoot,
+    );
+    process.stderr.write(
+        `[indexer] Graphify: ${graph.nodes.length} nodes, ${graph.edges.length} edges (${Date.now() - graphStart}ms)\n`
+    );
+
     // Write to temp directory, then atomic rename
     const tempRoot = knowledgeRoot + '.new';
     fs.mkdirSync(tempRoot, { recursive: true });
     fs.mkdirSync(path.join(tempRoot, 'summaries'), { recursive: true });
+    fs.mkdirSync(path.join(tempRoot, 'graph'), { recursive: true });
 
     // Write all files
     fs.writeFileSync(path.join(tempRoot, 'index.json'), JSON.stringify(newIndex, null, 2), 'utf8');
@@ -635,6 +650,8 @@ async function runIndexerInternal(
         JSON.stringify(newSummaries, null, 2),
         'utf8'
     );
+    fs.writeFileSync(path.join(tempRoot, 'graph', 'nodes.json'), JSON.stringify(graph.nodes, null, 2), 'utf8');
+    fs.writeFileSync(path.join(tempRoot, 'graph', 'edges.json'), JSON.stringify(graph.edges, null, 2), 'utf8');
 
     // Copy architecture.md if it exists
     const archSrc = path.join(knowledgeRoot, 'architecture.md');

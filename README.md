@@ -148,7 +148,8 @@ Add to your project's `.claude/mcp_servers.json`:
       "command": "node",
       "args": ["/absolute/path/to/ai-code-knowledge/mcp-server/dist/server.js"],
       "env": {
-        "KNOWLEDGE_ROOT": ".knowledge"
+        "KNOWLEDGE_ROOT": ".knowledge",
+        "PROJECT_ROOT": "."
       }
     }
   }
@@ -164,12 +165,15 @@ Or for development (runs TypeScript directly, no build step):
       "command": "npx",
       "args": ["tsx", "/absolute/path/to/ai-code-knowledge/mcp-server/server.ts"],
       "env": {
-        "KNOWLEDGE_ROOT": ".knowledge"
+        "KNOWLEDGE_ROOT": ".knowledge",
+        "PROJECT_ROOT": "."
       }
     }
   }
 }
 ```
+
+> **Tip:** When using this MCP server with a different project than the one it's installed in, use absolute paths for both `KNOWLEDGE_ROOT` and `PROJECT_ROOT` to avoid path resolution issues.
 
 #### Cursor
 
@@ -182,7 +186,8 @@ Add to `.cursor/mcp.json` in your project root:
       "command": "node",
       "args": ["/absolute/path/to/ai-code-knowledge/mcp-server/dist/server.js"],
       "env": {
-        "KNOWLEDGE_ROOT": ".knowledge"
+        "KNOWLEDGE_ROOT": ".knowledge",
+        "PROJECT_ROOT": "."
       }
     }
   }
@@ -200,7 +205,8 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
       "command": "node",
       "args": ["/absolute/path/to/ai-code-knowledge/mcp-server/dist/server.js"],
       "env": {
-        "KNOWLEDGE_ROOT": "/absolute/path/to/your/project/.knowledge"
+        "KNOWLEDGE_ROOT": "/absolute/path/to/your/project/.knowledge",
+        "PROJECT_ROOT": "/absolute/path/to/your/project"
       }
     }
   }
@@ -212,7 +218,7 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 The server communicates via stdio. Run it as:
 
 ```bash
-KNOWLEDGE_ROOT=/path/to/project/.knowledge node /path/to/ai-code-knowledge/mcp-server/dist/server.js
+PROJECT_ROOT=/path/to/project KNOWLEDGE_ROOT=/path/to/project/.knowledge node /path/to/ai-code-knowledge/mcp-server/dist/server.js
 ```
 
 Pass the process's stdin/stdout to your MCP client. All logs go to stderr.
@@ -237,18 +243,41 @@ Copy the `CLAUDE.md` from this repo into your project and customize it. This tel
 
 ### MCP tools
 
+**Composite tools** (start here — reduce tool calls by 60-70%):
+
 | Tool | Description |
 |------|-------------|
 | `get_project_overview` | File tree, tech stack, modules, symbol counts, entry points |
 | `get_module_context` | Everything about a module: summaries, symbols, deps, patterns |
 | `get_implementation_context` | Rich context for a file: summary, symbols, imports, related files |
 | `get_batch_summaries` | Compact summaries for up to 20 files in one call |
+
+**Targeted query tools:**
+
+| Tool | Description |
+|------|-------------|
 | `find_symbol` | Locate class/function/interface definitions by name |
 | `find_callers` | Trace call chains via BFS through the call graph |
 | `get_dependencies` | Module-level dependency relationships |
 | `get_file_summary` | Quick overview of a single file |
 | `search_architecture` | Query human-authored architecture docs |
+| `semantic_search` | Hybrid BM25 + vector search across files, symbols, and features |
+| `explore_graph` | Traverse the knowledge graph by following typed edges (calls, imports, etc.) |
+| `get_feature_context` | Look up cross-cutting feature groups by semantic similarity |
 | `health_check` | Knowledge base status and freshness |
+
+**Pipeline & workspace tools:**
+
+| Tool | Description |
+|------|-------------|
+| `get_artifact_schema` | Expected JSON schema for pipeline artifact types |
+| `get_artifact_store_path` | Filesystem path where a pipeline artifact should be written |
+| `validate_artifact_draft` | Pre-validate artifact JSON against expected schema |
+| `get_cumulative_context` | Digest of all artifacts produced by prior pipeline phases |
+| `get_directory_tree` | File/folder structure as a tree listing |
+| `get_code_patterns` | Recurring code patterns with occurrence counts and examples |
+| `find_template_file` | Find most similar existing files to use as templates |
+| `get_static_data_schema` | Structure of static data files: keys, exports, relationships |
 
 ## Configuration
 

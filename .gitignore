@@ -42,3 +42,4 @@ Thumbs.db
 workspace
 .knowledge
 node_modules
+**/dist/**

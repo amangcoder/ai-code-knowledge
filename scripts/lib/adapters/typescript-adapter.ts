@@ -16,7 +16,7 @@ export class TypeScriptAdapter implements LanguageAdapter {
     readonly language = 'typescript';
     readonly extensions = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
     readonly projectMarkers = ['tsconfig.json', 'package.json'];
-    readonly ignoreDirs = ['node_modules', 'dist', 'build', '.next', '.nuxt', 'coverage'];
+    readonly ignoreDirs = ['node_modules', 'dist', 'build', '.next', '.nuxt', 'coverage', 'cdk.out'];
 
     private project: Project | undefined;
     private projectRoot: string = '';

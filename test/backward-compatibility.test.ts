@@ -405,7 +405,7 @@ describe('backward compatibility — general guarantees (REQ-027)', () => {
     it('none of the enhanced tools throw exceptions without vectors', async () => {
         await expect(findSymbolHandler({ name: 'charge' }, knowledgeRoot)).resolves.toBeDefined();
         await expect(findTemplateFileHandler({ description: 'payment' }, knowledgeRoot)).resolves.toBeDefined();
-        await expect(getProjectOverviewHandler({}, knowledgeRoot)).resolves.toBeDefined();
+        expect(getProjectOverviewHandler({}, knowledgeRoot)).toBeDefined();
         await expect(getImplementationContextHandler({ file: 'src/order.ts' }, knowledgeRoot)).resolves.toBeDefined();
     });
 });

@@ -260,8 +260,7 @@ export async function createVectorStore(
     // Attempt to dynamically import LanceDB
     let lance: LanceDB | null = null;
     try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        lance = (await (Function('return import("@lancedb/lancedb")')() as Promise<unknown>)) as LanceDB;
+        lance = (await import('@lancedb/lancedb')) as unknown as LanceDB;
     } catch {
         // LanceDB not installed — return unavailable stub
         return new UnavailableVectorStore();

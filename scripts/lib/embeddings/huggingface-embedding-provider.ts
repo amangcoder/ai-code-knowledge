@@ -18,7 +18,7 @@ import type { EmbeddingProvider } from './embedding-provider.js';
 
 const DEFAULT_MODEL = 'Salesforce/codesage-base';
 const DEFAULT_DIMENSIONS = 768;
-const BASE_URL = 'https://api-inference.huggingface.co/pipeline/feature-extraction';
+const BASE_URL = 'https://router.huggingface.co/pipeline/feature-extraction';
 const CHUNK_SIZE = 32;
 const REQUEST_TIMEOUT = 60_000; // 60s — cold starts can be slow
 

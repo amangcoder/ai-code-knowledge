@@ -21,7 +21,7 @@ export interface SymbolEntry {
     file: string;                 // absolute path
     line: number;
     signature: string;
-    type: 'function' | 'class' | 'interface' | 'type' | 'method' | 'module-init' | 'decorator' | 'enum' | 'constructor';
+    type: 'function' | 'class' | 'interface' | 'type' | 'method' | 'module-init' | 'decorator' | 'enum' | 'constructor' | 'property';
     module: string;               // parent directory name
     calls: string[];              // qualifiedNames of called symbols
     calledBy: string[];           // qualifiedNames of callers (inverted index)

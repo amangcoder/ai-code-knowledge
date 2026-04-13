@@ -13,7 +13,13 @@ export function normalizePath(filePath: string): string {
 }
 
 export function resolveProjectRoot(knowledgeRoot: string): string {
-    // .knowledge is typically at <projectRoot>/.knowledge
+    // Prefer explicit PROJECT_ROOT (set by server.ts or build-knowledge.ts)
+    // over inferring from KNOWLEDGE_ROOT — the inference breaks when the
+    // server CWD differs from the project that was indexed.
+    if (process.env['PROJECT_ROOT']) {
+        return path.resolve(process.env['PROJECT_ROOT']);
+    }
+    // Fallback: .knowledge is typically at <projectRoot>/.knowledge
     const resolved = path.resolve(knowledgeRoot);
     return path.dirname(resolved);
 }

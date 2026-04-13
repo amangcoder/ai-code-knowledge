@@ -131,7 +131,9 @@ async function main(): Promise<void> {
     for (const [lang, files] of filesByLanguage) {
         const adapter = registry.getByLanguage(lang);
         if (adapter?.initialize) {
+            log(`Initializing ${lang} adapter (${files.length} files)...`);
             await adapter.initialize(files.map(f => f.filePath), projectRoot);
+            log(`${lang} adapter ready`);
         }
     }
 
@@ -187,8 +189,14 @@ async function main(): Promise<void> {
     // Extract symbols per language using adapters
     for (const [lang, files] of filesToProcess) {
         const adapter = registry.getByLanguage(lang)!;
+        log(`Phase 1: extracting symbols from ${files.length} ${lang} files...`);
+        let filesDone = 0;
         for (const file of files) {
             allSymbols.push(...adapter.extractSymbols(file, richness));
+            filesDone++;
+            if (filesDone % 100 === 0 || filesDone === files.length) {
+                log(`  [${lang}] ${filesDone}/${files.length} files`);
+            }
         }
     }
 
@@ -202,6 +210,7 @@ async function main(): Promise<void> {
 
         if (langSymbols.length === 0) continue;
 
+        log(`Phase 1b: building ${lang} call graph (${langSymbols.length} symbols, ${files.length} files)...`);
         const contents = new Map<string, string>();
         for (const f of files) {
             contents.set(f.relativePath, f.content);
@@ -209,6 +218,7 @@ async function main(): Promise<void> {
 
         const withCalls = adapter.buildCallGraph(langSymbols, contents, projectRoot);
         symbolsWithCalls.push(...withCalls);
+        log(`  ${lang} call graph: ${withCalls.length} symbols with calls`);
     }
 
     const finalSymbols = invertCallGraph(symbolsWithCalls);
@@ -216,10 +226,12 @@ async function main(): Promise<void> {
 
     // ── Phase 2: Dependency graph (always full rebuild) ───────────────────────
     const t2 = Date.now();
+    log(`Phase 2: extracting dependencies...`);
     const fileDeps: Record<string, ImportInfo[]> = {};
 
     for (const [lang, files] of allFileContexts) {
         const adapter = registry.getByLanguage(lang)!;
+        log(`  [${lang}] extracting deps from ${files.length} files...`);
         for (const file of files) {
             fileDeps[file.filePath] = adapter.extractDependencies(file);
         }
@@ -236,6 +248,7 @@ async function main(): Promise<void> {
     // ── Phase 2.5: Rich-level analysis (complexity + test mapping) ────────────
     if (richness === 'rich') {
         const t25 = Date.now();
+        log(`Phase 2.5: rich analysis (complexity + test mapping)...`);
 
         // Complexity analysis
         const { computeFileComplexity } = await import('./lib/complexity.js');
@@ -287,6 +300,10 @@ async function main(): Promise<void> {
     // Extract test map if available from rich analysis
     const testMap = (depGraph as any)._testMap as import('./lib/test-mapper.js').TestMap | undefined;
 
+    let totalFilesToSummarize = 0;
+    for (const [, files] of filesToProcess) totalFilesToSummarize += files.length;
+    log(`Phase 3: generating summaries for ${totalFilesToSummarize} files...`);
+
     let summaryCount = 0;
     for (const [, files] of filesToProcess) {
         for (const file of files) {
@@ -307,6 +324,9 @@ async function main(): Promise<void> {
             }
 
             summaryCount++;
+            if (summaryCount % 100 === 0 || summaryCount === totalFilesToSummarize) {
+                log(`  summaries: ${summaryCount}/${totalFilesToSummarize}`);
+            }
         }
     }
 
@@ -318,15 +338,18 @@ async function main(): Promise<void> {
     log(`Summaries: ${summaryCount} processed in ${Date.now() - t3}ms`);
 
     // ── Phase 4: Index ────────────────────────────────────────────────────────
+    log(`Phase 4: building index...`);
     const index = await buildIndex(knowledgeRoot);
     (index as any).buildInProgress = false;
     (index as any).buildGeneration = buildGeneration;
     (index as any).richness = richness;
     await writeIndex(knowledgeRoot, index);
+    log(`Index: ${(index as any).fileCount ?? '?'} files indexed`);
 
     // ── Phase 7: Embedding generation ────────────────────────────────────────
     if (!skipVectors) {
         try {
+            log(`Phase 7: generating embeddings (EMBEDDING_MODEL=${process.env['EMBEDDING_MODEL'] ?? 'huggingface'})...`);
             const { runEmbeddingPhase } = await import('./lib/phases/embedding-phase.js');
             const { createEmbeddingProvider } = await import('./lib/embeddings/embedding-factory.js');
             const embeddingProvider = createEmbeddingProvider();
@@ -341,6 +364,7 @@ async function main(): Promise<void> {
     }
 
     // ── Phase 8: Knowledge graph ─────────────────────────────────────────────
+    log(`Phase 8: building knowledge graph...`);
     try {
         const { runGraphBuildPhase } = await import('./lib/phases/graph-build-phase.js');
         const graphResult = await runGraphBuildPhase(knowledgeRoot);
@@ -365,7 +389,8 @@ async function main(): Promise<void> {
     }
 
     // ── Phase 9: Feature discovery ───────────────────────────────────────────
-    if (!skipFeatures) {
+    if (!skipFeatures && !skipVectors) {
+        log(`Phase 9: discovering features...`);
         try {
             const { runFeatureDiscoveryPhase } = await import('./lib/phases/feature-discovery-phase.js');
             const { createEmbeddingProvider } = await import('./lib/embeddings/embedding-factory.js');
@@ -376,7 +401,7 @@ async function main(): Promise<void> {
             log(`Warning: Feature discovery phase failed — ${err instanceof Error ? err.message : err}`);
         }
     } else {
-        log('Skipping feature discovery (--skip-features)');
+        log(`Skipping feature discovery (${skipFeatures ? '--skip-features' : '--skip-vectors'})`);
     }
 
     // Cleanup adapters

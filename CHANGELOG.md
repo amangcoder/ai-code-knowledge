@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-04-13
+
+### Added
+
+#### PROJECT_ROOT Environment Variable
+- **Explicit `PROJECT_ROOT` support** — MCP server and build pipeline now accept a `PROJECT_ROOT` env var to correctly resolve file paths when the server runs from a different working directory than the indexed project. `server.ts` infers it from `KNOWLEDGE_ROOT` if not set.
+- All MCP config examples (Claude Code, Cursor, Windsurf, raw stdio) updated with `PROJECT_ROOT`.
+
+#### Graphify Phase (8.5) in Indexer
+- The main indexer (`mcp-server/src/indexer.ts`) now builds the knowledge graph inline (Phase 8.5) and writes `graph/nodes.json` and `graph/edges.json` atomically alongside the other knowledge artifacts.
+
+#### Build Pipeline Progress Logging
+- Detailed progress logging added across all build phases (symbol extraction, call graph, dependency extraction, summarization, embedding, graph build, feature discovery) for better observability on large codebases.
+
+#### Symbol Type: `property`
+- `SymbolEntry.type` union extended with `'property'` in both `src/types.ts` and `mcp-server/types.ts`.
+
+#### Types
+- `GraphifyPhaseResult` interface added to `mcp-server/types.ts` for Phase 8.5 results.
+
+#### Documentation
+- README MCP tool table expanded and categorized into Composite, Targeted Query, and Pipeline & Workspace sections. All 22 tools now documented.
+
+### Fixed
+- **HuggingFace API URL** — Updated from deprecated `api-inference.huggingface.co` to `router.huggingface.co` in both build pipeline and MCP server providers.
+- **Working memory mutation** — `setInMemory` now uses `structuredClone` to prevent callers from mutating cached values.
+- **LanceDB import** — Replaced `Function('return import(...)')()` hack with a standard dynamic `import()`.
+- **Feature discovery skip logic** — Phase 9 is now also skipped when `--skip-vectors` is set, since features depend on vector embeddings.
+- **Incremental updater test** — `copyFixture` now skips subdirectories to avoid `EISDIR` errors.
+- **Backward compatibility test** — `getProjectOverviewHandler` call fixed (sync, not async).
+
+### Changed
+- **Default embedding model** reverted from `Salesforce/codesage-large` (1024 dims) back to `Salesforce/codesage-base` (768 dims) — better latency/cost tradeoff for typical project sizes.
+- **TypeScript adapter** — `cdk.out` added to `ignoreDirs`.
+- **`.gitignore`** — `**/dist/**` added to exclude all build artifacts from version control; tracked `mcp-server/dist/` files removed.
+
+---
+
 ## [0.5.1] - 2026-03-23
 
 ### Added

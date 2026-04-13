@@ -96,7 +96,7 @@ export function setInMemory<T>(key: string, value: T, buildTimestamp: string): v
         evictOldest();
     }
     store.set(key, {
-        value,
+        value: structuredClone(value),
         insertedAt: Date.now(),
         buildTimestamp,
     });
