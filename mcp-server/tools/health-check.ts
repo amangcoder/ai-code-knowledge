@@ -218,9 +218,9 @@ export async function handler(
         sections.push({
             label: `Coverage Gaps (${gaps.length})`,
             content: gapLines.join('\n') +
-                '\n\nTo exclude paths from indexing, add them to .knowledge/config.json:\n' +
-                '  { "exclude": ["path/to/skip", "another/path"] }\n' +
-                'Then re-run build-knowledge to rebuild the index.',
+                '\n\nIf these are generated or vendor files, add them to .knowledge/config.json:\n' +
+                '  { "exclude": ["path/to/skip"] }\n' +
+                'Then re-run build-knowledge.',
             priority: 2,
         });
     }
