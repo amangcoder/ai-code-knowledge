@@ -135,7 +135,6 @@ export async function runGraphifyPhase(
 
     // No-op if Graphify output doesn't exist
     if (!fs.existsSync(graphJsonPath)) {
-        logInfo(PHASE, 'No .graphify/graph.json found — skipping enrichment');
         return { nodesAdded: 0, edgesAdded: 0, architectureEnriched: false, durationMs: 0 };
     }
 

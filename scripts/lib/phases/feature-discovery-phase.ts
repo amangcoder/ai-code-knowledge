@@ -18,6 +18,7 @@ import type {
 import type { EmbeddingProvider } from '../embeddings/embedding-provider.js';
 import type { Summarizer } from '../summarizer.js';
 import { createVectorStore } from '../vector-store.js';
+import type { FileEmbeddingRecord } from '../vector-store.js';
 import { discoverFeatures, writeFeatures } from '../feature-discovery.js';
 import { logInfo, logError } from '../logger.js';
 
@@ -65,15 +66,32 @@ export async function runFeatureDiscoveryPhase(
     const vectorStore = await createVectorStore(knowledgeRoot, provider.dimensions());
     const embeddings = await vectorStore.getAllFileEmbeddings();
 
-    // 4. If embeddings unavailable, generate from summaries
+    // 4. If embeddings unavailable, generate from summaries and persist for reuse
     if (embeddings.size === 0 && Object.keys(summaries).length > 0) {
         logInfo(PHASE, 'No stored embeddings found — generating from summaries');
         try {
-            const texts = Object.entries(summaries).map(([, s]) => s.purpose ?? '');
+            const summaryEntries = Object.entries(summaries);
+            const texts = summaryEntries.map(([, s]) => s.purpose ?? '');
             const embeddingArrays = await provider.embed(texts);
-            Object.entries(summaries).forEach(([filePath], idx) => {
+            const records: FileEmbeddingRecord[] = [];
+            summaryEntries.forEach(([filePath, summary], idx) => {
                 embeddings.set(filePath, embeddingArrays[idx]);
+                records.push({
+                    id: `file:${filePath}`,
+                    file: filePath,
+                    purpose: summary.purpose ?? '',
+                    embedding: embeddingArrays[idx],
+                    contentHash: summary.contentHash ?? '',
+                });
             });
+            // Persist so subsequent builds can skip regeneration
+            if (records.length > 0 && vectorStore.isAvailable()) {
+                try {
+                    await vectorStore.upsertFiles(records);
+                } catch (err) {
+                    logError(PHASE, `Failed to persist fallback embeddings: ${String(err)}`);
+                }
+            }
         } catch (err) {
             logError(PHASE, `Failed to generate embeddings: ${String(err)}`);
             return { featuresDiscovered: 0, durationMs: Date.now() - startMs };

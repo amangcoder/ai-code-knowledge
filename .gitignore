@@ -43,3 +43,6 @@ workspace
 .knowledge
 node_modules
 **/dist/**
+
+# Orchestrator runtime artifacts
+.graphify/

@@ -59,6 +59,7 @@ type LanceTable = {
     search(query: Float32Array): { limit: (n: number) => { toArray: () => Promise<Record<string, unknown>[]> } };
     overwrite?(records: Record<string, unknown>[]): Promise<void>;
     toArrow?(): Promise<unknown>;
+    query?(): { toArray: () => Promise<Record<string, unknown>[]> };
 };
 
 type LanceDB = {
@@ -224,8 +225,22 @@ class LanceDBVectorStore implements VectorStore {
     }
 
     async getAllFileEmbeddings(): Promise<Map<string, Float32Array>> {
-        // Stub: returns empty map (real implementation would iterate table)
-        return new Map();
+        if (!this.filesTable?.query) return new Map();
+        try {
+            const rows = await this.filesTable.query().toArray();
+            const result = new Map<string, Float32Array>();
+            for (const row of rows) {
+                if (row['id'] === '__init__') continue;
+                const file = row['file'];
+                const vector = row['vector'];
+                if (typeof file === 'string' && file && Array.isArray(vector)) {
+                    result.set(file, new Float32Array(vector as number[]));
+                }
+            }
+            return result;
+        } catch {
+            return new Map();
+        }
     }
 }
 

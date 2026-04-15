@@ -32,6 +32,7 @@ import * as getCumulativeContext from './tools/get-cumulative-context.js';
 import * as semanticSearch from './tools/semantic-search.js';
 import * as exploreGraph from './tools/explore-graph.js';
 import * as getFeatureContext from './tools/get-feature-context.js';
+import * as rebuildKnowledge from './tools/rebuild-knowledge.js';
 
 const KNOWLEDGE_ROOT = process.env['KNOWLEDGE_ROOT'] ?? '.knowledge';
 
@@ -47,7 +48,7 @@ if (!process.env['PROJECT_ROOT']) {
 async function main(): Promise<void> {
     const server = new McpServer({
         name: 'ai-code-knowledge',
-        version: '0.4.0',
+        version: '0.7.0',
     });
 
     initToolLogger(KNOWLEDGE_ROOT);
@@ -571,6 +572,53 @@ async function main(): Promise<void> {
         async (args: { query: string; topK?: number }) => {
             return withToolLogging('get_feature_context', args, () =>
                 getFeatureContext.handler(args, KNOWLEDGE_ROOT));
+        }
+    );
+
+    // ── Build management tools ────────────────────────────────────────────
+
+    server.tool(
+        'rebuild_knowledge',
+        'Trigger a knowledge base rebuild programmatically. Spawns the build-knowledge pipeline ' +
+            'and returns structured results (status, duration, stats, log). ' +
+            'Use after making significant code changes or when health_check reports staleness. ' +
+            'Blocks until build completes or timeout. Default: incremental build with 10min timeout.',
+        {
+            incremental: z
+                .boolean()
+                .optional()
+                .describe('Run incremental build (default: true). Set false for full rebuild.'),
+            skip_vectors: z
+                .boolean()
+                .optional()
+                .describe('Skip vector embedding phase'),
+            skip_features: z
+                .boolean()
+                .optional()
+                .describe('Skip feature discovery phase'),
+            skip_graphify: z
+                .boolean()
+                .optional()
+                .describe('Skip graph enrichment phase'),
+            rebuild_features: z
+                .boolean()
+                .optional()
+                .describe('Force rebuild of feature clusters'),
+            richness: z
+                .enum(['minimal', 'standard', 'rich'])
+                .optional()
+                .describe('Summarization depth level'),
+            timeout_minutes: z
+                .number()
+                .int()
+                .min(1)
+                .max(30)
+                .optional()
+                .describe('Max build time in minutes (default: 10)'),
+        },
+        async (args) => {
+            return withToolLogging('rebuild_knowledge', args, () =>
+                rebuildKnowledge.handler(args, KNOWLEDGE_ROOT));
         }
     );
 

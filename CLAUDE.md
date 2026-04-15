@@ -17,7 +17,13 @@ This repository uses an **AI Code Knowledge System** to provide a structured ind
 - `get_dependencies(module, depth?)`: Retrieve module-level or file-level dependency relationships.
 - `get_file_summary(file)`: Get a high-level overview of a single file. Prefer `get_implementation_context` for richer detail.
 - `search_architecture(query)`: Query the human-authored architecture documentation for system-wide patterns.
+- `semantic_search(query, scope?, topK?)`: Hybrid BM25 + vector search across files, symbols, and features. Use for natural-language queries like "authentication flow" or "how does caching work".
+- `explore_graph(start, edgeTypes?, maxDepth?, direction?)`: Traverse the knowledge graph following typed edges (calls, imports, depends_on, etc.). Use to trace call chains or import relationships.
+- `get_feature_context(query, topK?)`: Look up cross-cutting feature groups by semantic similarity (e.g. "payment processing", "user auth").
 - `health_check(verbose?)`: Knowledge base status. Use `verbose=true` for tech stack and file tree.
+
+### Build Management
+- `rebuild_knowledge(incremental?, skip_vectors?, skip_features?, skip_graphify?, rebuild_features?, richness?, timeout_minutes?)`: Trigger a knowledge base rebuild without leaving the agent. Use after large refactors or when `health_check` reports staleness. Defaults to an incremental build with a 10-minute timeout. Returns status, duration, build stats, and log output.
 
 ## Preferred Tool Order
 Follow this order to minimize tool calls and maximize context efficiency:
@@ -30,7 +36,10 @@ Follow this order to minimize tool calls and maximize context efficiency:
 7. `get_dependencies` (to understand module relationships)
 8. `get_file_summary` (single file, lightweight — prefer `get_implementation_context`)
 9. `search_architecture` (to understand high-level system design)
-10. `native grep` (only as a last resort if MCP tools fail to find a pattern)
+10. `semantic_search` (natural-language queries when other tools don't return results)
+11. `explore_graph` (trace call/import chains across modules)
+12. `rebuild_knowledge` (when knowledge is stale after significant changes)
+13. `native grep` (only as a last resort if MCP tools fail to find a pattern)
 
 ## When to Use Each Tool
 
@@ -78,4 +87,4 @@ Use for high-level questions about the system's design or to find which modules 
 - **Do not** skip using MCP tools when unsure about where a feature is implemented.
 
 ## Knowledge Freshness
-The knowledge index is updated automatically if the `watch` script is running. If you suspect the index is stale (e.g., after a large refactor), you can trigger a manual rebuild using `npm run build-knowledge`. Always check `.knowledge/index.json` for the `lastBuilt` timestamp if in doubt.
+The knowledge index is updated automatically if the `watch` script is running. If you suspect the index is stale (e.g., after a large refactor), trigger a rebuild using the `rebuild_knowledge` MCP tool — no terminal needed. For a full rebuild including vectors, call `rebuild_knowledge(incremental=false)`. Always check `.knowledge/index.json` for the `lastBuilt` timestamp if in doubt.

@@ -303,6 +303,12 @@ Otherwise, copy `CLAUDE.md` from this repo into your project root. This tells AI
 | `get_feature_context` | Look up cross-cutting feature groups by semantic similarity |
 | `health_check` | Knowledge base status and freshness |
 
+**Build management:**
+
+| Tool | Description |
+|------|-------------|
+| `rebuild_knowledge` | Trigger a knowledge base rebuild from within the agent. Supports incremental builds, skip flags, richness levels, and timeout. Returns status, duration, stats, and build log. |
+
 **Pipeline & workspace tools:**
 
 | Tool | Description |
@@ -334,8 +340,8 @@ Vector search is powered by configurable embedding backends via `EMBEDDING_MODEL
 
 | Provider | Value | Requirements |
 |----------|-------|-------------|
-| HuggingFace (default for build) | `huggingface` | Optional `HF_API_TOKEN` |
-| Local server | `local` / `codesage` | Python embedding server running |
+| Local server **(default)** | `local` / `local-base` (768d), `local-large` (1024d) | Python embedding server running |
+| HuggingFace | `huggingface` | Optional `HF_API_TOKEN` |
 | Ollama | `ollama` | Local Ollama instance |
 | OpenAI | `openai` | `OPENAI_API_KEY` |
 | Mock (CI) | `mock` | None — returns zero vectors |
@@ -347,7 +353,7 @@ Vector search is powered by configurable embedding backends via `EMBEDDING_MODEL
 | `KNOWLEDGE_ROOT` | `.knowledge` | Path to the `.knowledge` directory |
 | `PROJECT_ROOT` | Derived from `KNOWLEDGE_ROOT` | Explicit project root — always set this when running the MCP server for a different project |
 | `SUMMARIZER_MODE` | `static` | Summary backend: `static`, `ollama`, `anthropic` |
-| `EMBEDDING_MODEL` | `huggingface` | Embedding provider |
+| `EMBEDDING_MODEL` | `local` | Embedding provider |
 | `ANTHROPIC_API_KEY` | — | Required for `anthropic` summarizer |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama endpoint |
 | `HF_API_TOKEN` | — | HuggingFace token (optional, increases rate limits) |
@@ -379,7 +385,7 @@ src/
   types.ts                # Shared type definitions
 mcp-server/
   server.ts               # MCP server entry point
-  tools/                  # Tool implementations (21 tools)
+  tools/                  # Tool implementations (22 tools)
 test/                     # Unit, integration, and perf tests
 .knowledge/               # Generated knowledge artifacts (gitignored)
   symbols.json            # All extracted symbols with call graph

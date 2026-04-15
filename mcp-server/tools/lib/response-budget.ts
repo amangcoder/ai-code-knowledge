@@ -22,6 +22,7 @@ export const TOOL_BUDGETS: Record<string, number> = {
     get_code_patterns: 14000,
     search_architecture: 14000,
     semantic_search: 14000,
+    rebuild_knowledge: 16000,
 };
 
 export interface Section {

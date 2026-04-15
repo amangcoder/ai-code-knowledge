@@ -1,8 +1,8 @@
 /**
  * Factory for creating EmbeddingProvider instances.
  *
- * Reads EMBEDDING_MODEL env var (default: 'huggingface').
- * Supports HuggingFace (CodeSage), Ollama, and OpenAI providers.
+ * Reads EMBEDDING_MODEL env var (default: 'local').
+ * Supports local server, HuggingFace (CodeSage), Ollama, and OpenAI providers.
  */
 
 import type { EmbeddingProvider } from './embedding-provider.js';
@@ -29,7 +29,7 @@ import { OpenAIEmbeddingProvider } from './openai-embedding-provider.js';
  * @throws if EMBEDDING_MODEL=openai and OPENAI_API_KEY is not set
  */
 export function createEmbeddingProvider(): EmbeddingProvider {
-    const model = (process.env['EMBEDDING_MODEL'] ?? 'huggingface').toLowerCase().trim();
+    const model = (process.env['EMBEDDING_MODEL'] ?? 'local').toLowerCase().trim();
 
     if (model === 'openai') {
         const apiKey = process.env['OPENAI_API_KEY'];
